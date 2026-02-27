@@ -1,0 +1,66 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: jobappliestracker-postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: jobtracker
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - jobappliestracker-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: jobappliestracker-backend
+    restart: always
+    env_file:
+      - ./backend/.env
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - jobappliestracker-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: jobappliestracker-frontend
+    restart: always
+    environment:
+      CI: "true"
+      NEXT_PUBLIC_API_URL: http://localhost:8000
+    command: sh -c "pnpm install --no-frozen-lockfile && pnpm --filter web dev"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - jobappliestracker-network
+
+volumes:
+  postgres_data:
+
+networks:
+  jobappliestracker-network:
+    driver: bridge

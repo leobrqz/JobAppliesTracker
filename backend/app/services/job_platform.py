@@ -1,0 +1,1 @@
+"""Job platform service scaffold."""

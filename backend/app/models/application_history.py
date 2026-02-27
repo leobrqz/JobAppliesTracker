@@ -1,0 +1,1 @@
+"""Application history model scaffold."""

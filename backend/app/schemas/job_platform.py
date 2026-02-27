@@ -1,0 +1,1 @@
+"""Job platform schema scaffold."""
