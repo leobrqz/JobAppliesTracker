@@ -725,8 +725,8 @@ export interface components {
         };
         /** StatusDistributionItem */
         StatusDistributionItem: {
-            /** Status */
-            status: string;
+            /** Stage */
+            stage: string;
             /** Count */
             count: number;
         };

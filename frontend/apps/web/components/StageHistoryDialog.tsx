@@ -17,10 +17,13 @@ import { Button } from "@workspace/ui/components/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@workspace/ui/components/dialog"
 import { Input } from "@workspace/ui/components/input"
 import { Label } from "@workspace/ui/components/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@workspace/ui/components/select"
 import { Separator } from "@workspace/ui/components/separator"
 import { Textarea } from "@workspace/ui/components/textarea"
 import { useApplicationHistory } from "@/hooks/useApplicationHistory"
 import { advanceStage, deleteHistoryEntry } from "@/services/applications.service"
+
+const STAGE_OPTIONS = ["application", "screening", "interview", "assessment", "offer", "closed"]
 
 interface Props {
   applicationId: number
@@ -48,13 +51,13 @@ export function StageHistoryDialog({ applicationId, open, onOpenChange, onStageC
   const [submitting, setSubmitting] = useState(false)
 
   async function handleAddEntry() {
-    if (!newStage.trim()) {
-      toast.error("Stage name is required")
+    if (!newStage) {
+      toast.error("Stage is required")
       return
     }
     setSubmitting(true)
     const result = await advanceStage(applicationId, {
-      stage: newStage.trim(),
+      stage: newStage,
       date: new Date(newDate).toISOString(),
       notes: newNotes.trim() || undefined,
     })
@@ -64,6 +67,7 @@ export function StageHistoryDialog({ applicationId, open, onOpenChange, onStageC
     } else {
       toast.success("Stage added")
       setNewStage("")
+      setNewDate(new Date().toISOString().slice(0, 16))
       setNewNotes("")
       await refetch()
       onStageChanged?.()
@@ -133,12 +137,18 @@ export function StageHistoryDialog({ applicationId, open, onOpenChange, onStageC
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1">
               <Label htmlFor="new-stage">Stage</Label>
-              <Input
-                id="new-stage"
-                placeholder="e.g. interview"
-                value={newStage}
-                onChange={(e) => setNewStage(e.target.value)}
-              />
+              <Select value={newStage} onValueChange={setNewStage}>
+                <SelectTrigger id="new-stage">
+                  <SelectValue placeholder="Select stage…" />
+                </SelectTrigger>
+                <SelectContent>
+                  {STAGE_OPTIONS.map((s) => (
+                    <SelectItem key={s} value={s}>
+                      {s}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div className="space-y-1">
               <Label htmlFor="new-date">Date &amp; Time</Label>

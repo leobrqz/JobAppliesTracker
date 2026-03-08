@@ -37,7 +37,7 @@ export function StatusDistributionChart() {
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Status Distribution</CardTitle>
+          <CardTitle className="text-base">Stage Distribution</CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground">No applications yet.</p>
@@ -46,12 +46,12 @@ export function StatusDistributionChart() {
     )
   }
 
-  const chartData = data.map((item) => ({ name: item.status, value: item.count }))
+  const chartData = data.map((item) => ({ name: item.stage, value: item.count }))
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base">Status Distribution</CardTitle>
+        <CardTitle className="text-base">Stage Distribution</CardTitle>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={260}>

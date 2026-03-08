@@ -108,6 +108,12 @@ export function ApplicationTable({ data, platforms, archived, onEdit, onRefresh 
           <div className="flex items-center gap-1">
             {!archived && (
               <>
+                <Button variant="ghost" size="sm" onClick={() => setHistoryAppId(app.id)}>
+                  History
+                </Button>
+                <Button variant="ghost" size="sm" onClick={() => onEdit(app)}>
+                  Edit
+                </Button>
                 {app.application_url && (
                   <Button variant="ghost" size="sm" asChild>
                     <a href={app.application_url} target="_blank" rel="noopener noreferrer">
@@ -115,12 +121,6 @@ export function ApplicationTable({ data, platforms, archived, onEdit, onRefresh 
                     </a>
                   </Button>
                 )}
-                <Button variant="ghost" size="sm" onClick={() => setHistoryAppId(app.id)}>
-                  History
-                </Button>
-                <Button variant="ghost" size="sm" onClick={() => onEdit(app)}>
-                  Edit
-                </Button>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
                     <Button variant="ghost" size="sm">Archive</Button>

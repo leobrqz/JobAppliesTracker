@@ -71,13 +71,13 @@ def get_summary(db: Session) -> DashboardSummary:
 
 def get_status_distribution(db: Session) -> list[StatusDistributionItem]:
     rows = (
-        db.query(Application.status, func.count(Application.id).label("count"))
+        db.query(Application.current_stage, func.count(Application.id).label("count"))
         .filter(Application.archived_at.is_(None))
-        .group_by(Application.status)
+        .group_by(Application.current_stage)
         .order_by(func.count(Application.id).desc())
         .all()
     )
-    return [StatusDistributionItem(status=row.status, count=row.count) for row in rows]
+    return [StatusDistributionItem(stage=row.current_stage, count=row.count) for row in rows]
 
 
 def get_recent_applications(db: Session) -> list[RecentApplicationItem]:

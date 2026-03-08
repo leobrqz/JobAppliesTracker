@@ -16,7 +16,7 @@ class DashboardSummary(BaseModel):
 
 
 class StatusDistributionItem(BaseModel):
-    status: str
+    stage: str
     count: int
 
 

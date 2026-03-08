@@ -12,8 +12,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@workspace/ui/components/alert-dialog"
+import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
-import { Checkbox } from "@workspace/ui/components/checkbox"
 import {
   Table,
   TableBody,
@@ -110,7 +110,11 @@ export function PlatformTable({ data, onEdit, onRefresh }: Props) {
                   )}
                 </TableCell>
                 <TableCell>
-                  <Checkbox checked={platform.manual_resume} disabled />
+                  {platform.manual_resume ? (
+                    <Badge variant="secondary">Required</Badge>
+                  ) : (
+                    <Badge variant="outline" className="text-muted-foreground">Auto filled</Badge>
+                  )}
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-1">

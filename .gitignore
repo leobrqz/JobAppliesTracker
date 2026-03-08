@@ -14,5 +14,12 @@ venv/
 .env.local
 .env.*.local
 
+
+# Storage
+backend/storage
+
 # Others
 docs
+
+skills-lock.json
+.cursor

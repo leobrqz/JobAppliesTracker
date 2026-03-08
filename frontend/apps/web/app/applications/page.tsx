@@ -32,12 +32,12 @@ export default function ApplicationsPage() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Applications</h1>
+      <h1 className="text-2xl font-semibold">Applications</h1>
+
+      <div className="flex flex-wrap items-end gap-4">
+        <ApplicationFiltersBar filters={filters} onChange={setFilters} />
         <Button onClick={openCreate}>New Application</Button>
       </div>
-
-      <ApplicationFiltersBar filters={filters} onChange={setFilters} />
 
       {isLoading ? (
         <div className="space-y-2">

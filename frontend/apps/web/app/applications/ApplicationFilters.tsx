@@ -23,7 +23,7 @@ export function ApplicationFiltersBar({ filters, onChange }: Props) {
   }
 
   return (
-    <div className="flex flex-wrap items-end gap-4">
+    <div className="contents">
       <div className="space-y-1">
         <Label className="text-xs">Status</Label>
         <Select
