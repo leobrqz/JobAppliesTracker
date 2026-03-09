@@ -33,15 +33,20 @@ interface PresetField {
   placeholder: string
 }
 
-const PRESET_FIELDS: PresetField[] = [
-  { label: "Full Name", type: "text", placeholder: "Your full name" },
-  { label: "Phone", type: "text", placeholder: "+1 234 567 8900" },
-  { label: "Email", type: "email", placeholder: "you@example.com" },
-  { label: "LinkedIn", type: "link", placeholder: "https://linkedin.com/in/your-handle" },
-  { label: "GitHub", type: "link", placeholder: "https://github.com/your-handle" },
-  { label: "Portfolio", type: "link", placeholder: "https://yoursite.com" },
+const PRESET_GROUPS: PresetField[][] = [
+  [
+    { label: "Full Name", type: "text", placeholder: "Your full name" },
+    { label: "Email", type: "email", placeholder: "you@example.com" },
+    { label: "Phone", type: "text", placeholder: "+1 234 567 8900" },
+  ],
+  [
+    { label: "LinkedIn", type: "link", placeholder: "https://linkedin.com/in/handle" },
+    { label: "GitHub", type: "link", placeholder: "https://github.com/handle" },
+    { label: "Portfolio", type: "link", placeholder: "https://yoursite.com" },
+  ],
 ]
 
+const PRESET_FIELDS = PRESET_GROUPS.flat()
 const PRESET_LABELS = new Set(PRESET_FIELDS.map((f) => f.label))
 
 interface EntryFormState {
@@ -53,50 +58,74 @@ interface EntryFormState {
 
 const DEFAULT_FORM: EntryFormState = { label: "", value: "", type: "text", labelLocked: false }
 
-function EntryRow({
+function PresetCell({
+  preset,
   entry,
+  onAdd,
   onEdit,
   onCopy,
   onDelete,
 }: {
-  entry: ProfileDataResponse
+  preset: PresetField
+  entry: ProfileDataResponse | null
+  onAdd: () => void
   onEdit: () => void
   onCopy: () => void
   onDelete: () => void
 }) {
   return (
-    <div className="flex items-center justify-between gap-4 py-2">
-      <div className="min-w-0 flex-1">
-        <p className="truncate text-sm">{entry.value}</p>
-      </div>
-      <div className="flex shrink-0 items-center gap-1">
-        <Button variant="ghost" size="sm" onClick={onCopy}>Copy</Button>
-        <Button variant="ghost" size="sm" onClick={onEdit}>Edit</Button>
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive">
-              Delete
+    <div className="flex flex-col gap-1 rounded-md border p-3">
+      <p className="text-xs font-medium text-muted-foreground">{preset.label}</p>
+      {entry ? (
+        <>
+          <p className="truncate text-sm" title={entry.value}>
+            {entry.value}
+          </p>
+          <div className="flex items-center gap-1 pt-1">
+            <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={onCopy}>
+              Copy
             </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Delete entry?</AlertDialogTitle>
-              <AlertDialogDescription>
-                &quot;{entry.label}&quot; will be permanently deleted.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction
-                onClick={onDelete}
-                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              >
-                Delete
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      </div>
+            <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={onEdit}>
+              Edit
+            </Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 px-2 text-xs text-destructive hover:text-destructive"
+                >
+                  Delete
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Delete entry?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    &quot;{entry.label}&quot; will be permanently deleted.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={onDelete}
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  >
+                    Delete
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
+        </>
+      ) : (
+        <>
+          <p className="text-sm italic text-muted-foreground">Not set</p>
+          <Button variant="ghost" size="sm" className="mt-1 h-7 w-fit px-2 text-xs" onClick={onAdd}>
+            Add
+          </Button>
+        </>
+      )}
     </div>
   )
 }
@@ -179,7 +208,6 @@ export function ProfileDataSection() {
   }
 
   const dataMap = new Map(data.map((e) => [e.label, e]))
-  const presetEntries = PRESET_FIELDS.map((f) => ({ preset: f, entry: dataMap.get(f.label) ?? null }))
   const customEntries = data.filter((e) => !PRESET_LABELS.has(e.label))
 
   return (
@@ -191,68 +219,86 @@ export function ProfileDataSection() {
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-1">
+      <CardContent className="flex flex-col gap-4">
         {isLoading ? (
-          <div className="space-y-2">
-            {[0, 1, 2, 3, 4, 5].map((i) => <Skeleton key={i} className="h-10 w-full" />)}
+          <div className="flex flex-col gap-3">
+            <div className="grid grid-cols-3 gap-3">
+              {[0, 1, 2].map((i) => <Skeleton key={i} className="h-20 w-full rounded-md" />)}
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              {[3, 4, 5].map((i) => <Skeleton key={i} className="h-20 w-full rounded-md" />)}
+            </div>
           </div>
         ) : error ? (
           <p className="text-sm text-destructive">Failed to load profile data: {error}</p>
         ) : (
           <>
-            {presetEntries.map(({ preset, entry }) => (
-              <div key={preset.label}>
-                <div className="flex items-center justify-between gap-2">
-                  <span className="w-28 shrink-0 text-xs font-medium text-muted-foreground">
-                    {preset.label}
-                  </span>
-                  {entry ? (
-                    <EntryRow
+            {PRESET_GROUPS.map((group, gi) => (
+              <div key={gi} className="grid grid-cols-3 gap-3">
+                {group.map((preset) => {
+                  const entry = dataMap.get(preset.label) ?? null
+                  return (
+                    <PresetCell
+                      key={preset.label}
+                      preset={preset}
                       entry={entry}
-                      onEdit={() => openEdit(entry)}
-                      onCopy={() => handleCopy(entry.value)}
-                      onDelete={() => handleDelete(entry.id)}
+                      onAdd={() => openPresetFill(preset)}
+                      onEdit={() => openEdit(entry!)}
+                      onCopy={() => handleCopy(entry!.value)}
+                      onDelete={() => handleDelete(entry!.id)}
                     />
-                  ) : (
-                    <div className="flex flex-1 items-center justify-between py-2">
-                      <span className="text-sm text-muted-foreground italic">Not set</span>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => openPresetFill(preset)}
-                      >
-                        Add
-                      </Button>
-                    </div>
-                  )}
-                </div>
-                <Separator className="my-1" />
+                  )
+                })}
               </div>
             ))}
 
             {customEntries.length > 0 && (
-              <div className="pt-2">
-                <p className="mb-2 text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                  Custom
-                </p>
-                <ul className="space-y-1">
-                  {customEntries.map((entry) => (
-                    <li key={entry.id} className="rounded-md border px-3">
-                      <div className="flex items-center gap-2">
+              <>
+                <Separator />
+                <div className="flex flex-col gap-2">
+                  <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                    Custom
+                  </p>
+                  <ul className="flex flex-col gap-1">
+                    {customEntries.map((entry) => (
+                      <li key={entry.id} className="flex items-center gap-3 rounded-md border px-3 py-2">
                         <span className="w-28 shrink-0 text-xs font-medium text-muted-foreground">
                           {entry.label}
                         </span>
-                        <EntryRow
-                          entry={entry}
-                          onEdit={() => openEdit(entry)}
-                          onCopy={() => handleCopy(entry.value)}
-                          onDelete={() => handleDelete(entry.id)}
-                        />
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+                        <p className="min-w-0 flex-1 truncate text-sm">{entry.value}</p>
+                        <div className="flex shrink-0 items-center gap-1">
+                          <Button variant="ghost" size="sm" onClick={() => handleCopy(entry.value)}>Copy</Button>
+                          <Button variant="ghost" size="sm" onClick={() => openEdit(entry)}>Edit</Button>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive">
+                                Delete
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Delete entry?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  &quot;{entry.label}&quot; will be permanently deleted.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => handleDelete(entry.id)}
+                                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                >
+                                  Delete
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </>
             )}
           </>
         )}
@@ -262,12 +308,16 @@ export function ProfileDataSection() {
         <DialogContent className="max-w-sm">
           <DialogHeader>
             <DialogTitle>
-              {editTarget ? `Edit — ${form.label}` : form.labelLocked ? `Add — ${form.label}` : "New Custom Entry"}
+              {editTarget
+                ? `Edit — ${form.label}`
+                : form.labelLocked
+                ? `Add — ${form.label}`
+                : "New Custom Entry"}
             </DialogTitle>
           </DialogHeader>
-          <div className="space-y-3">
+          <div className="flex flex-col gap-3">
             {!form.labelLocked && (
-              <div className="space-y-1">
+              <div className="flex flex-col gap-1">
                 <Label htmlFor="pd-label">Label</Label>
                 <Input
                   id="pd-label"
@@ -277,7 +327,7 @@ export function ProfileDataSection() {
                 />
               </div>
             )}
-            <div className="space-y-1">
+            <div className="flex flex-col gap-1">
               <Label htmlFor="pd-value">Value</Label>
               <Input
                 id="pd-value"
@@ -290,7 +340,7 @@ export function ProfileDataSection() {
               />
             </div>
             {!form.labelLocked && (
-              <div className="space-y-1">
+              <div className="flex flex-col gap-1">
                 <Label>Type</Label>
                 <Select value={form.type} onValueChange={(v) => setForm((f) => ({ ...f, type: v }))}>
                   <SelectTrigger>
