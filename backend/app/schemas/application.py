@@ -17,6 +17,7 @@ class ApplicationCreate(BaseModel):
     status: str
     applied_at: date
     resume_id: Optional[int] = None
+    company_id: Optional[int] = None
 
 
 class ApplicationUpdate(BaseModel):
@@ -30,6 +31,7 @@ class ApplicationUpdate(BaseModel):
     status: Optional[str] = None
     applied_at: Optional[date] = None
     resume_id: Optional[int] = None
+    company_id: Optional[int] = None
 
 
 class ApplicationResponse(BaseModel):
@@ -39,6 +41,7 @@ class ApplicationResponse(BaseModel):
     platform_id: int
     job_title: str
     company: Optional[str]
+    company_id: Optional[int]
     salary: Optional[Decimal]
     seniority: Optional[str]
     contract_type: Optional[str]

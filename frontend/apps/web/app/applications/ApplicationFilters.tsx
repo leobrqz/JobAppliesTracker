@@ -2,6 +2,7 @@
 
 import { Label } from "@workspace/ui/components/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@workspace/ui/components/select"
+import { useCompanies } from "@/hooks/useCompanies"
 import { usePlatforms } from "@/hooks/usePlatforms"
 import type { ApplicationFilters } from "@/types"
 
@@ -17,6 +18,7 @@ interface Props {
 
 export function ApplicationFiltersBar({ filters, onChange }: Props) {
   const { data: platforms } = usePlatforms()
+  const { data: companies } = useCompanies()
 
   function update(patch: Partial<ApplicationFilters>) {
     onChange({ ...filters, ...patch })
@@ -85,6 +87,30 @@ export function ApplicationFiltersBar({ filters, onChange }: Props) {
           </SelectContent>
         </Select>
       </div>
+
+      {companies.length > 0 && (
+        <div className="space-y-1">
+          <Label className="text-xs">Company</Label>
+          <Select
+            value={filters.company_id != null ? String(filters.company_id) : ALL_SENTINEL}
+            onValueChange={(v) =>
+              update({ company_id: v === ALL_SENTINEL ? undefined : parseInt(v) })
+            }
+          >
+            <SelectTrigger className="w-40">
+              <SelectValue placeholder="All companies" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={ALL_SENTINEL}>All companies</SelectItem>
+              {companies.map((c) => (
+                <SelectItem key={c.id} value={String(c.id)}>
+                  {c.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
 
       <div className="space-y-1">
         <Label className="text-xs">View</Label>

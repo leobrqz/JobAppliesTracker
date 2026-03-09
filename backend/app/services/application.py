@@ -17,6 +17,7 @@ def get_applications(
     status: Optional[str] = None,
     stage: Optional[str] = None,
     platform_id: Optional[int] = None,
+    company_id: Optional[int] = None,
     archived: bool = False,
 ) -> list[Application]:
     query = db.query(Application)
@@ -30,6 +31,8 @@ def get_applications(
         query = query.filter(Application.current_stage == stage)
     if platform_id is not None:
         query = query.filter(Application.platform_id == platform_id)
+    if company_id is not None:
+        query = query.filter(Application.company_id == company_id)
     return query.order_by(Application.applied_at.desc()).all()
 
 
@@ -40,6 +43,7 @@ def create_application(db: Session, data: ApplicationCreate) -> Application:
         platform_id=data.platform_id,
         job_title=data.job_title,
         company=data.company,
+        company_id=data.company_id,
         salary=data.salary,
         seniority=data.seniority,
         contract_type=data.contract_type,

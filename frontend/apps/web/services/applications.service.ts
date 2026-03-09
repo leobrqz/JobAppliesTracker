@@ -13,6 +13,7 @@ function buildFiltersQuery(filters?: ApplicationFilters): string {
   if (filters?.status) params.set("status", filters.status)
   if (filters?.stage) params.set("stage", filters.stage)
   if (filters?.platform_id !== undefined) params.set("platform_id", String(filters.platform_id))
+  if (filters?.company_id !== undefined) params.set("company_id", String(filters.company_id))
   if (filters?.archived !== undefined) params.set("archived", String(filters.archived))
   const qs = params.toString()
   return qs ? `?${qs}` : ""

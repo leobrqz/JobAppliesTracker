@@ -1,15 +1,25 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { Button } from "@workspace/ui/components/button"
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@workspace/ui/components/command"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@workspace/ui/components/dialog"
 import { Input } from "@workspace/ui/components/input"
 import { Label } from "@workspace/ui/components/label"
+import { Popover, PopoverContent, PopoverTrigger } from "@workspace/ui/components/popover"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@workspace/ui/components/select"
-import { createApplication, updateApplication } from "@/services/applications.service"
+import { useCompanies } from "@/hooks/useCompanies"
 import { usePlatforms } from "@/hooks/usePlatforms"
+import { createApplication, updateApplication } from "@/services/applications.service"
 import type { ApplicationCreate, ApplicationResponse, ApplicationUpdate } from "@/types"
 
 const STAGE_SUGGESTIONS = ["application", "screening", "interview", "assessment", "offer", "closed"]
@@ -18,7 +28,6 @@ const STATUS_SUGGESTIONS = ["active", "in_progress", "closed", "rejected", "offe
 interface FormValues {
   platform_id: string
   job_title: string
-  company: string
   salary: string
   seniority: string
   contract_type: string
@@ -39,8 +48,19 @@ interface Props {
 export function ApplicationForm({ selectedApplication, open, onOpenChange, onSuccess }: Props) {
   const isEdit = selectedApplication !== null
   const { data: platforms } = usePlatforms()
+  const { data: companies } = useCompanies()
 
   const { register, handleSubmit, reset, setValue, watch } = useForm<FormValues>()
+
+  // Company combobox state — managed separately from react-hook-form
+  const [companyInput, setCompanyInput] = useState("")
+  const [selectedCompanyId, setSelectedCompanyId] = useState<number | null>(null)
+  const [companySuggestOpen, setCompanySuggestOpen] = useState(false)
+  const companyInputRef = useRef<HTMLInputElement>(null)
+
+  const filteredCompanies = companies.filter((c) =>
+    c.name.toLowerCase().includes(companyInput.toLowerCase()),
+  )
 
   useEffect(() => {
     if (open) {
@@ -48,7 +68,6 @@ export function ApplicationForm({ selectedApplication, open, onOpenChange, onSuc
         reset({
           platform_id: String(selectedApplication.platform_id),
           job_title: selectedApplication.job_title,
-          company: selectedApplication.company ?? "",
           salary: selectedApplication.salary != null ? String(selectedApplication.salary) : "",
           seniority: selectedApplication.seniority ?? "",
           contract_type: selectedApplication.contract_type ?? "",
@@ -58,11 +77,12 @@ export function ApplicationForm({ selectedApplication, open, onOpenChange, onSuc
           applied_at: selectedApplication.applied_at.slice(0, 10),
           resume_id: selectedApplication.resume_id != null ? String(selectedApplication.resume_id) : "",
         })
+        setCompanyInput(selectedApplication.company ?? "")
+        setSelectedCompanyId(selectedApplication.company_id ?? null)
       } else {
         reset({
           platform_id: "",
           job_title: "",
-          company: "",
           salary: "",
           seniority: "",
           contract_type: "",
@@ -72,7 +92,10 @@ export function ApplicationForm({ selectedApplication, open, onOpenChange, onSuc
           applied_at: new Date().toISOString().slice(0, 10),
           resume_id: "",
         })
+        setCompanyInput("")
+        setSelectedCompanyId(null)
       }
+      setCompanySuggestOpen(false)
     }
   }, [open, selectedApplication, reset])
 
@@ -86,11 +109,15 @@ export function ApplicationForm({ selectedApplication, open, onOpenChange, onSuc
       return
     }
 
+    const companyName = companyInput.trim() || undefined
+    const companyId = selectedCompanyId ?? undefined
+
     if (isEdit && selectedApplication) {
       const data: ApplicationUpdate = {
         platform_id: parseInt(values.platform_id),
         job_title: values.job_title.trim(),
-        company: values.company.trim() || undefined,
+        company: companyName,
+        company_id: companyId,
         salary: values.salary ? parseFloat(values.salary) : undefined,
         seniority: values.seniority.trim() || undefined,
         contract_type: values.contract_type.trim() || undefined,
@@ -109,7 +136,8 @@ export function ApplicationForm({ selectedApplication, open, onOpenChange, onSuc
       const data: ApplicationCreate = {
         platform_id: parseInt(values.platform_id),
         job_title: values.job_title.trim(),
-        company: values.company.trim() || undefined,
+        company: companyName,
+        company_id: companyId,
         salary: values.salary ? parseFloat(values.salary) : undefined,
         seniority: values.seniority.trim() || undefined,
         contract_type: values.contract_type.trim() || undefined,
@@ -165,11 +193,74 @@ export function ApplicationForm({ selectedApplication, open, onOpenChange, onSuc
           </div>
 
           <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1">
-              <Label htmlFor="company">Company</Label>
-              <Input id="company" {...register("company")} placeholder="Acme Corp" />
+            <div className="flex flex-col gap-1">
+              <Label htmlFor="company-input">Company</Label>
+              <Popover
+                open={companySuggestOpen && filteredCompanies.length > 0}
+                onOpenChange={setCompanySuggestOpen}
+              >
+                <PopoverTrigger asChild>
+                  <div className="relative">
+                    <Input
+                      id="company-input"
+                      ref={companyInputRef}
+                      value={companyInput}
+                      placeholder="Acme Corp"
+                      autoComplete="off"
+                      onChange={(e) => {
+                        const val = e.target.value
+                        setCompanyInput(val)
+                        // If user deviates from the currently selected company name, unlink it
+                        if (selectedCompanyId !== null) {
+                          const linked = companies.find((c) => c.id === selectedCompanyId)
+                          if (linked && val !== linked.name) {
+                            setSelectedCompanyId(null)
+                          }
+                        }
+                        setCompanySuggestOpen(val.length > 0)
+                      }}
+                      onFocus={() => {
+                        if (companyInput.length > 0 && filteredCompanies.length > 0) {
+                          setCompanySuggestOpen(true)
+                        }
+                      }}
+                    />
+                  </div>
+                </PopoverTrigger>
+                <PopoverContent
+                  className="w-[var(--radix-popover-trigger-width)] p-0"
+                  align="start"
+                  onOpenAutoFocus={(e) => e.preventDefault()}
+                >
+                  <Command shouldFilter={false}>
+                    <CommandList>
+                      <CommandGroup>
+                        {filteredCompanies.map((c) => (
+                          <CommandItem
+                            key={c.id}
+                            value={c.name}
+                            onSelect={() => {
+                              setCompanyInput(c.name)
+                              setSelectedCompanyId(c.id)
+                              setCompanySuggestOpen(false)
+                              companyInputRef.current?.focus()
+                            }}
+                          >
+                            {c.name}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+              {selectedCompanyId !== null && (
+                <p className="text-xs text-muted-foreground">
+                  Linked to company record
+                </p>
+              )}
             </div>
-            <div className="space-y-1">
+            <div className="flex flex-col gap-1">
               <Label htmlFor="salary">Salary</Label>
               <Input id="salary" type="number" step="0.01" {...register("salary")} placeholder="0.00" />
             </div>

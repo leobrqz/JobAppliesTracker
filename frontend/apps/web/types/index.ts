@@ -4,6 +4,10 @@ export type ApplicationCreate = components["schemas"]["ApplicationCreate"]
 export type ApplicationUpdate = components["schemas"]["ApplicationUpdate"]
 export type ApplicationResponse = components["schemas"]["ApplicationResponse"]
 
+export type CompanyCreate = components["schemas"]["CompanyCreate"]
+export type CompanyUpdate = components["schemas"]["CompanyUpdate"]
+export type CompanyResponse = components["schemas"]["CompanyResponse"]
+
 export type ApplicationHistoryCreate = components["schemas"]["ApplicationHistoryCreate"]
 export type ApplicationHistoryResponse = components["schemas"]["ApplicationHistoryResponse"]
 
@@ -31,5 +35,6 @@ export interface ApplicationFilters {
   status?: string
   stage?: string
   platform_id?: number
+  company_id?: number
   archived?: boolean
 }

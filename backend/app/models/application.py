@@ -11,6 +11,7 @@ if TYPE_CHECKING:
     from app.models.job_platform import JobPlatform
     from app.models.resume import Resume
     from app.models.application_history import ApplicationHistory
+    from app.models.company import Company
 
 
 class Application(Base):
@@ -28,12 +29,14 @@ class Application(Base):
     status: Mapped[str] = mapped_column(String(50), nullable=False)
     applied_at: Mapped[datetime] = mapped_column(nullable=False)
     resume_id: Mapped[Optional[int]] = mapped_column(ForeignKey("resume.id", ondelete="SET NULL"), nullable=True)
+    company_id: Mapped[Optional[int]] = mapped_column(ForeignKey("company.id", ondelete="SET NULL"), nullable=True)
     archived_at: Mapped[Optional[datetime]] = mapped_column(nullable=True)
     created_at: Mapped[datetime] = mapped_column(nullable=False, server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(nullable=False, server_default=func.now(), onupdate=func.now())
 
     platform: Mapped["JobPlatform"] = relationship("JobPlatform", back_populates="applications")
     resume: Mapped[Optional["Resume"]] = relationship("Resume", back_populates="applications")
+    company_ref: Mapped[Optional["Company"]] = relationship("Company", back_populates="applications")
     history: Mapped[list["ApplicationHistory"]] = relationship(
         "ApplicationHistory",
         back_populates="application",

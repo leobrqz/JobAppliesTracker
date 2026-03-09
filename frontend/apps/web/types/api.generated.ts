@@ -183,6 +183,43 @@ export interface paths {
         patch: operations["update_job_platform_api_job_platforms__platform_id__patch"];
         trace?: never;
     };
+    "/api/companies/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Companies */
+        get: operations["list_companies_api_companies__get"];
+        put?: never;
+        /** Create Company */
+        post: operations["create_company_api_companies__post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/companies/{company_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Company */
+        get: operations["get_company_api_companies__company_id__get"];
+        put?: never;
+        post?: never;
+        /** Delete Company */
+        delete: operations["delete_company_api_companies__company_id__delete"];
+        options?: never;
+        head?: never;
+        /** Update Company */
+        patch: operations["update_company_api_companies__company_id__patch"];
+        trace?: never;
+    };
     "/api/applications/": {
         parameters: {
             query?: never;
@@ -405,6 +442,8 @@ export interface components {
             applied_at: string;
             /** Resume Id */
             resume_id?: number | null;
+            /** Company Id */
+            company_id?: number | null;
         };
         /** ApplicationHistoryCreate */
         ApplicationHistoryCreate: {
@@ -449,6 +488,8 @@ export interface components {
             job_title: string;
             /** Company */
             company: string | null;
+            /** Company Id */
+            company_id: number | null;
             /** Salary */
             salary: string | null;
             /** Seniority */
@@ -503,6 +544,8 @@ export interface components {
             applied_at?: string | null;
             /** Resume Id */
             resume_id?: number | null;
+            /** Company Id */
+            company_id?: number | null;
         };
         /** Body_upload_resume_api_resumes__post */
         Body_upload_resume_api_resumes__post: {
@@ -512,6 +555,45 @@ export interface components {
             description?: string | null;
             /** File */
             file: string;
+        };
+        /** CompanyCreate */
+        CompanyCreate: {
+            /** Name */
+            name: string;
+            /** Website */
+            website?: string | null;
+            /** Notes */
+            notes?: string | null;
+        };
+        /** CompanyResponse */
+        CompanyResponse: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+            /** Website */
+            website: string | null;
+            /** Notes */
+            notes: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** CompanyUpdate */
+        CompanyUpdate: {
+            /** Name */
+            name?: string | null;
+            /** Website */
+            website?: string | null;
+            /** Notes */
+            notes?: string | null;
         };
         /** DashboardSummary */
         DashboardSummary: {
@@ -1320,12 +1402,172 @@ export interface operations {
             };
         };
     };
+    list_companies_api_companies__get: {
+        parameters: {
+            query?: {
+                search?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CompanyResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_company_api_companies__post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CompanyCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CompanyResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_company_api_companies__company_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                company_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CompanyResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_company_api_companies__company_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                company_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_company_api_companies__company_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                company_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CompanyUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CompanyResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     list_applications_api_applications__get: {
         parameters: {
             query?: {
                 status?: string | null;
                 stage?: string | null;
                 platform_id?: number | null;
+                company_id?: number | null;
                 archived?: boolean;
             };
             header?: never;

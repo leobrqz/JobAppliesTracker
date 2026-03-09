@@ -15,11 +15,12 @@ def list_applications(
     status: Optional[str] = None,
     stage: Optional[str] = None,
     platform_id: Optional[int] = None,
+    company_id: Optional[int] = None,
     archived: bool = False,
     db: Session = Depends(get_db),
 ) -> list[ApplicationResponse]:
     return application_service.get_applications(
-        db, status=status, stage=stage, platform_id=platform_id, archived=archived
+        db, status=status, stage=stage, platform_id=platform_id, company_id=company_id, archived=archived
     )
 
 
