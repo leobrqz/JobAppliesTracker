@@ -11,6 +11,8 @@ class StageAvg(BaseModel):
 
 class DashboardSummary(BaseModel):
     total_applications: int
+    total_offers: int
+    total_rejections: int
     response_rate: float
     avg_days_per_stage: list[StageAvg]
 

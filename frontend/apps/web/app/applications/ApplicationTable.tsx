@@ -10,6 +10,7 @@ import {
   useReactTable,
   type SortingState,
 } from "@tanstack/react-table"
+import { Archive, CalendarDays, ExternalLink, History, Pencil, RotateCcw, Trash2 } from "lucide-react"
 import { toast } from "sonner"
 import {
   AlertDialog,
@@ -32,6 +33,13 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
+import { AppointmentListDialog } from "@/components/AppointmentListDialog"
 import { StageHistoryDialog } from "@/components/StageHistoryDialog"
 import { archiveApplication, deleteApplication, restoreApplication } from "@/services/applications.service"
 import type { ApplicationResponse } from "@/types"
@@ -55,6 +63,7 @@ function formatDate(iso: string): string {
 export function ApplicationTable({ data, platforms, archived, onEdit, onRefresh }: Props) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [historyAppId, setHistoryAppId] = useState<number | null>(null)
+  const [appointmentsApp, setAppointmentsApp] = useState<ApplicationResponse | null>(null)
 
   async function handleArchive(id: number) {
     const result = await archiveApplication(id)
@@ -101,30 +110,60 @@ export function ApplicationTable({ data, platforms, archived, onEdit, onRefresh 
     }),
     columnHelper.display({
       id: "actions",
-      header: "Actions",
+      header: () => <span className="text-right block">Actions</span>,
       cell: ({ row }) => {
         const app = row.original
         return (
-          <div className="flex items-center gap-1">
+          <div className="flex items-center justify-end gap-1">
             {!archived && (
               <>
-                <Button variant="ghost" size="sm" onClick={() => setHistoryAppId(app.id)}>
-                  History
-                </Button>
-                <Button variant="ghost" size="sm" onClick={() => onEdit(app)}>
-                  Edit
-                </Button>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="ghost" size="sm" onClick={() => setAppointmentsApp(app)}>
+                      <CalendarDays data-icon="inline-start" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Appointments</TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="ghost" size="sm" onClick={() => setHistoryAppId(app.id)}>
+                      <History data-icon="inline-start" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>History</TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="ghost" size="sm" onClick={() => onEdit(app)}>
+                      <Pencil data-icon="inline-start" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Edit</TooltipContent>
+                </Tooltip>
                 {app.application_url && (
-                  <Button variant="ghost" size="sm" asChild>
-                    <a href={app.application_url} target="_blank" rel="noopener noreferrer">
-                      Open
-                    </a>
-                  </Button>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="ghost" size="sm" asChild>
+                        <a href={app.application_url} target="_blank" rel="noopener noreferrer">
+                          <ExternalLink data-icon="inline-start" />
+                        </a>
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Open link</TooltipContent>
+                  </Tooltip>
                 )}
                 <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button variant="ghost" size="sm">Archive</Button>
-                  </AlertDialogTrigger>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="ghost" size="sm">
+                          <Archive data-icon="inline-start" />
+                        </Button>
+                      </AlertDialogTrigger>
+                    </TooltipTrigger>
+                    <TooltipContent>Archive</TooltipContent>
+                  </Tooltip>
                   <AlertDialogContent>
                     <AlertDialogHeader>
                       <AlertDialogTitle>Archive application?</AlertDialogTitle>
@@ -142,9 +181,16 @@ export function ApplicationTable({ data, platforms, archived, onEdit, onRefresh 
             )}
             {archived && (
               <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button variant="ghost" size="sm">Restore</Button>
-                </AlertDialogTrigger>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="ghost" size="sm">
+                        <RotateCcw data-icon="inline-start" />
+                      </Button>
+                    </AlertDialogTrigger>
+                  </TooltipTrigger>
+                  <TooltipContent>Restore</TooltipContent>
+                </Tooltip>
                 <AlertDialogContent>
                   <AlertDialogHeader>
                     <AlertDialogTitle>Restore application?</AlertDialogTitle>
@@ -160,11 +206,20 @@ export function ApplicationTable({ data, platforms, archived, onEdit, onRefresh 
               </AlertDialog>
             )}
             <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive">
-                  Delete
-                </Button>
-              </AlertDialogTrigger>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <AlertDialogTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-destructive hover:text-destructive"
+                    >
+                      <Trash2 data-icon="inline-start" />
+                    </Button>
+                  </AlertDialogTrigger>
+                </TooltipTrigger>
+                <TooltipContent>Delete</TooltipContent>
+              </Tooltip>
               <AlertDialogContent>
                 <AlertDialogHeader>
                   <AlertDialogTitle>Delete application?</AlertDialogTitle>
@@ -201,7 +256,7 @@ export function ApplicationTable({ data, platforms, archived, onEdit, onRefresh 
   })
 
   return (
-    <>
+    <TooltipProvider>
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -277,6 +332,20 @@ export function ApplicationTable({ data, platforms, archived, onEdit, onRefresh 
           onStageChanged={onRefresh}
         />
       )}
-    </>
+
+      {appointmentsApp !== null && (
+        <AppointmentListDialog
+          applicationId={appointmentsApp.id}
+          applicationLabel={
+            appointmentsApp.company
+              ? `${appointmentsApp.job_title} — ${appointmentsApp.company}`
+              : appointmentsApp.job_title
+          }
+          open={appointmentsApp !== null}
+          onOpenChange={(open) => { if (!open) setAppointmentsApp(null) }}
+          onRefresh={onRefresh}
+        />
+      )}
+    </TooltipProvider>
   )
 }

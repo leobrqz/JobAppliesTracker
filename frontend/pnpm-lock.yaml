@@ -29,6 +29,21 @@ importers:
 
   apps/web:
     dependencies:
+      '@preact/signals':
+        specifier: ^2.8.2
+        version: 2.8.2(preact@10.29.0)
+      '@schedule-x/calendar':
+        specifier: ^4.3.1
+        version: 4.3.1(@preact/signals@2.8.2(preact@10.29.0))(preact@10.29.0)(temporal-polyfill@0.3.1)
+      '@schedule-x/events-service':
+        specifier: ^4.3.1
+        version: 4.3.1
+      '@schedule-x/react':
+        specifier: ^4.1.0
+        version: 4.1.0(@schedule-x/calendar@4.3.1(@preact/signals@2.8.2(preact@10.29.0))(preact@10.29.0)(temporal-polyfill@0.3.1))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@schedule-x/theme-default':
+        specifier: ^4.3.1
+        version: 4.3.1
       '@tanstack/react-table':
         specifier: ^8.21.3
         version: 8.21.3(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -44,6 +59,9 @@ importers:
       next-themes:
         specifier: ^0.4.6
         version: 0.4.6(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      preact:
+        specifier: ^10.29.0
+        version: 10.29.0
       react:
         specifier: ^19.2.4
         version: 19.2.4
@@ -59,6 +77,9 @@ importers:
       sonner:
         specifier: ^2.0.7
         version: 2.0.7(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      temporal-polyfill:
+        specifier: ^0.3.1
+        version: 0.3.1
     devDependencies:
       '@tailwindcss/postcss':
         specifier: ^4.1.18
@@ -986,6 +1007,14 @@ packages:
   '@open-draft/until@2.1.0':
     resolution: {integrity: sha512-U69T3ItWHvLwGg5eJ0n3I62nWuE6ilHlmz7zM0npLBRvPRd7e6NYmg54vvRtP5mZG7kZqZCFVdsTWo7BPtBujg==}
 
+  '@preact/signals-core@1.14.0':
+    resolution: {integrity: sha512-AowtCcCU/33lFlh1zRFf/u+12rfrhtNakj7UpaGEsmMwUKpKWMVvcktOGcwBBNiB4lWrZWc01LhiyyzVklJyaQ==}
+
+  '@preact/signals@2.8.2':
+    resolution: {integrity: sha512-gym5yoa64c+0w2kL7zRAAjY548qzWXbbuOfjsK9F1nWrEqooDwyWnih5SNdonjhQSp27zUqYh7UrxIRnkCyFCA==}
+    peerDependencies:
+      preact: '>= 10.25.0 || >=11.0.0-0'
+
   '@radix-ui/number@1.1.1':
     resolution: {integrity: sha512-MkKCwxlXTgz6CFoJx3pCwn07GKp36+aZyu/u2Ln2VrA5DcdyCZkASEDBTd8x5whTQQL5CiYf4prXKLcgQdv29g==}
 
@@ -1696,6 +1725,26 @@ packages:
         optional: true
       react-redux:
         optional: true
+
+  '@schedule-x/calendar@4.3.1':
+    resolution: {integrity: sha512-lArCIoRmTXLrJcq9VDKLfo1E3h8AwWLXvkEQt3o7rhc8qp9py4xfyjGMBP635eYzRoe3q9iaOS+WzglMz8EefQ==}
+    peerDependencies:
+      '@preact/signals': ^2.0.2
+      preact: ^10.19.2
+      temporal-polyfill: 0.3.0
+
+  '@schedule-x/events-service@4.3.1':
+    resolution: {integrity: sha512-jTdDraYe+F7nof6VRnF/GX3VJjl7CNUlfpMnZDQazgXlsRjiRHCiyxiyiw3LyOhpW0ssqIBkPWA/H+7qAF/BUQ==}
+
+  '@schedule-x/react@4.1.0':
+    resolution: {integrity: sha512-l2hn1kdTModk4Lbt+nEr/VAcuNMA+w+hAAtgz8VLOj5UeieM7PWoK+cDapzPHCjUKisCSPd8QZfAX966Ma82kQ==}
+    peerDependencies:
+      '@schedule-x/calendar': ^3.1.0 || ^4.0.0
+      react: ^16.7.0 || ^17 || ^18 || ^19
+      react-dom: ^16.7.0 || ^17 || ^18 || ^19
+
+  '@schedule-x/theme-default@4.3.1':
+    resolution: {integrity: sha512-EVJulV9e3DH91j6Hfw8ZIh2kfqi1Juc1155LSz+9BO7S9K1GLaVBZqO413FCI/pPP+rHRE0nuhB/3iS+BidUUA==}
 
   '@sec-ant/readable-stream@0.4.1':
     resolution: {integrity: sha512-831qok9r2t8AlxLko40y2ebgSDhenenCatLVeW/uBtnHPyhHOvG0C7TvfgecV+wHzIm5KUICgzmVpWS+IMEAeg==}
@@ -3782,6 +3831,9 @@ packages:
     resolution: {integrity: sha512-dM0jVuXJPsDN6DvRpea484tCUaMiXWjuCn++HGTqUWzGDjv5tZkEZldAJ/UMlqRYGFrD/etByo4/xOuC/snX2A==}
     engines: {node: '>=20'}
 
+  preact@10.29.0:
+    resolution: {integrity: sha512-wSAGyk2bYR1c7t3SZ3jHcM6xy0lcBcDel6lODcs9ME6Th++Dx2KU+6D3HD8wMMKGA8Wpw7OMd3/4RGzYRpzwRg==}
+
   prelude-ls@1.2.1:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
@@ -4323,6 +4375,12 @@ packages:
   tapable@2.3.0:
     resolution: {integrity: sha512-g9ljZiwki/LfxmQADO3dEY1CbpmXT5Hm2fJ+QaGKwSXUylMybePR7/67YW7jOrrvjEgL1Fmz5kzyAjWVWLlucg==}
     engines: {node: '>=6'}
+
+  temporal-polyfill@0.3.1:
+    resolution: {integrity: sha512-3Ceqnjxa7nQ1VGRjehALmP9LdiJqalmoYh6o22s8skP+ZN6df1cTN/7h+p0k4v357pFsQN94gtJoxV6fqvlijA==}
+
+  temporal-spec@0.3.1:
+    resolution: {integrity: sha512-B4TUhezh9knfSIMwt7RVggApDRJZo73uZdj8AacL2mZ8RP5KtLianh2MXxL06GN9ESYiIsiuoLQhgVfwe55Yhw==}
 
   through@2.3.8:
     resolution: {integrity: sha512-w89qg7PI8wAdvX60bMDP+bFoD5Dvhm9oLheFp5O4a2QF0cSBGsBX4qZmadPMvVqlLJBBci+WqGGOAPvcDeNSVg==}
@@ -5383,6 +5441,13 @@ snapshots:
 
   '@open-draft/until@2.1.0': {}
 
+  '@preact/signals-core@1.14.0': {}
+
+  '@preact/signals@2.8.2(preact@10.29.0)':
+    dependencies:
+      '@preact/signals-core': 1.14.0
+      preact: 10.29.0
+
   '@radix-ui/number@1.1.1': {}
 
   '@radix-ui/primitive@1.1.3': {}
@@ -6164,6 +6229,22 @@ snapshots:
     optionalDependencies:
       react: 19.2.4
       react-redux: 9.2.0(@types/react@19.2.14)(react@19.2.4)(redux@5.0.1)
+
+  '@schedule-x/calendar@4.3.1(@preact/signals@2.8.2(preact@10.29.0))(preact@10.29.0)(temporal-polyfill@0.3.1)':
+    dependencies:
+      '@preact/signals': 2.8.2(preact@10.29.0)
+      preact: 10.29.0
+      temporal-polyfill: 0.3.1
+
+  '@schedule-x/events-service@4.3.1': {}
+
+  '@schedule-x/react@4.1.0(@schedule-x/calendar@4.3.1(@preact/signals@2.8.2(preact@10.29.0))(preact@10.29.0)(temporal-polyfill@0.3.1))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
+    dependencies:
+      '@schedule-x/calendar': 4.3.1(@preact/signals@2.8.2(preact@10.29.0))(preact@10.29.0)(temporal-polyfill@0.3.1)
+      react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
+
+  '@schedule-x/theme-default@4.3.1': {}
 
   '@sec-ant/readable-stream@0.4.1': {}
 
@@ -8434,6 +8515,8 @@ snapshots:
 
   powershell-utils@0.1.0: {}
 
+  preact@10.29.0: {}
+
   prelude-ls@1.2.1: {}
 
   prettier-plugin-tailwindcss@0.7.2(prettier@3.8.1):
@@ -9091,6 +9174,12 @@ snapshots:
   tailwindcss@4.1.18: {}
 
   tapable@2.3.0: {}
+
+  temporal-polyfill@0.3.1:
+    dependencies:
+      temporal-spec: 0.3.1
+
+  temporal-spec@0.3.1: {}
 
   through@2.3.8: {}
 

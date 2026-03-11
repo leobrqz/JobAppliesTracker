@@ -1,5 +1,6 @@
 "use client"
 
+import { ExternalLink, Pencil, Trash2 } from "lucide-react"
 import { toast } from "sonner"
 import {
   AlertDialog,
@@ -22,6 +23,12 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 import { deleteJobPlatform } from "@/services/platforms.service"
 import type { JobPlatformResponse } from "@/types"
 
@@ -43,120 +50,148 @@ export function PlatformTable({ data, onEdit, onRefresh }: Props) {
   }
 
   return (
-    <div className="rounded-md border">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Name</TableHead>
-            <TableHead>Icon</TableHead>
-            <TableHead>Base URL</TableHead>
-            <TableHead>Applications URL</TableHead>
-            <TableHead>Manual Resume</TableHead>
-            <TableHead>Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {data.length === 0 ? (
+    <TooltipProvider>
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
             <TableRow>
-              <TableCell colSpan={6} className="py-8 text-center text-muted-foreground">
-                No platforms yet.
-              </TableCell>
+              <TableHead>Name</TableHead>
+              <TableHead>Icon</TableHead>
+              <TableHead>Base URL</TableHead>
+              <TableHead>Applications URL</TableHead>
+              <TableHead>Manual Resume</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
             </TableRow>
-          ) : (
-            data.map((platform) => (
-              <TableRow key={platform.id}>
-                <TableCell className="font-medium">{platform.name}</TableCell>
-                <TableCell>
-                  {platform.icon ? (
-                    platform.icon.startsWith("http") ? (
-                      <img
-                        src={platform.icon}
-                        alt={platform.name}
-                        className="h-5 w-5 object-contain"
-                      />
-                    ) : (
-                      <span className="text-sm">{platform.icon}</span>
-                    )
-                  ) : (
-                    <span className="text-muted-foreground">—</span>
-                  )}
-                </TableCell>
-                <TableCell>
-                  {platform.base_url ? (
-                    <a
-                      href={platform.base_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm text-primary hover:underline truncate block max-w-40"
-                    >
-                      {platform.base_url}
-                    </a>
-                  ) : (
-                    <span className="text-muted-foreground">—</span>
-                  )}
-                </TableCell>
-                <TableCell>
-                  {platform.applications_url ? (
-                    <a
-                      href={platform.applications_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm text-primary hover:underline truncate block max-w-40"
-                    >
-                      {platform.applications_url}
-                    </a>
-                  ) : (
-                    <span className="text-muted-foreground">—</span>
-                  )}
-                </TableCell>
-                <TableCell>
-                  {platform.manual_resume ? (
-                    <Badge variant="secondary">Required</Badge>
-                  ) : (
-                    <Badge variant="outline" className="text-muted-foreground">Auto filled</Badge>
-                  )}
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-1">
-                    <Button variant="ghost" size="sm" onClick={() => onEdit(platform)}>
-                      Edit
-                    </Button>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="text-destructive hover:text-destructive"
-                        >
-                          Delete
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Delete platform?</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            This will permanently delete &quot;{platform.name}&quot;. Platforms with existing
-                            applications cannot be deleted.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() => handleDelete(platform.id)}
-                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                          >
-                            Delete
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </div>
+          </TableHeader>
+          <TableBody>
+            {data.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={6} className="py-8 text-center text-muted-foreground">
+                  No platforms yet.
                 </TableCell>
               </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
-    </div>
+            ) : (
+              data.map((platform) => (
+                <TableRow key={platform.id}>
+                  <TableCell className="font-medium">{platform.name}</TableCell>
+                  <TableCell>
+                    {platform.icon ? (
+                      platform.icon.startsWith("http") ? (
+                        <img
+                          src={platform.icon}
+                          alt={platform.name}
+                          className="h-5 w-5 object-contain"
+                        />
+                      ) : (
+                        <span className="text-sm">{platform.icon}</span>
+                      )
+                    ) : (
+                      <span className="text-muted-foreground">—</span>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {platform.base_url ? (
+                      <a
+                        href={platform.base_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-primary hover:underline truncate block max-w-40"
+                      >
+                        {platform.base_url}
+                      </a>
+                    ) : (
+                      <span className="text-muted-foreground">—</span>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {platform.applications_url ? (
+                      <a
+                        href={platform.applications_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-primary hover:underline truncate block max-w-40"
+                      >
+                        {platform.applications_url}
+                      </a>
+                    ) : (
+                      <span className="text-muted-foreground">—</span>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {platform.manual_resume ? (
+                      <Badge variant="secondary">Required</Badge>
+                    ) : (
+                      <Badge variant="outline" className="text-muted-foreground">Auto filled</Badge>
+                    )}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex items-center justify-end gap-1">
+                      {platform.base_url && (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button variant="ghost" size="sm" asChild>
+                              <a
+                                href={platform.base_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                <ExternalLink data-icon="inline-start" />
+                              </a>
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Open website</TooltipContent>
+                        </Tooltip>
+                      )}
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button variant="ghost" size="sm" onClick={() => onEdit(platform)}>
+                            <Pencil data-icon="inline-start" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>Edit</TooltipContent>
+                      </Tooltip>
+                      <AlertDialog>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <AlertDialogTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-destructive hover:text-destructive"
+                              >
+                                <Trash2 data-icon="inline-start" />
+                              </Button>
+                            </AlertDialogTrigger>
+                          </TooltipTrigger>
+                          <TooltipContent>Delete</TooltipContent>
+                        </Tooltip>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Delete platform?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This will permanently delete &quot;{platform.name}&quot;. Platforms with existing
+                              applications cannot be deleted.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => handleDelete(platform.id)}
+                              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            >
+                              Delete
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
+    </TooltipProvider>
   )
 }

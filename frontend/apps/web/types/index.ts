@@ -4,6 +4,10 @@ export type ApplicationCreate = components["schemas"]["ApplicationCreate"]
 export type ApplicationUpdate = components["schemas"]["ApplicationUpdate"]
 export type ApplicationResponse = components["schemas"]["ApplicationResponse"]
 
+export type AppointmentCreate = components["schemas"]["AppointmentCreate"]
+export type AppointmentUpdate = components["schemas"]["AppointmentUpdate"]
+export type AppointmentResponse = components["schemas"]["AppointmentResponse"]
+
 export type CompanyCreate = components["schemas"]["CompanyCreate"]
 export type CompanyUpdate = components["schemas"]["CompanyUpdate"]
 export type CompanyResponse = components["schemas"]["CompanyResponse"]

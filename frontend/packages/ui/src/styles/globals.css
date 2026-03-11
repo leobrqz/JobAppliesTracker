@@ -40,6 +40,22 @@
     --sidebar-accent-foreground: oklch(0.205 0 0);
     --sidebar-border: oklch(0.922 0 0);
     --sidebar-ring: oklch(0.708 0 0);
+
+    --sx-color-primary: #1a1a1a;
+    --sx-color-on-primary: #fafafa;
+    --sx-color-primary-container: #f5f5f5;
+    --sx-color-on-primary-container: #1a1a1a;
+    --sx-color-surface: #ffffff;
+    --sx-color-surface-dim: #ececec;
+    --sx-color-surface-bright: #ffffff;
+    --sx-color-on-surface: #262626;
+    --sx-color-surface-container: #f5f5f5;
+    --sx-color-surface-container-low: #fafafa;
+    --sx-color-surface-container-high: #ececec;
+    --sx-color-background: #ffffff;
+    --sx-color-on-background: #262626;
+    --sx-color-outline: #d4d4d4;
+    --sx-color-outline-variant: #e5e5e5;
 }
 
 .dark {
@@ -74,6 +90,22 @@
     --sidebar-accent-foreground: oklch(0.985 0 0);
     --sidebar-border: oklch(1 0 0 / 10%);
     --sidebar-ring: oklch(0.556 0 0);
+
+    --sx-color-primary: #dddddd;
+    --sx-color-on-primary: #1a1a1a;
+    --sx-color-primary-container: #3d3d3d;
+    --sx-color-on-primary-container: #fafafa;
+    --sx-color-surface: #333333;
+    --sx-color-surface-dim: #2a2a2a;
+    --sx-color-surface-bright: #404040;
+    --sx-color-on-surface: #fafafa;
+    --sx-color-surface-container: #3d3d3d;
+    --sx-color-surface-container-low: #333333;
+    --sx-color-surface-container-high: #444444;
+    --sx-color-background: #262626;
+    --sx-color-on-background: #fafafa;
+    --sx-color-outline: #525252;
+    --sx-color-outline-variant: #404040;
 }
 
 @theme inline {
@@ -125,4 +157,21 @@
   body {
     @apply bg-background text-foreground;
     }
+}
+
+.sx-calendar-page-wrapper .sx-react-calendar-wrapper {
+  height: 600px;
+}
+
+.sx-calendar-strip-wrapper {
+  height: 500px;
+  overflow: hidden;
+}
+
+.sx-calendar-strip-wrapper .sx-react-calendar-wrapper {
+  height: 100%;
+}
+
+.sx-calendar-strip-wrapper .sx__calendar-header {
+  display: none;
 }

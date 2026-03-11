@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     from app.models.resume import Resume
     from app.models.application_history import ApplicationHistory
     from app.models.company import Company
+    from app.models.appointment import Appointment
 
 
 class Application(Base):
@@ -39,6 +40,11 @@ class Application(Base):
     company_ref: Mapped[Optional["Company"]] = relationship("Company", back_populates="applications")
     history: Mapped[list["ApplicationHistory"]] = relationship(
         "ApplicationHistory",
+        back_populates="application",
+        cascade="all, delete-orphan",
+    )
+    appointments: Mapped[list["Appointment"]] = relationship(
+        "Appointment",
         back_populates="application",
         cascade="all, delete-orphan",
     )

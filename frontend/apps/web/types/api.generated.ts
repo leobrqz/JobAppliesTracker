@@ -326,6 +326,43 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/appointments/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Appointments */
+        get: operations["list_appointments_api_appointments__get"];
+        put?: never;
+        /** Create Appointment */
+        post: operations["create_appointment_api_appointments__post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/appointments/{appointment_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Appointment */
+        get: operations["get_appointment_api_appointments__appointment_id__get"];
+        put?: never;
+        post?: never;
+        /** Delete Appointment */
+        delete: operations["delete_appointment_api_appointments__appointment_id__delete"];
+        options?: never;
+        head?: never;
+        /** Update Appointment */
+        patch: operations["update_appointment_api_appointments__appointment_id__patch"];
+        trace?: never;
+    };
     "/api/dashboard/summary": {
         parameters: {
             query?: never;
@@ -547,6 +584,81 @@ export interface components {
             /** Company Id */
             company_id?: number | null;
         };
+        /** AppointmentCreate */
+        AppointmentCreate: {
+            /** Application Id */
+            application_id?: number | null;
+            /** Title */
+            title: string;
+            /** Type */
+            type: string;
+            /** Platform */
+            platform?: string | null;
+            /** Meeting Url */
+            meeting_url?: string | null;
+            /**
+             * Starts At
+             * Format: date-time
+             */
+            starts_at: string;
+            /** Ends At */
+            ends_at?: string | null;
+            /** Notes */
+            notes?: string | null;
+        };
+        /** AppointmentResponse */
+        AppointmentResponse: {
+            /** Id */
+            id: number;
+            /** Application Id */
+            application_id: number | null;
+            /** Title */
+            title: string;
+            /** Type */
+            type: string;
+            /** Platform */
+            platform: string | null;
+            /** Meeting Url */
+            meeting_url: string | null;
+            /**
+             * Starts At
+             * Format: date-time
+             */
+            starts_at: string;
+            /** Ends At */
+            ends_at: string | null;
+            /** Notes */
+            notes: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** AppointmentUpdate */
+        AppointmentUpdate: {
+            /** Application Id */
+            application_id?: number | null;
+            /** Title */
+            title?: string | null;
+            /** Type */
+            type?: string | null;
+            /** Platform */
+            platform?: string | null;
+            /** Meeting Url */
+            meeting_url?: string | null;
+            /** Starts At */
+            starts_at?: string | null;
+            /** Ends At */
+            ends_at?: string | null;
+            /** Notes */
+            notes?: string | null;
+        };
         /** Body_upload_resume_api_resumes__post */
         Body_upload_resume_api_resumes__post: {
             /** Name */
@@ -599,6 +711,10 @@ export interface components {
         DashboardSummary: {
             /** Total Applications */
             total_applications: number;
+            /** Total Offers */
+            total_offers: number;
+            /** Total Rejections */
+            total_rejections: number;
             /** Response Rate */
             response_rate: number;
             /** Avg Days Per Stage */
@@ -1870,6 +1986,167 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_appointments_api_appointments__get: {
+        parameters: {
+            query?: {
+                application_id?: number | null;
+                start?: string | null;
+                end?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AppointmentResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_appointment_api_appointments__post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AppointmentCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AppointmentResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_appointment_api_appointments__appointment_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                appointment_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AppointmentResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_appointment_api_appointments__appointment_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                appointment_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_appointment_api_appointments__appointment_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                appointment_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AppointmentUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AppointmentResponse"];
+                };
             };
             /** @description Validation Error */
             422: {

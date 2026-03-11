@@ -62,8 +62,24 @@ def get_summary(db: Session) -> DashboardSummary:
         for row in avg_days_rows
     ]
 
+    total_offers = (
+        db.query(func.count(Application.id))
+        .filter(Application.archived_at.is_(None), Application.status == "offered")
+        .scalar()
+        or 0
+    )
+
+    total_rejections = (
+        db.query(func.count(Application.id))
+        .filter(Application.archived_at.is_(None), Application.status == "rejected")
+        .scalar()
+        or 0
+    )
+
     return DashboardSummary(
         total_applications=total,
+        total_offers=total_offers,
+        total_rejections=total_rejections,
         response_rate=response_rate,
         avg_days_per_stage=avg_days_per_stage,
     )
