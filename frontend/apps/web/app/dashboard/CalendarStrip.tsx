@@ -8,6 +8,12 @@ import { createEventsServicePlugin } from "@schedule-x/events-service"
 import "@schedule-x/theme-default/dist/index.css"
 import { Button } from "@workspace/ui/components/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@workspace/ui/components/card"
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@workspace/ui/components/collapsible"
+import { ChevronDown, ChevronUp } from "lucide-react"
 import { AppointmentDialog } from "@/components/AppointmentDialog"
 import { useAppointments } from "@/hooks/useAppointments"
 import { getAppointment } from "@/services/appointments.service"
@@ -78,12 +84,27 @@ function getWeekRange(): { start: string; end: string } {
   return { start: monday.toISOString(), end: sunday.toISOString() }
 }
 
+const STORAGE_KEY = "dashboard-calendar-strip-expanded"
+
 export function CalendarStrip() {
   const range = useMemo(() => getWeekRange(), [])
   const { data: appointments, refetch } = useAppointments(range)
 
+  const [open, setOpen] = useState(() => {
+    if (typeof window === "undefined") return true
+    const stored = localStorage.getItem(STORAGE_KEY)
+    return stored !== "false"
+  })
+
   const [dialogOpen, setDialogOpen] = useState(false)
   const [selectedAppointment, setSelectedAppointment] = useState<AppointmentResponse | null>(null)
+
+  function handleOpenChange(next: boolean) {
+    setOpen(next)
+    if (typeof window !== "undefined") {
+      localStorage.setItem(STORAGE_KEY, String(next))
+    }
+  }
 
   const [eventsService] = useState(() => createEventsServicePlugin())
 
@@ -123,17 +144,36 @@ export function CalendarStrip() {
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle className="text-base font-medium">This Week</CardTitle>
-        <Button variant="outline" size="sm" onClick={openCreate}>
-          New Appointment
-        </Button>
-      </CardHeader>
-      <CardContent>
-        <div className="sx-calendar-strip-wrapper" style={{ isolation: "isolate" }}>
-          <ScheduleXCalendar calendarApp={calendar} />
-        </div>
-      </CardContent>
+      <Collapsible open={open} onOpenChange={handleOpenChange}>
+        <CardHeader className="flex flex-row items-center justify-between pb-2">
+          <div className="flex items-center gap-2">
+            <CollapsibleTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-label={open ? "Collapse calendar" : "Expand calendar"}
+              >
+                {open ? (
+                  <ChevronUp data-icon="inline-start" />
+                ) : (
+                  <ChevronDown data-icon="inline-start" />
+                )}
+              </Button>
+            </CollapsibleTrigger>
+            <CardTitle className="text-base font-medium">This Week</CardTitle>
+          </div>
+          <Button variant="outline" size="sm" onClick={openCreate}>
+            New Appointment
+          </Button>
+        </CardHeader>
+        <CollapsibleContent>
+          <CardContent>
+            <div className="sx-calendar-strip-wrapper" style={{ isolation: "isolate" }}>
+              <ScheduleXCalendar calendarApp={calendar} />
+            </div>
+          </CardContent>
+        </CollapsibleContent>
+      </Collapsible>
       <AppointmentDialog
         appointment={selectedAppointment}
         open={dialogOpen}
