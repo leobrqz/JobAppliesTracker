@@ -4,6 +4,7 @@ import { Badge } from "@workspace/ui/components/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@workspace/ui/components/card"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { useRecentApplications } from "@/hooks/useRecentApplications"
+import type { RecentApplicationItem } from "@/types"
 
 function formatDate(iso: string): string {
   return new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric" }).format(
@@ -49,7 +50,7 @@ export function RecentApplicationsList() {
           <p className="text-sm text-muted-foreground">No applications yet.</p>
         ) : (
           <ul className="space-y-3">
-            {data.map((item) => (
+            {data.map((item: RecentApplicationItem) => (
               <li key={item.id} className="flex items-center justify-between gap-4">
                 <div className="min-w-0">
                   <p className="truncate text-sm font-medium">{item.job_title}</p>

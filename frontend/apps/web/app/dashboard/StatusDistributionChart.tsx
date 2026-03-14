@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@workspace/ui/componen
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts"
 import { useStatusDistribution } from "@/hooks/useStatusDistribution"
+import type { StatusDistributionItem } from "@/types"
 
 const CHART_COLORS = ["#6366f1", "#22c55e", "#f59e0b", "#ef4444", "#8b5cf6", "#14b8a6"]
 
@@ -46,7 +47,7 @@ export function StatusDistributionChart() {
     )
   }
 
-  const chartData = data.map((item) => ({ name: item.stage, value: item.count }))
+  const chartData = data.map((item: StatusDistributionItem) => ({ name: item.stage, value: item.count }))
 
   return (
     <Card>
@@ -57,7 +58,7 @@ export function StatusDistributionChart() {
         <ResponsiveContainer width="100%" height={260}>
           <PieChart>
             <Pie data={chartData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={90} label>
-              {chartData.map((_, index) => (
+              {chartData.map((_: { name: string; value: number }, index: number) => (
                 <Cell key={index} fill={CHART_COLORS[index % CHART_COLORS.length]} />
               ))}
             </Pie>

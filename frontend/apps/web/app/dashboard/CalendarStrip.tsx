@@ -5,7 +5,8 @@ import { useEffect, useMemo, useState } from "react"
 import { useCalendarApp, ScheduleXCalendar } from "@schedule-x/react"
 import { createViewWeek } from "@schedule-x/calendar"
 import { createEventsServicePlugin } from "@schedule-x/events-service"
-import "@schedule-x/theme-default/dist/index.css"
+import "@schedule-x/theme-shadcn"
+import { useTheme } from "next-themes"
 import { Button } from "@workspace/ui/components/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@workspace/ui/components/card"
 import {
@@ -87,14 +88,16 @@ function getWeekRange(): { start: string; end: string } {
 const STORAGE_KEY = "dashboard-calendar-strip-expanded"
 
 export function CalendarStrip() {
+  const { resolvedTheme } = useTheme()
   const range = useMemo(() => getWeekRange(), [])
   const { data: appointments, refetch } = useAppointments(range)
 
-  const [open, setOpen] = useState(() => {
-    if (typeof window === "undefined") return true
+  const [open, setOpen] = useState(true)
+
+  useEffect(() => {
     const stored = localStorage.getItem(STORAGE_KEY)
-    return stored !== "false"
-  })
+    setOpen(stored !== "false")
+  }, [])
 
   const [dialogOpen, setDialogOpen] = useState(false)
   const [selectedAppointment, setSelectedAppointment] = useState<AppointmentResponse | null>(null)
@@ -109,6 +112,8 @@ export function CalendarStrip() {
   const [eventsService] = useState(() => createEventsServicePlugin())
 
   const calendar = useCalendarApp({
+    theme: "shadcn",
+    isDark: resolvedTheme === "dark",
     views: [createViewWeek()],
     calendars: CALENDAR_COLORS,
     timezone: getLocalTZ(),
@@ -116,7 +121,7 @@ export function CalendarStrip() {
     events: [],
     plugins: [eventsService],
     callbacks: {
-      onEventClick(calendarEvent) {
+      onEventClick(calendarEvent: { id: unknown }) {
         handleEventClick(calendarEvent.id as string)
       },
     },
@@ -125,6 +130,12 @@ export function CalendarStrip() {
   useEffect(() => {
     eventsService.set(toEvents(appointments))
   }, [appointments, eventsService])
+
+  useEffect(() => {
+    if (calendar && resolvedTheme && (resolvedTheme === "light" || resolvedTheme === "dark")) {
+      calendar.setTheme(resolvedTheme)
+    }
+  }, [calendar, resolvedTheme])
 
   async function handleEventClick(eventId: string) {
     const result = await getAppointment(Number(eventId))

@@ -44,6 +44,9 @@ importers:
       '@schedule-x/theme-default':
         specifier: ^4.3.1
         version: 4.3.1
+      '@schedule-x/theme-shadcn':
+        specifier: ^4.3.1
+        version: 4.3.1
       '@tanstack/react-table':
         specifier: ^8.21.3
         version: 8.21.3(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -1745,6 +1748,9 @@ packages:
 
   '@schedule-x/theme-default@4.3.1':
     resolution: {integrity: sha512-EVJulV9e3DH91j6Hfw8ZIh2kfqi1Juc1155LSz+9BO7S9K1GLaVBZqO413FCI/pPP+rHRE0nuhB/3iS+BidUUA==}
+
+  '@schedule-x/theme-shadcn@4.3.1':
+    resolution: {integrity: sha512-af8h9imJcBC4ctMlY47zJpeGFAzAnZDh7i1sCH0OwoaFEq96KLXOaokIRq4XF9OzfCNKgS6STJge+b8fPtiaAA==}
 
   '@sec-ant/readable-stream@0.4.1':
     resolution: {integrity: sha512-831qok9r2t8AlxLko40y2ebgSDhenenCatLVeW/uBtnHPyhHOvG0C7TvfgecV+wHzIm5KUICgzmVpWS+IMEAeg==}
@@ -6245,6 +6251,8 @@ snapshots:
       react-dom: 19.2.4(react@19.2.4)
 
   '@schedule-x/theme-default@4.3.1': {}
+
+  '@schedule-x/theme-shadcn@4.3.1': {}
 
   '@sec-ant/readable-stream@0.4.1': {}
 

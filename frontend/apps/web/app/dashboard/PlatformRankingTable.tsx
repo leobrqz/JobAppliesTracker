@@ -11,6 +11,7 @@ import {
   TableRow,
 } from "@workspace/ui/components/table"
 import { usePlatformRanking } from "@/hooks/usePlatformRanking"
+import type { PlatformRankingItem } from "@/types"
 
 export function PlatformRankingTable() {
   const { data, isLoading, error } = usePlatformRanking()
@@ -57,7 +58,7 @@ export function PlatformRankingTable() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {data.map((item) => (
+              {data.map((item: PlatformRankingItem) => (
                 <TableRow key={item.id}>
                   <TableCell className="font-medium">{item.name}</TableCell>
                   <TableCell className="text-right">{item.total}</TableCell>

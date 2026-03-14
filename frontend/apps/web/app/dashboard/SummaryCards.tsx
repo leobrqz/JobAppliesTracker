@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@workspace/ui/componen
 import { Separator } from "@workspace/ui/components/separator"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { useDashboardSummary } from "@/hooks/useDashboardSummary"
+import type { StageAvg } from "@/types"
 
 export function SummaryCards() {
   const { data, isLoading, error } = useDashboardSummary()
@@ -71,7 +72,7 @@ export function SummaryCards() {
             <p className="text-sm text-muted-foreground">No data yet</p>
           ) : (
             <ul className="flex flex-col gap-1">
-              {summary.avg_days_per_stage.map((item) => (
+              {summary.avg_days_per_stage.map((item: StageAvg) => (
                 <li key={item.stage} className="flex justify-between text-sm">
                   <span className="capitalize text-muted-foreground">{item.stage}</span>
                   <span className="font-medium">{item.avg_days}d</span>

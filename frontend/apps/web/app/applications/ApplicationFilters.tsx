@@ -4,7 +4,7 @@ import { Label } from "@workspace/ui/components/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@workspace/ui/components/select"
 import { useCompanies } from "@/hooks/useCompanies"
 import { usePlatforms } from "@/hooks/usePlatforms"
-import type { ApplicationFilters } from "@/types"
+import type { ApplicationFilters, CompanyResponse, JobPlatformResponse } from "@/types"
 
 const STAGE_OPTIONS = ["application", "screening", "interview", "assessment", "offer", "closed"]
 const STATUS_OPTIONS = ["active", "in_progress", "closed", "rejected", "offered"]
@@ -30,7 +30,7 @@ export function ApplicationFiltersBar({ filters, onChange }: Props) {
         <Label className="text-xs">Status</Label>
         <Select
           value={filters.status ?? ALL_SENTINEL}
-          onValueChange={(v) => update({ status: v === ALL_SENTINEL ? undefined : v })}
+          onValueChange={(v: string) => update({ status: v === ALL_SENTINEL ? undefined : v })}
         >
           <SelectTrigger className="w-36">
             <SelectValue placeholder="All statuses" />
@@ -50,7 +50,7 @@ export function ApplicationFiltersBar({ filters, onChange }: Props) {
         <Label className="text-xs">Stage</Label>
         <Select
           value={filters.stage ?? ALL_SENTINEL}
-          onValueChange={(v) => update({ stage: v === ALL_SENTINEL ? undefined : v })}
+          onValueChange={(v: string) => update({ stage: v === ALL_SENTINEL ? undefined : v })}
         >
           <SelectTrigger className="w-36">
             <SelectValue placeholder="All stages" />
@@ -70,7 +70,7 @@ export function ApplicationFiltersBar({ filters, onChange }: Props) {
         <Label className="text-xs">Platform</Label>
         <Select
           value={filters.platform_id != null ? String(filters.platform_id) : ALL_SENTINEL}
-          onValueChange={(v) =>
+          onValueChange={(v: string) =>
             update({ platform_id: v === ALL_SENTINEL ? undefined : parseInt(v) })
           }
         >
@@ -79,7 +79,7 @@ export function ApplicationFiltersBar({ filters, onChange }: Props) {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value={ALL_SENTINEL}>All platforms</SelectItem>
-            {platforms.map((p) => (
+            {platforms.map((p: JobPlatformResponse) => (
               <SelectItem key={p.id} value={String(p.id)}>
                 {p.name}
               </SelectItem>
@@ -93,7 +93,7 @@ export function ApplicationFiltersBar({ filters, onChange }: Props) {
           <Label className="text-xs">Company</Label>
           <Select
             value={filters.company_id != null ? String(filters.company_id) : ALL_SENTINEL}
-            onValueChange={(v) =>
+            onValueChange={(v: string) =>
               update({ company_id: v === ALL_SENTINEL ? undefined : parseInt(v) })
             }
           >
@@ -102,7 +102,7 @@ export function ApplicationFiltersBar({ filters, onChange }: Props) {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value={ALL_SENTINEL}>All companies</SelectItem>
-              {companies.map((c) => (
+              {companies.map((c: CompanyResponse) => (
                 <SelectItem key={c.id} value={String(c.id)}>
                   {c.name}
                 </SelectItem>
@@ -116,7 +116,7 @@ export function ApplicationFiltersBar({ filters, onChange }: Props) {
         <Label className="text-xs">View</Label>
         <Select
           value={filters.archived ? "archived" : "active"}
-          onValueChange={(v) => update({ archived: v === "archived" })}
+          onValueChange={(v: string) => update({ archived: v === "archived" })}
         >
           <SelectTrigger className="w-32">
             <SelectValue />

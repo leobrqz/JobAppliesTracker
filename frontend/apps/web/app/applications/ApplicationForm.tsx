@@ -20,7 +20,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useCompanies } from "@/hooks/useCompanies"
 import { usePlatforms } from "@/hooks/usePlatforms"
 import { createApplication, updateApplication } from "@/services/applications.service"
-import type { ApplicationCreate, ApplicationResponse, ApplicationUpdate } from "@/types"
+import type {
+  ApplicationCreate,
+  ApplicationResponse,
+  ApplicationUpdate,
+  CompanyResponse,
+  JobPlatformResponse,
+} from "@/types"
 
 const STAGE_SUGGESTIONS = ["application", "screening", "interview", "assessment", "offer", "closed"]
 const STATUS_SUGGESTIONS = ["active", "in_progress", "closed", "rejected", "offered"]
@@ -58,7 +64,7 @@ export function ApplicationForm({ selectedApplication, open, onOpenChange, onSuc
   const [companySuggestOpen, setCompanySuggestOpen] = useState(false)
   const companyInputRef = useRef<HTMLInputElement>(null)
 
-  const filteredCompanies = companies.filter((c) =>
+  const filteredCompanies = companies.filter((c: CompanyResponse) =>
     c.name.toLowerCase().includes(companyInput.toLowerCase()),
   )
 
@@ -178,7 +184,7 @@ export function ApplicationForm({ selectedApplication, open, onOpenChange, onSuc
                 <SelectValue placeholder="Select platform" />
               </SelectTrigger>
               <SelectContent>
-                {platforms.map((p) => (
+                {platforms.map((p: JobPlatformResponse) => (
                   <SelectItem key={p.id} value={String(p.id)}>
                     {p.name}
                   </SelectItem>
@@ -212,7 +218,7 @@ export function ApplicationForm({ selectedApplication, open, onOpenChange, onSuc
                         setCompanyInput(val)
                         // If user deviates from the currently selected company name, unlink it
                         if (selectedCompanyId !== null) {
-                          const linked = companies.find((c) => c.id === selectedCompanyId)
+                          const linked = companies.find((c: CompanyResponse) => c.id === selectedCompanyId)
                           if (linked && val !== linked.name) {
                             setSelectedCompanyId(null)
                           }
@@ -235,7 +241,7 @@ export function ApplicationForm({ selectedApplication, open, onOpenChange, onSuc
                   <Command shouldFilter={false}>
                     <CommandList>
                       <CommandGroup>
-                        {filteredCompanies.map((c) => (
+                        {filteredCompanies.map((c: CompanyResponse) => (
                           <CommandItem
                             key={c.id}
                             value={c.name}

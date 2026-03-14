@@ -5,7 +5,8 @@ import { useEffect, useMemo, useState } from "react"
 import { useCalendarApp, ScheduleXCalendar } from "@schedule-x/react"
 import { createViewMonthGrid, createViewMonthAgenda } from "@schedule-x/calendar"
 import { createEventsServicePlugin } from "@schedule-x/events-service"
-import "@schedule-x/theme-default/dist/index.css"
+import "@schedule-x/theme-shadcn"
+import { useTheme } from "next-themes"
 import { toast } from "sonner"
 import { ExternalLink, Pencil, Trash2 } from "lucide-react"
 import {
@@ -125,6 +126,7 @@ function formatTimeRange(startsAt: string, endsAt: string | null): string {
 }
 
 export default function CalendarPage() {
+  const { resolvedTheme } = useTheme()
   const [currentDate, setCurrentDate] = useState(() => new Date())
   const range = useMemo(() => getMonthRange(currentDate), [currentDate])
   const { data: appointments, refetch } = useAppointments(range)
@@ -145,6 +147,8 @@ export default function CalendarPage() {
   const [eventsService] = useState(() => createEventsServicePlugin())
 
   const calendar = useCalendarApp({
+    theme: "shadcn",
+    isDark: resolvedTheme === "dark",
     views: [createViewMonthGrid(), createViewMonthAgenda()],
     calendars: CALENDAR_COLORS,
     timezone: getLocalTZ(),
@@ -152,7 +156,7 @@ export default function CalendarPage() {
     events: [],
     plugins: [eventsService],
     callbacks: {
-      onEventClick(calendarEvent) {
+      onEventClick(calendarEvent: { id: unknown }) {
         handleEventClick(calendarEvent.id as string)
       },
       onRangeUpdate(newRange) {
@@ -166,6 +170,12 @@ export default function CalendarPage() {
   useEffect(() => {
     eventsService.set(toEvents(appointments))
   }, [appointments, eventsService])
+
+  useEffect(() => {
+    if (calendar && resolvedTheme && (resolvedTheme === "light" || resolvedTheme === "dark")) {
+      calendar.setTheme(resolvedTheme)
+    }
+  }, [calendar, resolvedTheme])
 
   async function handleEventClick(eventId: string) {
     const result = await getAppointment(Number(eventId))
