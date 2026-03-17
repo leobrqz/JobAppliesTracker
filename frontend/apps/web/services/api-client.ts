@@ -2,6 +2,35 @@ const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000"
 
 export type ApiResult<T> = { data: T; error: null } | { data: null; error: string }
 
+function normalizeErrorMessage(status: number, body: unknown): string {
+  if (body && typeof body === "object") {
+    const anyBody = body as any
+    if (typeof anyBody.detail === "string") {
+      return anyBody.detail
+    }
+    if (Array.isArray(anyBody.detail)) {
+      const messages = anyBody.detail
+        .map((item) => {
+          if (item && typeof item === "object" && typeof (item as any).msg === "string") {
+            return (item as any).msg
+          }
+          return ""
+        })
+        .filter(Boolean)
+      if (messages.length > 0) {
+        return messages.join("; ")
+      }
+    }
+    if (typeof anyBody.message === "string") {
+      return anyBody.message
+    }
+    if (typeof anyBody.error === "string") {
+      return anyBody.error
+    }
+  }
+  return `Error ${status}`
+}
+
 export async function apiRequest<T>(
   path: string,
   options?: RequestInit,
@@ -14,16 +43,13 @@ export async function apiRequest<T>(
     }
 
     if (!response.ok) {
-      let message = `Error ${response.status}`
       try {
         const body = await response.json()
-        if (typeof body?.detail === "string") {
-          message = body.detail
-        }
+        const message = normalizeErrorMessage(response.status, body)
+        return { data: null, error: message }
       } catch {
-        // ignore parse errors
+        return { data: null, error: `Error ${response.status}` }
       }
-      return { data: null, error: message }
     }
 
     const data = await response.json()

@@ -15,7 +15,7 @@ export default function ApplicationsPage() {
   const [formOpen, setFormOpen] = useState(false)
   const [selected, setSelected] = useState<ApplicationResponse | null>(null)
 
-  const { data, isLoading, error, refetch } = useApplications(filters)
+  const { data, isLoading, error, refetch, setData } = useApplications(filters)
   const { data: platforms } = usePlatforms()
 
   const platformMap = Object.fromEntries(platforms.map((p) => [p.id, p.name])) as Record<number, string>
@@ -36,7 +36,9 @@ export default function ApplicationsPage() {
 
       <div className="flex flex-wrap items-end gap-4">
         <ApplicationFiltersBar filters={filters} onChange={setFilters} />
-        <Button onClick={openCreate}>New Application</Button>
+        <div className="ml-auto">
+          <Button onClick={openCreate}>New Application</Button>
+        </div>
       </div>
 
       {isLoading ? (
@@ -53,7 +55,13 @@ export default function ApplicationsPage() {
           platforms={platformMap}
           archived={filters.archived ?? false}
           onEdit={openEdit}
-          onRefresh={refetch}
+          onRefresh={(updater) => {
+            if (updater) {
+              setData((current) => updater(current))
+            } else {
+              refetch()
+            }
+          }}
         />
       )}
 

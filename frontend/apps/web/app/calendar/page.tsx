@@ -41,6 +41,8 @@ import {
 import { AppointmentDialog } from "@/components/AppointmentDialog"
 import { useAppointments } from "@/hooks/useAppointments"
 import { useApplications } from "@/hooks/useApplications"
+import { formatDate, formatTimeRange, type TimeFormat } from "@/lib/display"
+import { usePreference } from "@/hooks/usePreference"
 import { deleteAppointment, getAppointment } from "@/services/appointments.service"
 import type { AppointmentResponse } from "@/types"
 
@@ -72,64 +74,58 @@ const CALENDAR_COLORS = {
   },
 }
 
-function getLocalTZ(): string {
-  return Temporal.Now.timeZoneId()
-}
-
-function isoToZonedDateTime(iso: string): Temporal.ZonedDateTime {
+function isoToZonedDateTime(iso: string, timeZoneId: string): Temporal.ZonedDateTime {
   let cleaned = iso
   if (cleaned.endsWith("Z")) cleaned = cleaned.slice(0, -1)
   const plusIdx = cleaned.indexOf("+")
   if (plusIdx !== -1) cleaned = cleaned.slice(0, plusIdx)
-  return Temporal.PlainDateTime.from(cleaned).toZonedDateTime(getLocalTZ())
+  return Temporal.PlainDateTime.from(cleaned).toZonedDateTime(timeZoneId)
 }
 
-function toEvents(appointments: AppointmentResponse[]) {
+function toEvents(appointments: AppointmentResponse[], timeZoneId: string) {
   return appointments.map((a) => ({
     id: String(a.id),
     title: a.title,
-    start: isoToZonedDateTime(a.starts_at),
+    start: isoToZonedDateTime(a.starts_at, timeZoneId),
     end: a.ends_at
-      ? isoToZonedDateTime(a.ends_at)
-      : isoToZonedDateTime(a.starts_at).add({ hours: 1 }),
+      ? isoToZonedDateTime(a.ends_at, timeZoneId)
+      : isoToZonedDateTime(a.starts_at, timeZoneId).add({ hours: 1 }),
     calendarId: CALENDAR_COLORS[a.type as keyof typeof CALENDAR_COLORS] ? a.type : "other",
   }))
+}
+
+function formatLocalDateTime(date: Date): string {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, "0")
+  const day = String(date.getDate()).padStart(2, "0")
+  const hours = String(date.getHours()).padStart(2, "0")
+  const minutes = String(date.getMinutes()).padStart(2, "0")
+  const seconds = String(date.getSeconds()).padStart(2, "0")
+  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`
 }
 
 function getMonthRange(date: Date): { start: string; end: string } {
   const y = date.getFullYear()
   const m = date.getMonth()
-  const first = new Date(y, m, 1)
-  const last = new Date(y, m + 1, 0, 23, 59, 59)
-  return { start: first.toISOString(), end: last.toISOString() }
+  const first = new Date(y, m, 1, 0, 0, 0, 0)
+  const last = new Date(y, m + 1, 0, 23, 59, 59, 999)
+  return { start: formatLocalDateTime(first), end: formatLocalDateTime(last) }
 }
 
-function formatDate(iso: string): string {
-  return new Intl.DateTimeFormat("en-US", {
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-  }).format(new Date(iso))
-}
-
-function formatTime(iso: string): string {
-  return new Intl.DateTimeFormat("en-US", {
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(new Date(iso))
-}
-
-function formatTimeRange(startsAt: string, endsAt: string | null): string {
-  const start = formatTime(startsAt)
-  if (!endsAt) return start
-  return `${start} – ${formatTime(endsAt)}`
+function resolveTimeZone(pref: string | undefined): string {
+  if (pref && pref !== "auto") return pref
+  return Temporal.Now.timeZoneId()
 }
 
 export default function CalendarPage() {
   const { resolvedTheme } = useTheme()
+  const [timeZonePref] = usePreference<string>("display.timeZone", "auto")
+  const [locale] = usePreference<string>("display.locale", "en-US")
+  const [timeFormat] = usePreference<TimeFormat>("display.timeFormat", "12h")
+  const timeZoneId = resolveTimeZone(timeZonePref)
   const [currentDate, setCurrentDate] = useState(() => new Date())
   const range = useMemo(() => getMonthRange(currentDate), [currentDate])
-  const { data: appointments, refetch } = useAppointments(range)
+  const { data: appointments, refetch, setData } = useAppointments(range)
   const { data: applications } = useApplications()
 
   const appLookup = useMemo(() => {
@@ -151,7 +147,7 @@ export default function CalendarPage() {
     isDark: resolvedTheme === "dark",
     views: [createViewMonthGrid(), createViewMonthAgenda()],
     calendars: CALENDAR_COLORS,
-    timezone: getLocalTZ(),
+    timezone: timeZoneId,
     dayBoundaries: { start: "06:00", end: "22:00" },
     events: [],
     plugins: [eventsService],
@@ -168,8 +164,8 @@ export default function CalendarPage() {
   })
 
   useEffect(() => {
-    eventsService.set(toEvents(appointments))
-  }, [appointments, eventsService])
+    eventsService.set(toEvents(appointments, timeZoneId))
+  }, [appointments, eventsService, timeZoneId])
 
   useEffect(() => {
     if (calendar && resolvedTheme && (resolvedTheme === "light" || resolvedTheme === "dark")) {
@@ -195,9 +191,11 @@ export default function CalendarPage() {
   }
 
   async function handleDelete(id: number) {
+    setData((current) => current.filter((appt) => appt.id !== id))
     const result = await deleteAppointment(id)
     if (result.error !== null) {
       toast.error(result.error)
+      refetch()
     } else {
       toast.success("Appointment deleted")
       refetch()
@@ -215,9 +213,11 @@ export default function CalendarPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-2">
         <h1 className="text-2xl font-semibold">Calendar</h1>
-        <Button onClick={openCreate}>New Appointment</Button>
+        <div className="flex justify-end">
+          <Button onClick={openCreate}>New Appointment</Button>
+        </div>
       </div>
 
       <div className="sx-calendar-page-wrapper" style={{ isolation: "isolate" }}>

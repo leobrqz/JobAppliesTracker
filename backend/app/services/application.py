@@ -1,11 +1,12 @@
-from datetime import date, datetime, time, timezone
+from datetime import date, datetime, time
 from typing import Optional
 
 from sqlalchemy.orm import Session
 
 from app.models.application import Application
-from app.models.application_history import ApplicationHistory
 from app.schemas.application import ApplicationCreate, ApplicationUpdate
+from app.core import utcnow
+from app.services.application_history import _append_history_and_update_stage
 
 
 def get_application(db: Session, application_id: int) -> Application | None:
@@ -48,7 +49,6 @@ def create_application(db: Session, data: ApplicationCreate) -> Application:
         seniority=data.seniority,
         contract_type=data.contract_type,
         application_url=data.application_url,
-        current_stage=data.current_stage,
         status=data.status,
         applied_at=applied_at_dt,
         resume_id=data.resume_id,
@@ -56,12 +56,13 @@ def create_application(db: Session, data: ApplicationCreate) -> Application:
     db.add(application)
     db.flush()
 
-    first_history = ApplicationHistory(
-        application_id=application.id,
+    _append_history_and_update_stage(
+        db=db,
+        application=application,
         stage=data.current_stage,
         date=applied_at_dt,
+        notes=None,
     )
-    db.add(first_history)
     db.commit()
     db.refresh(application)
     return application
@@ -93,7 +94,7 @@ def archive_application(db: Session, application_id: int) -> Application | None:
     application = get_application(db, application_id)
     if application is None:
         return None
-    application.archived_at = datetime.now(timezone.utc).replace(tzinfo=None)
+    application.archived_at = utcnow()
     db.commit()
     db.refresh(application)
     return application

@@ -19,6 +19,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@workspace/ui/
 import { Separator } from "@workspace/ui/components/separator"
 import { AppointmentDialog } from "@/components/AppointmentDialog"
 import { useAppointments } from "@/hooks/useAppointments"
+import { formatTimeRange, type TimeFormat } from "@/lib/display"
+import { usePreference } from "@/hooks/usePreference"
 import { deleteAppointment } from "@/services/appointments.service"
 import type { AppointmentResponse } from "@/types"
 
@@ -30,25 +32,6 @@ interface Props {
   onRefresh?: () => void
 }
 
-function formatDateTime(iso: string): string {
-  return new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(new Date(iso))
-}
-
-function formatTimeRange(startsAt: string, endsAt: string | null): string {
-  const start = formatDateTime(startsAt)
-  if (!endsAt) return start
-  const end = new Intl.DateTimeFormat("en-US", {
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(new Date(endsAt))
-  return `${start} – ${end}`
-}
-
 export function AppointmentListDialog({
   applicationId,
   applicationLabel,
@@ -56,6 +39,8 @@ export function AppointmentListDialog({
   onOpenChange,
   onRefresh,
 }: Props) {
+  const [locale] = usePreference<string>("display.locale", "en-US")
+  const [timeFormat] = usePreference<TimeFormat>("display.timeFormat", "12h")
   const { data: appointments, isLoading, refetch } = useAppointments(
     open ? { application_id: applicationId } : undefined,
   )
@@ -192,7 +177,7 @@ function AppointmentCard({
           </Badge>
         </div>
         <p className="mt-1 text-xs text-muted-foreground">
-          {formatTimeRange(appointment.starts_at, appointment.ends_at)}
+          {formatTimeRange(appointment.starts_at, appointment.ends_at, locale, timeFormat)}
         </p>
         {appointment.platform && (
           <p className="text-xs text-muted-foreground">{appointment.platform}</p>

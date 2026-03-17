@@ -16,6 +16,7 @@ import {
 } from "@workspace/ui/components/collapsible"
 import { ChevronDown, ChevronUp } from "lucide-react"
 import { AppointmentDialog } from "@/components/AppointmentDialog"
+import { usePreference } from "@/hooks/usePreference"
 import { useAppointments } from "@/hooks/useAppointments"
 import { getAppointment } from "@/services/appointments.service"
 import type { AppointmentResponse } from "@/types"
@@ -85,28 +86,18 @@ function getWeekRange(): { start: string; end: string } {
   return { start: monday.toISOString(), end: sunday.toISOString() }
 }
 
-const STORAGE_KEY = "dashboard-calendar-strip-expanded"
-
 export function CalendarStrip() {
   const { resolvedTheme } = useTheme()
   const range = useMemo(() => getWeekRange(), [])
   const { data: appointments, refetch } = useAppointments(range)
 
-  const [open, setOpen] = useState(true)
-
-  useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY)
-    setOpen(stored !== "false")
-  }, [])
+  const [open, setOpen] = usePreference<boolean>("dashboard-calendar-strip-expanded", true)
 
   const [dialogOpen, setDialogOpen] = useState(false)
   const [selectedAppointment, setSelectedAppointment] = useState<AppointmentResponse | null>(null)
 
   function handleOpenChange(next: boolean) {
     setOpen(next)
-    if (typeof window !== "undefined") {
-      localStorage.setItem(STORAGE_KEY, String(next))
-    }
   }
 
   const [eventsService] = useState(() => createEventsServicePlugin())
@@ -173,7 +164,7 @@ export function CalendarStrip() {
             </CollapsibleTrigger>
             <CardTitle className="text-base font-medium">This Week</CardTitle>
           </div>
-          <Button variant="outline" size="sm" onClick={openCreate}>
+          <Button size="sm" onClick={openCreate}>
             New Appointment
           </Button>
         </CardHeader>

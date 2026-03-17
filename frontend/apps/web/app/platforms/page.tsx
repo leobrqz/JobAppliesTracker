@@ -25,9 +25,11 @@ export default function PlatformsPage() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="space-y-2">
         <h1 className="text-2xl font-semibold">Platforms</h1>
-        <Button onClick={openCreate}>New Platform</Button>
+        <div className="flex justify-end">
+          <Button onClick={openCreate}>New Platform</Button>
+        </div>
       </div>
 
       {isLoading ? (

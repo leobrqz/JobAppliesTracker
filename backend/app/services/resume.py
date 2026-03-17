@@ -1,11 +1,11 @@
 import os
-from datetime import datetime, timezone
 
 from fastapi import HTTPException
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.core.storage import delete_file, get_file_path, save_file
+from app.core import utcnow
 from app.models.resume import Resume
 from app.schemas.resume import ResumeCreate, ResumeUpdate
 
@@ -67,7 +67,7 @@ def archive_resume(db: Session, resume_id: int) -> Resume | None:
     resume = get_resume(db, resume_id)
     if resume is None:
         return None
-    resume.archived_at = datetime.now(timezone.utc).replace(tzinfo=None)
+    resume.archived_at = utcnow()
     db.commit()
     db.refresh(resume)
     return resume

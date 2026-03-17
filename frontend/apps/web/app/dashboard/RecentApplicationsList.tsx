@@ -3,16 +3,17 @@
 import { Badge } from "@workspace/ui/components/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@workspace/ui/components/card"
 import { Skeleton } from "@workspace/ui/components/skeleton"
+import { useDashboardWidgets } from "@/hooks/useDashboardWidgets"
+import { formatDate } from "@/lib/display"
+import { usePreference } from "@/hooks/usePreference"
 import { useRecentApplications } from "@/hooks/useRecentApplications"
 import type { RecentApplicationItem } from "@/types"
 
-function formatDate(iso: string): string {
-  return new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric" }).format(
-    new Date(iso),
-  )
-}
-
 export function RecentApplicationsList() {
+  const [widgets] = useDashboardWidgets()
+  if (!widgets.showRecentApplications) return null
+
+  const [locale] = usePreference<string>("display.locale", "en-US")
   const { data, isLoading, error } = useRecentApplications()
 
   if (isLoading) {
@@ -62,7 +63,9 @@ export function RecentApplicationsList() {
                   <Badge variant="outline" className="text-xs">
                     {item.status}
                   </Badge>
-                  <span className="text-xs text-muted-foreground">{formatDate(item.applied_at)}</span>
+                  <span className="text-xs text-muted-foreground">
+                    {formatDate(item.applied_at, locale)}
+                  </span>
                 </div>
               </li>
             ))}

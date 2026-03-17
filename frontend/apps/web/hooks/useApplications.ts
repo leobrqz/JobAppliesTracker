@@ -25,5 +25,5 @@ export function useApplications(filters: ApplicationFilters = {}) {
     fetchData()
   }, [fetchData])
 
-  return { data, isLoading, error, refetch: fetchData }
+  return { data, isLoading, error, refetch: fetchData, setData }
 }

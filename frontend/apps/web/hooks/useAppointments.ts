@@ -25,5 +25,5 @@ export function useAppointments(params?: AppointmentParams) {
     fetchData()
   }, [fetchData])
 
-  return { data, isLoading, error, refetch: fetchData }
+  return { data, isLoading, error, refetch: fetchData, setData }
 }

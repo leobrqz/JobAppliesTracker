@@ -21,6 +21,8 @@ import { Label } from "@workspace/ui/components/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@workspace/ui/components/select"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { Textarea } from "@workspace/ui/components/textarea"
+import { formatDate } from "@/lib/display"
+import { usePreference } from "@/hooks/usePreference"
 import { useResumes } from "@/hooks/useResumes"
 import {
   archiveResume,
@@ -32,13 +34,8 @@ import {
 } from "@/services/resumes.service"
 import type { ResumeResponse } from "@/types"
 
-function formatDate(iso: string): string {
-  return new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric" }).format(
-    new Date(iso),
-  )
-}
-
 export function ResumesSection() {
+  const [locale] = usePreference<string>("display.locale", "en-US")
   const [showArchived, setShowArchived] = useState(false)
   const { data, isLoading, error, refetch } = useResumes(showArchived)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -121,7 +118,7 @@ export function ResumesSection() {
             </Select>
             {!showArchived && (
               <>
-                <Button size="sm" variant="outline" onClick={() => fileInputRef.current?.click()}>
+                <Button size="sm" onClick={() => fileInputRef.current?.click()}>
                   Upload
                 </Button>
                 <input
@@ -155,7 +152,9 @@ export function ResumesSection() {
                   {resume.description && (
                     <p className="truncate text-xs text-muted-foreground">{resume.description}</p>
                   )}
-                  <p className="text-xs text-muted-foreground">{formatDate(resume.created_at)}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {formatDate(resume.created_at, locale)}
+                  </p>
                 </div>
                 <div className="flex shrink-0 items-center gap-1">
                   {!showArchived && (

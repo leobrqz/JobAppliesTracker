@@ -2,6 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@workspace/ui/components/card"
 import { Skeleton } from "@workspace/ui/components/skeleton"
+import { useDashboardWidgets } from "@/hooks/useDashboardWidgets"
 import {
   Table,
   TableBody,
@@ -14,6 +15,9 @@ import { usePlatformRanking } from "@/hooks/usePlatformRanking"
 import type { PlatformRankingItem } from "@/types"
 
 export function PlatformRankingTable() {
+  const [widgets] = useDashboardWidgets()
+  if (!widgets.showPlatformRanking) return null
+
   const { data, isLoading, error } = usePlatformRanking()
 
   if (isLoading) {

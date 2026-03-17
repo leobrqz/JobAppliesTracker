@@ -41,6 +41,8 @@ import {
 } from "@workspace/ui/components/tooltip"
 import { AppointmentListDialog } from "@/components/AppointmentListDialog"
 import { StageHistoryDialog } from "@/components/StageHistoryDialog"
+import { formatDate } from "@/lib/display"
+import { usePreference } from "@/hooks/usePreference"
 import { archiveApplication, deleteApplication, restoreApplication } from "@/services/applications.service"
 import type { ApplicationResponse } from "@/types"
 
@@ -49,38 +51,55 @@ interface Props {
   platforms: Record<number, string>
   archived: boolean
   onEdit: (application: ApplicationResponse) => void
-  onRefresh: () => void
+  onRefresh: (updater?: (current: ApplicationResponse[]) => ApplicationResponse[]) => void
 }
 
 const columnHelper = createColumnHelper<ApplicationResponse>()
 
-function formatDate(iso: string): string {
-  return new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric" }).format(
-    new Date(iso),
-  )
-}
-
 export function ApplicationTable({ data, platforms, archived, onEdit, onRefresh }: Props) {
+  const [locale] = usePreference<string>("display.locale", "en-US")
   const [sorting, setSorting] = useState<SortingState>([])
   const [historyAppId, setHistoryAppId] = useState<number | null>(null)
   const [appointmentsApp, setAppointmentsApp] = useState<ApplicationResponse | null>(null)
 
   async function handleArchive(id: number) {
+    onRefresh((current) =>
+      current.map((app) => (app.id === id ? { ...app, archived_at: new Date().toISOString() } : app)),
+    )
     const result = await archiveApplication(id)
-    if (result.error) toast.error(result.error)
-    else { toast.success("Application archived"); onRefresh() }
+    if (result.error) {
+      toast.error(result.error)
+      onRefresh((current) => current.map((app) => (app.id === id ? { ...app, archived_at: null } : app)))
+    } else {
+      toast.success("Application archived")
+      onRefresh()
+    }
   }
 
   async function handleRestore(id: number) {
+    onRefresh((current) =>
+      current.map((app) => (app.id === id ? { ...app, archived_at: null } : app)),
+    )
     const result = await restoreApplication(id)
-    if (result.error) toast.error(result.error)
-    else { toast.success("Application restored"); onRefresh() }
+    if (result.error) {
+      toast.error(result.error)
+      onRefresh()
+    } else {
+      toast.success("Application restored")
+      onRefresh()
+    }
   }
 
   async function handleDelete(id: number) {
+    onRefresh((current) => current.filter((app) => app.id !== id))
     const result = await deleteApplication(id)
-    if (result.error) toast.error(result.error)
-    else { toast.success("Application deleted"); onRefresh() }
+    if (result.error) {
+      toast.error(result.error)
+      onRefresh()
+    } else {
+      toast.success("Application deleted")
+      onRefresh()
+    }
   }
 
   const columns = [
@@ -106,7 +125,7 @@ export function ApplicationTable({ data, platforms, archived, onEdit, onRefresh 
     }),
     columnHelper.accessor("applied_at", {
       header: "Date Applied",
-      cell: (info) => formatDate(info.getValue()),
+      cell: (info) => formatDate(info.getValue(), locale),
     }),
     columnHelper.display({
       id: "actions",

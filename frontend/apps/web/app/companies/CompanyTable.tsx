@@ -28,6 +28,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
+import { formatDate } from "@/lib/display"
+import { usePreference } from "@/hooks/usePreference"
 import { deleteCompany } from "@/services/companies.service"
 import type { CompanyResponse } from "@/types"
 
@@ -37,13 +39,8 @@ interface Props {
   onRefresh: () => void
 }
 
-function formatDate(iso: string): string {
-  return new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric" }).format(
-    new Date(iso),
-  )
-}
-
 export function CompanyTable({ data, onEdit, onRefresh }: Props) {
+  const [locale] = usePreference<string>("display.locale", "en-US")
   async function handleDelete(id: number) {
     const result = await deleteCompany(id)
     if (result.error) {
@@ -100,7 +97,7 @@ export function CompanyTable({ data, onEdit, onRefresh }: Props) {
                     )}
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">
-                    {formatDate(company.created_at)}
+                    {formatDate(company.created_at, locale)}
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-1">

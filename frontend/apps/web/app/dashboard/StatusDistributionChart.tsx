@@ -3,12 +3,16 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@workspace/ui/components/card"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts"
+import { useDashboardWidgets } from "@/hooks/useDashboardWidgets"
 import { useStatusDistribution } from "@/hooks/useStatusDistribution"
 import type { StatusDistributionItem } from "@/types"
 
 const CHART_COLORS = ["#6366f1", "#22c55e", "#f59e0b", "#ef4444", "#8b5cf6", "#14b8a6"]
 
 export function StatusDistributionChart() {
+  const [widgets] = useDashboardWidgets()
+  if (!widgets.showStatusDistribution) return null
+
   const { data, isLoading, error } = useStatusDistribution()
 
   if (isLoading) {

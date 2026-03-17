@@ -2,6 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@workspace/ui/components/card"
 import { Skeleton } from "@workspace/ui/components/skeleton"
+import { useDashboardWidgets } from "@/hooks/useDashboardWidgets"
 import { useHeatmap } from "@/hooks/useHeatmap"
 import type { HeatmapItem } from "@/types"
 
@@ -36,6 +37,9 @@ function intensityClass(count: number): string {
 }
 
 export function WeeklyHeatmap() {
+  const [widgets] = useDashboardWidgets()
+  if (!widgets.showWeeklyHeatmap) return null
+
   const { data, isLoading, error } = useHeatmap()
 
   if (isLoading) {

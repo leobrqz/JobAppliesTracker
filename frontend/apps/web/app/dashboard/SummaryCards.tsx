@@ -3,10 +3,14 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@workspace/ui/components/card"
 import { Separator } from "@workspace/ui/components/separator"
 import { Skeleton } from "@workspace/ui/components/skeleton"
+import { useDashboardWidgets } from "@/hooks/useDashboardWidgets"
 import { useDashboardSummary } from "@/hooks/useDashboardSummary"
 import type { StageAvg } from "@/types"
 
 export function SummaryCards() {
+  const [widgets] = useDashboardWidgets()
+  if (!widgets.showSummary) return null
+
   const { data, isLoading, error } = useDashboardSummary()
 
   if (isLoading) {

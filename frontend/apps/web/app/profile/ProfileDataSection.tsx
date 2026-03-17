@@ -121,7 +121,7 @@ function PresetCell({
       ) : (
         <>
           <p className="text-sm italic text-muted-foreground">Not set</p>
-          <Button variant="ghost" size="sm" className="mt-1 h-7 w-fit px-2 text-xs" onClick={onAdd}>
+          <Button size="sm" className="mt-1 h-7 w-fit px-2 text-xs" onClick={onAdd}>
             Add
           </Button>
         </>
@@ -215,7 +215,7 @@ export function ProfileDataSection() {
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="text-base">Profile Data</CardTitle>
-          <Button size="sm" variant="outline" onClick={openCreate}>Add Custom</Button>
+          <Button size="sm" onClick={openCreate}>Add Custom</Button>
         </div>
       </CardHeader>
 
