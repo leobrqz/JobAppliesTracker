@@ -1,5 +1,6 @@
 #!/bin/bash
-echo "Rebuildando containers e subindo..."
-echo docker compose up --build -d
+set -e
 
-docker compose up --build -d
+echo "Rebuilding containers..."
+docker compose down
+docker compose up --build -d --force-recreate

@@ -1,3 +1,3 @@
 #!/bin/bash
 echo "Starting all services..."
-docker compose up --build -d
+docker compose up -d
