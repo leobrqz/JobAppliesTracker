@@ -1,18 +1,11 @@
 from datetime import datetime
 from decimal import Decimal
-from typing import Optional, TYPE_CHECKING
+from typing import Optional
 
 from sqlalchemy import ForeignKey, Numeric, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
-
-if TYPE_CHECKING:
-    from app.models.job_platform import JobPlatform
-    from app.models.resume import Resume
-    from app.models.application_history import ApplicationHistory
-    from app.models.company import Company
-    from app.models.appointment import Appointment
 
 
 class Application(Base):
