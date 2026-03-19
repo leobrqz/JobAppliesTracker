@@ -53,7 +53,7 @@ Track applications across platforms, manage companies, schedule interviews, and 
 **Prerequisites:** Docker 
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/leobrqz/JobAppliesTracker.git
 cd JobAppliesTracker
 ```
 
