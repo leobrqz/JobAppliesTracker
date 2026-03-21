@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { ApplicationsTablePreferencesCard } from "./ApplicationsTablePreferencesCard"
 import { Card, CardContent, CardHeader, CardTitle } from "@workspace/ui/components/card"
 import { Field, FieldGroup, FieldLabel } from "@workspace/ui/components/field"
 import { Input } from "@workspace/ui/components/input"
@@ -54,6 +55,18 @@ const TIME_ZONES = [
 
 type TimeZoneValue = (typeof TIME_ZONES)[number] | "auto"
 
+function SettingsHashScroll() {
+  React.useEffect(() => {
+    if (typeof window === "undefined") return
+    if (window.location.hash !== "#applications-table") return
+    const id = window.setTimeout(() => {
+      document.getElementById("applications-table")?.scrollIntoView({ behavior: "smooth", block: "start" })
+    }, 100)
+    return () => window.clearTimeout(id)
+  }, [])
+  return null
+}
+
 export default function SettingsPage() {
   const [widgets, setWidgets] = useDashboardWidgets()
   const [calendarExpanded, setCalendarExpanded] = usePreference<boolean>(
@@ -66,6 +79,7 @@ export default function SettingsPage() {
 
   return (
     <div className="flex flex-col gap-4">
+      <SettingsHashScroll />
       <h1 className="text-2xl font-semibold">Settings</h1>
       <Card>
         <CardHeader>
@@ -198,6 +212,8 @@ export default function SettingsPage() {
           </FieldGroup>
         </CardContent>
       </Card>
+
+      <ApplicationsTablePreferencesCard />
 
       <Card>
         <CardHeader>
