@@ -1,10 +1,20 @@
 "use client"
 
+import Link from "next/link"
 import { useState } from "react"
+import { Settings } from "lucide-react"
 import { Button } from "@workspace/ui/components/button"
 import { Skeleton } from "@workspace/ui/components/skeleton"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@workspace/ui/components/tooltip"
 import { useApplications } from "@/hooks/useApplications"
+import { useCompanies } from "@/hooks/useCompanies"
 import { usePlatforms } from "@/hooks/usePlatforms"
+import { useResumeMap } from "@/hooks/useResumeMap"
 import type { ApplicationFilters, ApplicationResponse } from "@/types"
 import { ApplicationFiltersBar } from "./ApplicationFilters"
 import { ApplicationForm } from "./ApplicationForm"
@@ -17,6 +27,8 @@ export default function ApplicationsPage() {
 
   const { data, isLoading, error, refetch, setData } = useApplications(filters)
   const { data: platforms } = usePlatforms()
+  const { map: resumeMap } = useResumeMap()
+  const { data: companies } = useCompanies()
 
   const platformMap = Object.fromEntries(platforms.map((p) => [p.id, p.name])) as Record<number, string>
 
@@ -36,7 +48,19 @@ export default function ApplicationsPage() {
 
       <div className="flex flex-wrap items-end gap-4">
         <ApplicationFiltersBar filters={filters} onChange={setFilters} />
-        <div className="ml-auto">
+        <div className="ml-auto flex items-center gap-2">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="outline" size="icon" asChild>
+                  <Link href="/settings#applications-table" aria-label="Customize table columns">
+                    <Settings />
+                  </Link>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Customize table columns</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
           <Button onClick={openCreate}>New Application</Button>
         </div>
       </div>
@@ -53,6 +77,8 @@ export default function ApplicationsPage() {
         <ApplicationTable
           data={data}
           platforms={platformMap}
+          resumeMap={resumeMap}
+          companies={companies}
           archived={filters.archived ?? false}
           onEdit={openEdit}
           onRefresh={(updater) => {

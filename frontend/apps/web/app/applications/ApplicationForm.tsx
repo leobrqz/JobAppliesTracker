@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { Button } from "@workspace/ui/components/button"
@@ -16,9 +16,17 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@workspace/ui/
 import { Input } from "@workspace/ui/components/input"
 import { Label } from "@workspace/ui/components/label"
 import { Popover, PopoverContent, PopoverTrigger } from "@workspace/ui/components/popover"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@workspace/ui/components/select"
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@workspace/ui/components/select"
 import { useCompanies } from "@/hooks/useCompanies"
 import { usePlatforms } from "@/hooks/usePlatforms"
+import { useResumeMap } from "@/hooks/useResumeMap"
 import { createApplication, updateApplication } from "@/services/applications.service"
 import type {
   ApplicationCreate,
@@ -27,6 +35,8 @@ import type {
   CompanyResponse,
   JobPlatformResponse,
 } from "@/types"
+
+const NO_RESUME_VALUE = "__none__"
 
 const STAGE_SUGGESTIONS = ["application", "screening", "interview", "assessment", "offer", "closed"]
 const STATUS_SUGGESTIONS = ["active", "in_progress", "closed", "rejected", "offered"]
@@ -55,6 +65,12 @@ export function ApplicationForm({ selectedApplication, open, onOpenChange, onSuc
   const isEdit = selectedApplication !== null
   const { data: platforms } = usePlatforms()
   const { data: companies } = useCompanies()
+  const { map: resumeMap, isLoading: resumesLoading, error: resumesError } = useResumeMap()
+
+  const resumesSorted = useMemo(
+    () => Object.values(resumeMap).sort((a, b) => a.name.localeCompare(b.name)),
+    [resumeMap],
+  )
 
   const { register, handleSubmit, reset, setValue, watch } = useForm<FormValues>()
 
@@ -168,6 +184,20 @@ export function ApplicationForm({ selectedApplication, open, onOpenChange, onSuc
   const currentStageValue = watch("current_stage")
   const statusValue = watch("status")
   const platformValue = watch("platform_id")
+  const resumeIdValue = watch("resume_id")
+
+  const resumeSelectValue =
+    resumeIdValue && resumeIdValue !== "" ? resumeIdValue : NO_RESUME_VALUE
+
+  const parsedResumeId = resumeIdValue ? parseInt(resumeIdValue, 10) : NaN
+  const orphanResumeId =
+    resumeIdValue !== "" &&
+    resumeIdValue != null &&
+    Number.isFinite(parsedResumeId) &&
+    resumeMap[parsedResumeId] === undefined
+      ? parsedResumeId
+      : null
+  const hasOrphanResume = orphanResumeId != null
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -286,6 +316,42 @@ export function ApplicationForm({ selectedApplication, open, onOpenChange, onSuc
           <div className="space-y-1">
             <Label htmlFor="application_url">Application URL</Label>
             <Input id="application_url" type="url" {...register("application_url")} placeholder="https://…" />
+          </div>
+
+          <div className="space-y-1">
+            <Label>Resume</Label>
+            {resumesLoading ? (
+              <p className="text-sm text-muted-foreground">Loading resumes…</p>
+            ) : resumesError ? (
+              <p className="text-sm text-destructive">{resumesError}</p>
+            ) : (
+              <Select
+                value={hasOrphanResume ? String(orphanResumeId) : resumeSelectValue}
+                onValueChange={(v) =>
+                  setValue("resume_id", v === NO_RESUME_VALUE ? "" : v)
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="No resume" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectItem value={NO_RESUME_VALUE}>No resume</SelectItem>
+                    {hasOrphanResume ? (
+                      <SelectItem value={String(orphanResumeId)}>
+                        Resume #{orphanResumeId} (removed or unavailable)
+                      </SelectItem>
+                    ) : null}
+                    {resumesSorted.map((r) => (
+                      <SelectItem key={r.id} value={String(r.id)}>
+                        {r.name}
+                        {r.archived_at ? " (archived)" : ""}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-3">

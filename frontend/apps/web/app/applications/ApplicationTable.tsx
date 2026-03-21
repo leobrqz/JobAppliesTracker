@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useCallback, useMemo, useState } from "react"
 import {
   createColumnHelper,
   flexRender,
@@ -8,6 +8,7 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
+  type ColumnDef,
   type SortingState,
 } from "@tanstack/react-table"
 import { Archive, CalendarDays, ExternalLink, History, Pencil, RotateCcw, Trash2 } from "lucide-react"
@@ -39,16 +40,22 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
+import { cn } from "@workspace/ui/lib/utils"
 import { AppointmentListDialog } from "@/components/AppointmentListDialog"
 import { StageHistoryDialog } from "@/components/StageHistoryDialog"
 import { formatDate } from "@/lib/display"
+import { formatResumeColumn } from "@/lib/formatResumeColumn"
+import { useApplicationsTablePreferences } from "@/hooks/useApplicationsTablePreferences"
 import { usePreference } from "@/hooks/usePreference"
 import { archiveApplication, deleteApplication, restoreApplication } from "@/services/applications.service"
-import type { ApplicationResponse } from "@/types"
+import type { ApplicationResponse, CompanyResponse, ResumeResponse } from "@/types"
+import { ApplicationDetailDialog } from "./ApplicationDetailDialog"
 
 interface Props {
   data: ApplicationResponse[]
   platforms: Record<number, string>
+  resumeMap: Record<number, ResumeResponse>
+  companies: CompanyResponse[]
   archived: boolean
   onEdit: (application: ApplicationResponse) => void
   onRefresh: (updater?: (current: ApplicationResponse[]) => ApplicationResponse[]) => void
@@ -56,80 +63,195 @@ interface Props {
 
 const columnHelper = createColumnHelper<ApplicationResponse>()
 
-export function ApplicationTable({ data, platforms, archived, onEdit, onRefresh }: Props) {
+export function ApplicationTable({
+  data,
+  platforms,
+  resumeMap,
+  companies,
+  archived,
+  onEdit,
+  onRefresh,
+}: Props) {
   const [locale] = usePreference<string>("display.locale", "en-US")
+  const [tablePrefs] = useApplicationsTablePreferences()
   const [sorting, setSorting] = useState<SortingState>([])
   const [historyAppId, setHistoryAppId] = useState<number | null>(null)
   const [appointmentsApp, setAppointmentsApp] = useState<ApplicationResponse | null>(null)
+  const [detailApp, setDetailApp] = useState<ApplicationResponse | null>(null)
 
-  async function handleArchive(id: number) {
-    onRefresh((current) =>
-      current.map((app) => (app.id === id ? { ...app, archived_at: new Date().toISOString() } : app)),
-    )
-    const result = await archiveApplication(id)
-    if (result.error) {
-      toast.error(result.error)
-      onRefresh((current) => current.map((app) => (app.id === id ? { ...app, archived_at: null } : app)))
-    } else {
-      toast.success("Application archived")
-      onRefresh()
+  const handleArchive = useCallback(
+    async (id: number) => {
+      onRefresh((current) =>
+        current.map((app) => (app.id === id ? { ...app, archived_at: new Date().toISOString() } : app)),
+      )
+      const result = await archiveApplication(id)
+      if (result.error) {
+        toast.error(result.error)
+        onRefresh((current) => current.map((app) => (app.id === id ? { ...app, archived_at: null } : app)))
+      } else {
+        toast.success("Application archived")
+        onRefresh()
+      }
+    },
+    [onRefresh],
+  )
+
+  const handleRestore = useCallback(
+    async (id: number) => {
+      onRefresh((current) =>
+        current.map((app) => (app.id === id ? { ...app, archived_at: null } : app)),
+      )
+      const result = await restoreApplication(id)
+      if (result.error) {
+        toast.error(result.error)
+        onRefresh()
+      } else {
+        toast.success("Application restored")
+        onRefresh()
+      }
+    },
+    [onRefresh],
+  )
+
+  const handleDelete = useCallback(
+    async (id: number) => {
+      onRefresh((current) => current.filter((app) => app.id !== id))
+      const result = await deleteApplication(id)
+      if (result.error) {
+        toast.error(result.error)
+        onRefresh()
+      } else {
+        toast.success("Application deleted")
+        onRefresh()
+      }
+    },
+    [onRefresh],
+  )
+
+  const columns = useMemo((): ColumnDef<ApplicationResponse>[] => {
+    const base: ColumnDef<ApplicationResponse>[] = [
+      columnHelper.accessor("job_title", {
+        header: "Job Title",
+        cell: ({ row, getValue }) => (
+          <Button
+            type="button"
+            variant="link"
+            className="h-auto max-w-[min(100%,16rem)] justify-start truncate p-0 font-medium"
+            onClick={() => setDetailApp(row.original)}
+          >
+            {getValue()}
+          </Button>
+        ),
+      }),
+      columnHelper.accessor("company", {
+        header: "Company",
+        cell: (info) => info.getValue() ?? <span className="text-muted-foreground">—</span>,
+      }),
+      columnHelper.accessor("platform_id", {
+        header: "Platform",
+        cell: (info) => platforms[info.getValue()] ?? info.getValue(),
+      }),
+      columnHelper.accessor("status", {
+        header: "Status",
+        cell: (info) => <Badge variant="outline">{info.getValue()}</Badge>,
+      }),
+      columnHelper.accessor("current_stage", {
+        header: "Stage",
+        cell: (info) => <Badge variant="secondary">{info.getValue()}</Badge>,
+      }),
+      columnHelper.accessor("applied_at", {
+        header: "Date Applied",
+        cell: (info) => formatDate(info.getValue(), locale),
+      }),
+    ]
+
+    const optional: ColumnDef<ApplicationResponse>[] = []
+
+    if (tablePrefs.showResumeColumn) {
+      optional.push(
+        columnHelper.accessor((row) => formatResumeColumn(row.resume_id, resumeMap), {
+          id: "resume",
+          header: "Resume",
+          cell: ({ row }) => {
+            const id = row.original.resume_id
+            if (id == null) {
+              return <span className="text-muted-foreground">—</span>
+            }
+            return (
+              <span className="max-w-[14rem] truncate" title={formatResumeColumn(id, resumeMap)}>
+                {formatResumeColumn(id, resumeMap)}
+              </span>
+            )
+          },
+          sortingFn: "alphanumeric",
+        }),
+      )
     }
-  }
 
-  async function handleRestore(id: number) {
-    onRefresh((current) =>
-      current.map((app) => (app.id === id ? { ...app, archived_at: null } : app)),
-    )
-    const result = await restoreApplication(id)
-    if (result.error) {
-      toast.error(result.error)
-      onRefresh()
-    } else {
-      toast.success("Application restored")
-      onRefresh()
+    if (tablePrefs.showSalaryColumn) {
+      optional.push(
+        columnHelper.accessor(
+          (row) => {
+            const s = row.salary
+            if (s == null || s === "") return null
+            const n = Number(s)
+            return Number.isNaN(n) ? null : n
+          },
+          {
+            id: "salary",
+            header: "Salary",
+            cell: ({ row }) => {
+              const s = row.original.salary
+              if (s == null || s === "") {
+                return <span className="text-muted-foreground">—</span>
+              }
+              const n = Number(s)
+              if (Number.isNaN(n)) {
+                return <span className="text-muted-foreground">—</span>
+              }
+              return new Intl.NumberFormat(locale, { maximumFractionDigits: 2 }).format(n)
+            },
+            sortingFn: (a, b, columnId) => {
+              const av = a.getValue(columnId) as number | null
+              const bv = b.getValue(columnId) as number | null
+              if (av == null && bv == null) return 0
+              if (av == null) return 1
+              if (bv == null) return -1
+              return av === bv ? 0 : av < bv ? -1 : 1
+            },
+          },
+        ),
+      )
     }
-  }
 
-  async function handleDelete(id: number) {
-    onRefresh((current) => current.filter((app) => app.id !== id))
-    const result = await deleteApplication(id)
-    if (result.error) {
-      toast.error(result.error)
-      onRefresh()
-    } else {
-      toast.success("Application deleted")
-      onRefresh()
+    if (tablePrefs.showSeniorityColumn) {
+      optional.push(
+        columnHelper.accessor((row) => row.seniority ?? "", {
+          id: "seniority",
+          header: "Seniority",
+          cell: (info) =>
+            info.row.original.seniority ? (
+              info.getValue()
+            ) : (
+              <span className="text-muted-foreground">—</span>
+            ),
+        }),
+      )
     }
-  }
 
-  const columns = [
-    columnHelper.accessor("job_title", {
-      header: "Job Title",
-      cell: (info) => <span className="font-medium">{info.getValue()}</span>,
-    }),
-    columnHelper.accessor("company", {
-      header: "Company",
-      cell: (info) => info.getValue() ?? <span className="text-muted-foreground">—</span>,
-    }),
-    columnHelper.accessor("platform_id", {
-      header: "Platform",
-      cell: (info) => platforms[info.getValue()] ?? info.getValue(),
-    }),
-    columnHelper.accessor("status", {
-      header: "Status",
-      cell: (info) => <Badge variant="outline">{info.getValue()}</Badge>,
-    }),
-    columnHelper.accessor("current_stage", {
-      header: "Stage",
-      cell: (info) => <Badge variant="secondary">{info.getValue()}</Badge>,
-    }),
-    columnHelper.accessor("applied_at", {
-      header: "Date Applied",
-      cell: (info) => formatDate(info.getValue(), locale),
-    }),
-    columnHelper.display({
+    if (tablePrefs.showCreatedAtColumn) {
+      optional.push(
+        columnHelper.accessor("created_at", {
+          id: "created_at",
+          header: "Created",
+          cell: (info) => formatDate(info.getValue(), locale),
+        }),
+      )
+    }
+
+    const actions = columnHelper.display({
       id: "actions",
-      header: () => <span className="text-right block">Actions</span>,
+      header: () => <span className="block text-right">Actions</span>,
       cell: ({ row }) => {
         const app = row.original
         return (
@@ -260,8 +382,10 @@ export function ApplicationTable({ data, platforms, archived, onEdit, onRefresh 
           </div>
         )
       },
-    }),
-  ]
+    })
+
+    return [...base, ...optional, actions]
+  }, [tablePrefs, platforms, resumeMap, locale, archived, onEdit, handleArchive, handleRestore, handleDelete])
 
   const table = useReactTable({
     data,
@@ -276,7 +400,13 @@ export function ApplicationTable({ data, platforms, archived, onEdit, onRefresh 
 
   return (
     <TooltipProvider>
-      <div className="rounded-md border">
+      <div
+        className={cn(
+          "rounded-md border",
+          tablePrefs.compactDensity &&
+            "[&_[data-slot=table-head]]:h-8 [&_[data-slot=table-head]]:px-1.5 [&_[data-slot=table-head]]:text-xs [&_[data-slot=table-cell]]:p-1.5 [&_[data-slot=table-cell]]:text-xs",
+        )}
+      >
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -343,11 +473,31 @@ export function ApplicationTable({ data, platforms, archived, onEdit, onRefresh 
         </div>
       )}
 
+      {detailApp !== null && (
+        <ApplicationDetailDialog
+          application={detailApp}
+          open
+          onOpenChange={(open) => {
+            if (!open) setDetailApp(null)
+          }}
+          platforms={platforms}
+          resumeMap={resumeMap}
+          companies={companies}
+          archived={archived}
+          locale={locale}
+          onEdit={onEdit}
+          onOpenHistory={(id) => setHistoryAppId(id)}
+          onOpenAppointments={(app) => setAppointmentsApp(app)}
+        />
+      )}
+
       {historyAppId !== null && (
         <StageHistoryDialog
           applicationId={historyAppId}
           open={historyAppId !== null}
-          onOpenChange={(open) => { if (!open) setHistoryAppId(null) }}
+          onOpenChange={(open) => {
+            if (!open) setHistoryAppId(null)
+          }}
           onStageChanged={onRefresh}
         />
       )}
@@ -361,7 +511,9 @@ export function ApplicationTable({ data, platforms, archived, onEdit, onRefresh 
               : appointmentsApp.job_title
           }
           open={appointmentsApp !== null}
-          onOpenChange={(open) => { if (!open) setAppointmentsApp(null) }}
+          onOpenChange={(open) => {
+            if (!open) setAppointmentsApp(null)
+          }}
           onRefresh={onRefresh}
         />
       )}
