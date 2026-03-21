@@ -6,6 +6,10 @@ function normalizeErrorMessage(status: number, body: unknown): string {
   if (body && typeof body === "object") {
     const anyBody = body as any
     if (typeof anyBody.detail === "string") {
+      const ref = anyBody.ref
+      if (typeof ref === "string" && ref.length > 0) {
+        return `${anyBody.detail} Reference: ${ref}`
+      }
       return anyBody.detail
     }
     if (Array.isArray(anyBody.detail)) {

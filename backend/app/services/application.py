@@ -49,6 +49,7 @@ def create_application(db: Session, data: ApplicationCreate) -> Application:
         seniority=data.seniority,
         contract_type=data.contract_type,
         application_url=data.application_url,
+        current_stage=data.current_stage,
         status=data.status,
         applied_at=applied_at_dt,
         resume_id=data.resume_id,

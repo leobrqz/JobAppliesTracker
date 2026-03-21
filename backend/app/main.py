@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.core.config import settings
+from app.exception_handlers import register_exception_handlers
 from app.routes.application import router as application_router
 from app.routes.application_history import router as application_history_router
 from app.routes.appointment import router as appointment_router
@@ -13,9 +15,11 @@ from app.routes.resume import router as resume_router
 
 app = FastAPI(title="JobAppliesTracker API")
 
+register_exception_handlers(app)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=settings.cors_origins_list,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
