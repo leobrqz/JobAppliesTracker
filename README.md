@@ -20,7 +20,7 @@ Track applications across platforms, manage companies, schedule interviews, and 
 --- 
 <br/> 
 
-**WIP.** Not production-grade yet. Breaking changes are possible. Fine for daily use. Schema changes ship as Alembic migrations.
+**WIP.** This is a work in progress. The project is not yet ready for production, breaking changes are possible. It is stable to use. Database migrations support schema updates across versions.
 
 
 ## Stack
@@ -40,20 +40,21 @@ Track applications across platforms, manage companies, schedule interviews, and 
 
 Default home when you load the app (`/dashboard`).
 
-- Totals, response rate, and time-in-stage summary
+- Application count (with offers/rejections), response rate, average days per stage
 - Week strip of upcoming appointments
-- Stage distribution, recent applications, platform ranking, weekly heatmap
+- Stage distribution (pie chart), recent applications, platform conversion ranking, weekly heatmap
 - Hide any widget from Settings
 
 ### Applications
 
 Primary list for every application you track.
 
-- Filters, sort, pagination, optional archived view
+- Filter by status, stage, platform, company, and active vs archived; column sort; pagination
 - Stage history (add, edit, remove entries)
 - Archive and restore
-- Read-only detail from the job title
-- Linked resume, appointments scoped to that application
+- Detail view from the job title
+- Create and edit: job title, company, platform, posting URL, contract type, seniority, salary, applied date, stage, status, resume
+- Linked resume; appointments scoped to that application
 - Extra columns and compact rows (Settings)
 
 ### Companies
@@ -61,20 +62,23 @@ Primary list for every application you track.
 Directory of employers.
 
 - Name, website, notes
-- New or updated names can attach existing applications that used the same string
+- New company: links applications that already used the same company text but were not linked yet
+- Rename company: updates the company text on applications already linked to that record
 
 ### Platforms
 
-Job boards you apply through.
+Job boards and career sites you record applications against.
 
-- One row per board (e.g. LinkedIn, Indeed)
-- Templates feed autocomplete when creating applications
+- Dedicated page: create, edit, and delete platforms
+- Each row: name, optional icon, base URL and "applications" URL (open from the table), **manual resume** flag for boards where you fill a CV on their site
+- Built-in **templates** pre-fill name, icon, and URLs when you add or edit a platform
+- Applications pick a platform; the applications list can filter by platform
 
 ### Calendar
 
 Full-month schedule.
 
-- Grid and agenda
+- Month grid and agenda views
 - Event types: interview, assessment, project, meeting, other
 - Optional meeting URL and optional link to an application
 
@@ -83,15 +87,16 @@ Full-month schedule.
 Resumes and text you reuse on forms.
 
 - CV upload, rename, archive, delete, download
-- Preset fields (contact and links) plus custom key/value rows
+- Presets: full name, email, phone, LinkedIn, GitHub, portfolio
+- Customizable key/value rows
 
 ### Settings
 
 Global display and layout.
 
 - 12h or 24h, timezone, locale
-- Which dashboard widgets appear; calendar strip starts expanded or not
-- Applications table: optional columns and density
+- Dashboard: show or hide each widget; week strip starts expanded or collapsed
+- Applications table: optional resume, salary, seniority, and created-at columns; compact row density
 
 ---
 
@@ -110,13 +115,6 @@ Global display and layout.
 
 You can run the application via Docker or locally.
 
-URLs for the services:
-| Service | URL |
-|---------|-----|
-| App | [http://localhost:3000](http://localhost:3000) |
-| API | [http://localhost:8000](http://localhost:8000) |
-  
-<br/>
 
 **Note:**  
 Running migrations is required on first setup. Also run after pulling updates that include new migrations.
