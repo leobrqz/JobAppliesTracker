@@ -268,7 +268,12 @@ export function ApplicationTable({
                 </Tooltip>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button variant="ghost" size="sm" onClick={() => setHistoryAppId(app.id)}>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      aria-label="Stage history"
+                      onClick={() => setHistoryAppId(app.id)}
+                    >
                       <History data-icon="inline-start" />
                     </Button>
                   </TooltipTrigger>
