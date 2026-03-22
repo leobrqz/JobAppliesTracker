@@ -256,10 +256,10 @@ export default function CalendarPage() {
                     {sortedAppointments.map((appt) => (
                       <TableRow key={appt.id}>
                         <TableCell className="whitespace-nowrap">
-                          {formatDate(appt.starts_at)}
+                          {formatDate(appt.starts_at, locale)}
                         </TableCell>
                         <TableCell className="whitespace-nowrap text-muted-foreground">
-                          {formatTimeRange(appt.starts_at, appt.ends_at)}
+                          {formatTimeRange(appt.starts_at, appt.ends_at, locale, timeFormat)}
                         </TableCell>
                         <TableCell className="font-medium">{appt.title}</TableCell>
                         <TableCell>

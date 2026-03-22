@@ -14,7 +14,7 @@ function normalizeErrorMessage(status: number, body: unknown): string {
     }
     if (Array.isArray(anyBody.detail)) {
       const messages = anyBody.detail
-        .map((item) => {
+        .map((item: unknown) => {
           if (item && typeof item === "object" && typeof (item as any).msg === "string") {
             return (item as any).msg
           }

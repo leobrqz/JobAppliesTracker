@@ -13,6 +13,7 @@ export type CompanyUpdate = components["schemas"]["CompanyUpdate"]
 export type CompanyResponse = components["schemas"]["CompanyResponse"]
 
 export type ApplicationHistoryCreate = components["schemas"]["ApplicationHistoryCreate"]
+export type ApplicationHistoryUpdate = components["schemas"]["ApplicationHistoryUpdate"]
 export type ApplicationHistoryResponse = components["schemas"]["ApplicationHistoryResponse"]
 
 export type JobPlatformCreate = components["schemas"]["JobPlatformCreate"]

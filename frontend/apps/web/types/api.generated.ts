@@ -323,7 +323,8 @@ export interface paths {
         delete: operations["delete_history_entry_api_applications__application_id__history__history_id__delete"];
         options?: never;
         head?: never;
-        patch?: never;
+        /** Patch History Entry */
+        patch: operations["patch_history_entry_api_applications__application_id__history__history_id__patch"];
         trace?: never;
     };
     "/api/appointments/": {
@@ -514,6 +515,15 @@ export interface components {
              * Format: date-time
              */
             created_at: string;
+        };
+        /** ApplicationHistoryUpdate */
+        ApplicationHistoryUpdate: {
+            /** Stage */
+            stage?: string | null;
+            /** Date */
+            date?: string | null;
+            /** Notes */
+            notes?: string | null;
         };
         /** ApplicationResponse */
         ApplicationResponse: {
@@ -1986,6 +1996,42 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    patch_history_entry_api_applications__application_id__history__history_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                application_id: number;
+                history_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ApplicationHistoryUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApplicationHistoryResponse"];
+                };
             };
             /** @description Validation Error */
             422: {
