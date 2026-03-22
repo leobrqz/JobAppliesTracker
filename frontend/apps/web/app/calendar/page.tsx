@@ -1,6 +1,7 @@
 "use client"
 
 import "temporal-polyfill/global"
+
 import { useEffect, useMemo, useState } from "react"
 import { useCalendarApp, ScheduleXCalendar } from "@schedule-x/react"
 import { createViewMonthGrid, createViewMonthAgenda } from "@schedule-x/calendar"
@@ -38,83 +39,82 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
+import { createAppointmentScheduleXCustomComponents } from "@/components/schedule-x/appointment-event-views"
 import { AppointmentDialog } from "@/components/AppointmentDialog"
 import { useAppointments } from "@/hooks/useAppointments"
 import { useApplications } from "@/hooks/useApplications"
-import { formatDate, formatTimeRange, type TimeFormat } from "@/lib/display"
+import {
+  APPOINTMENT_CALENDAR_COLORS,
+  appointmentsToScheduleXEvents,
+  getMonthRange,
+  resolveTimeZone,
+} from "@/lib/appointment-calendar"
+import { formatDate, formatTimeRange, scheduleXTimeAxisFormatOptions, type TimeFormat } from "@/lib/display"
 import { usePreference } from "@/hooks/usePreference"
 import { deleteAppointment, getAppointment } from "@/services/appointments.service"
 import type { AppointmentResponse } from "@/types"
 
-const CALENDAR_COLORS = {
-  interview: {
-    colorName: "interview",
-    lightColors: { main: "#4f46e5", container: "#e0e7ff", onContainer: "#3730a3" },
-    darkColors: { main: "#818cf8", container: "#312e81", onContainer: "#c7d2fe" },
-  },
-  assessment: {
-    colorName: "assessment",
-    lightColors: { main: "#d97706", container: "#fef3c7", onContainer: "#92400e" },
-    darkColors: { main: "#fbbf24", container: "#78350f", onContainer: "#fde68a" },
-  },
-  project: {
-    colorName: "project",
-    lightColors: { main: "#0d9488", container: "#ccfbf1", onContainer: "#115e59" },
-    darkColors: { main: "#2dd4bf", container: "#134e4a", onContainer: "#99f6e4" },
-  },
-  meeting: {
-    colorName: "meeting",
-    lightColors: { main: "#7c3aed", container: "#ede9fe", onContainer: "#5b21b6" },
-    darkColors: { main: "#a78bfa", container: "#4c1d95", onContainer: "#ddd6fe" },
-  },
-  other: {
-    colorName: "other",
-    lightColors: { main: "#64748b", container: "#f1f5f9", onContainer: "#334155" },
-    darkColors: { main: "#94a3b8", container: "#1e293b", onContainer: "#cbd5e1" },
-  },
+type AppointmentEventsService = ReturnType<typeof createEventsServicePlugin>
+
+type CalendarPageScheduleXProps = {
+  timeZoneId: string
+  locale: string
+  timeFormat: TimeFormat
+  isDark: boolean
+  resolvedTheme: string | undefined
+  eventsService: AppointmentEventsService
+  onEventClick: (eventId: string) => void
+  onCalendarRangeMonthChange: (monthStart: Date) => void
 }
 
-function isoToZonedDateTime(iso: string, timeZoneId: string): Temporal.ZonedDateTime {
-  let cleaned = iso
-  if (cleaned.endsWith("Z")) cleaned = cleaned.slice(0, -1)
-  const plusIdx = cleaned.indexOf("+")
-  if (plusIdx !== -1) cleaned = cleaned.slice(0, plusIdx)
-  return Temporal.PlainDateTime.from(cleaned).toZonedDateTime(timeZoneId)
-}
+function CalendarPageScheduleX({
+  timeZoneId,
+  locale,
+  timeFormat,
+  isDark,
+  resolvedTheme,
+  eventsService,
+  onEventClick,
+  onCalendarRangeMonthChange,
+}: CalendarPageScheduleXProps) {
+  const customComponents = useMemo(
+    () => createAppointmentScheduleXCustomComponents(locale, timeFormat),
+    [locale, timeFormat],
+  )
 
-function toEvents(appointments: AppointmentResponse[], timeZoneId: string) {
-  return appointments.map((a) => ({
-    id: String(a.id),
-    title: a.title,
-    start: isoToZonedDateTime(a.starts_at, timeZoneId),
-    end: a.ends_at
-      ? isoToZonedDateTime(a.ends_at, timeZoneId)
-      : isoToZonedDateTime(a.starts_at, timeZoneId).add({ hours: 1 }),
-    calendarId: CALENDAR_COLORS[a.type as keyof typeof CALENDAR_COLORS] ? a.type : "other",
-  }))
-}
+  const calendar = useCalendarApp({
+    theme: "shadcn",
+    isDark,
+    locale,
+    views: [createViewMonthGrid(), createViewMonthAgenda()],
+    calendars: APPOINTMENT_CALENDAR_COLORS,
+    timezone: timeZoneId,
+    dayBoundaries: { start: "06:00", end: "22:00" },
+    weekOptions: {
+      timeAxisFormatOptions: scheduleXTimeAxisFormatOptions(timeFormat),
+    },
+    events: [],
+    plugins: [eventsService],
+    callbacks: {
+      onEventClick(calendarEvent: { id: unknown }) {
+        onEventClick(String(calendarEvent.id))
+      },
+      onRangeUpdate(newRange) {
+        const start = newRange.start as unknown as Temporal.ZonedDateTime
+        const mid = start.add({ days: 15 })
+        onCalendarRangeMonthChange(new Date(mid.year, mid.month - 1, 1))
+      },
+    },
+  })
 
-function formatLocalDateTime(date: Date): string {
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, "0")
-  const day = String(date.getDate()).padStart(2, "0")
-  const hours = String(date.getHours()).padStart(2, "0")
-  const minutes = String(date.getMinutes()).padStart(2, "0")
-  const seconds = String(date.getSeconds()).padStart(2, "0")
-  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`
-}
+  useEffect(() => {
+    if (!calendar) return
+    if (resolvedTheme === "light" || resolvedTheme === "dark") {
+      calendar.setTheme(resolvedTheme)
+    }
+  }, [calendar, resolvedTheme])
 
-function getMonthRange(date: Date): { start: string; end: string } {
-  const y = date.getFullYear()
-  const m = date.getMonth()
-  const first = new Date(y, m, 1, 0, 0, 0, 0)
-  const last = new Date(y, m + 1, 0, 23, 59, 59, 999)
-  return { start: formatLocalDateTime(first), end: formatLocalDateTime(last) }
-}
-
-function resolveTimeZone(pref: string | undefined): string {
-  if (pref && pref !== "auto") return pref
-  return Temporal.Now.timeZoneId()
+  return <ScheduleXCalendar calendarApp={calendar} customComponents={customComponents} />
 }
 
 export default function CalendarPage() {
@@ -142,36 +142,11 @@ export default function CalendarPage() {
 
   const [eventsService] = useState(() => createEventsServicePlugin())
 
-  const calendar = useCalendarApp({
-    theme: "shadcn",
-    isDark: resolvedTheme === "dark",
-    views: [createViewMonthGrid(), createViewMonthAgenda()],
-    calendars: CALENDAR_COLORS,
-    timezone: timeZoneId,
-    dayBoundaries: { start: "06:00", end: "22:00" },
-    events: [],
-    plugins: [eventsService],
-    callbacks: {
-      onEventClick(calendarEvent: { id: unknown }) {
-        handleEventClick(calendarEvent.id as string)
-      },
-      onRangeUpdate(newRange) {
-        const start = newRange.start as unknown as Temporal.ZonedDateTime
-        const mid = start.add({ days: 15 })
-        setCurrentDate(new Date(mid.year, mid.month - 1, 1))
-      },
-    },
-  })
+  const isDark = resolvedTheme === "dark"
 
   useEffect(() => {
-    eventsService.set(toEvents(appointments, timeZoneId))
+    eventsService.set(appointmentsToScheduleXEvents(appointments, timeZoneId))
   }, [appointments, eventsService, timeZoneId])
-
-  useEffect(() => {
-    if (calendar && resolvedTheme && (resolvedTheme === "light" || resolvedTheme === "dark")) {
-      calendar.setTheme(resolvedTheme)
-    }
-  }, [calendar, resolvedTheme])
 
   async function handleEventClick(eventId: string) {
     const result = await getAppointment(Number(eventId))
@@ -221,7 +196,17 @@ export default function CalendarPage() {
       </div>
 
       <div className="sx-calendar-page-wrapper" style={{ isolation: "isolate" }}>
-        <ScheduleXCalendar calendarApp={calendar} />
+        <CalendarPageScheduleX
+          key={`${locale}-${timeFormat}-${timeZoneId}`}
+          timeZoneId={timeZoneId}
+          locale={locale}
+          timeFormat={timeFormat}
+          isDark={isDark}
+          resolvedTheme={resolvedTheme}
+          eventsService={eventsService}
+          onEventClick={handleEventClick}
+          onCalendarRangeMonthChange={setCurrentDate}
+        />
       </div>
 
       <Card>

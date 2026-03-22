@@ -1,6 +1,7 @@
 "use client"
 
 import "temporal-polyfill/global"
+
 import { useEffect, useMemo, useState } from "react"
 import { useCalendarApp, ScheduleXCalendar } from "@schedule-x/react"
 import { createViewWeek } from "@schedule-x/calendar"
@@ -15,62 +16,74 @@ import {
   CollapsibleTrigger,
 } from "@workspace/ui/components/collapsible"
 import { ChevronDown, ChevronUp } from "lucide-react"
+import { createAppointmentScheduleXCustomComponents } from "@/components/schedule-x/appointment-event-views"
 import { AppointmentDialog } from "@/components/AppointmentDialog"
 import { usePreference } from "@/hooks/usePreference"
 import { useAppointments } from "@/hooks/useAppointments"
+import {
+  APPOINTMENT_CALENDAR_COLORS,
+  appointmentsToScheduleXEvents,
+  resolveTimeZone,
+} from "@/lib/appointment-calendar"
+import { scheduleXTimeAxisFormatOptions, type TimeFormat } from "@/lib/display"
 import { getAppointment } from "@/services/appointments.service"
 import type { AppointmentResponse } from "@/types"
 
-const CALENDAR_COLORS = {
-  interview: {
-    colorName: "interview",
-    lightColors: { main: "#4f46e5", container: "#e0e7ff", onContainer: "#3730a3" },
-    darkColors: { main: "#818cf8", container: "#312e81", onContainer: "#c7d2fe" },
-  },
-  assessment: {
-    colorName: "assessment",
-    lightColors: { main: "#d97706", container: "#fef3c7", onContainer: "#92400e" },
-    darkColors: { main: "#fbbf24", container: "#78350f", onContainer: "#fde68a" },
-  },
-  project: {
-    colorName: "project",
-    lightColors: { main: "#0d9488", container: "#ccfbf1", onContainer: "#115e59" },
-    darkColors: { main: "#2dd4bf", container: "#134e4a", onContainer: "#99f6e4" },
-  },
-  meeting: {
-    colorName: "meeting",
-    lightColors: { main: "#7c3aed", container: "#ede9fe", onContainer: "#5b21b6" },
-    darkColors: { main: "#a78bfa", container: "#4c1d95", onContainer: "#ddd6fe" },
-  },
-  other: {
-    colorName: "other",
-    lightColors: { main: "#64748b", container: "#f1f5f9", onContainer: "#334155" },
-    darkColors: { main: "#94a3b8", container: "#1e293b", onContainer: "#cbd5e1" },
-  },
+type AppointmentEventsService = ReturnType<typeof createEventsServicePlugin>
+
+type CalendarStripScheduleXProps = {
+  timeZoneId: string
+  locale: string
+  timeFormat: TimeFormat
+  isDark: boolean
+  resolvedTheme: string | undefined
+  eventsService: AppointmentEventsService
+  onEventClick: (eventId: string) => void
 }
 
-function getLocalTZ(): string {
-  return Temporal.Now.timeZoneId()
-}
+function CalendarStripScheduleX({
+  timeZoneId,
+  locale,
+  timeFormat,
+  isDark,
+  resolvedTheme,
+  eventsService,
+  onEventClick,
+}: CalendarStripScheduleXProps) {
+  const customComponents = useMemo(
+    () => createAppointmentScheduleXCustomComponents(locale, timeFormat),
+    [locale, timeFormat],
+  )
 
-function isoToZonedDateTime(iso: string): Temporal.ZonedDateTime {
-  let cleaned = iso
-  if (cleaned.endsWith("Z")) cleaned = cleaned.slice(0, -1)
-  const plusIdx = cleaned.indexOf("+")
-  if (plusIdx !== -1) cleaned = cleaned.slice(0, plusIdx)
-  return Temporal.PlainDateTime.from(cleaned).toZonedDateTime(getLocalTZ())
-}
+  const calendar = useCalendarApp({
+    theme: "shadcn",
+    isDark,
+    locale,
+    views: [createViewWeek()],
+    calendars: APPOINTMENT_CALENDAR_COLORS,
+    timezone: timeZoneId,
+    weekOptions: {
+      gridHeight: 2000,
+      nDays: 7,
+      timeAxisFormatOptions: scheduleXTimeAxisFormatOptions(timeFormat),
+    },
+    events: [],
+    plugins: [eventsService],
+    callbacks: {
+      onEventClick(calendarEvent: { id: unknown }) {
+        onEventClick(String(calendarEvent.id))
+      },
+    },
+  })
 
-function toEvents(appointments: AppointmentResponse[]) {
-  return appointments.map((a) => ({
-    id: String(a.id),
-    title: a.title,
-    start: isoToZonedDateTime(a.starts_at),
-    end: a.ends_at
-      ? isoToZonedDateTime(a.ends_at)
-      : isoToZonedDateTime(a.starts_at).add({ hours: 1 }),
-    calendarId: CALENDAR_COLORS[a.type as keyof typeof CALENDAR_COLORS] ? a.type : "other",
-  }))
+  useEffect(() => {
+    if (!calendar) return
+    if (resolvedTheme === "light" || resolvedTheme === "dark") {
+      calendar.setTheme(resolvedTheme)
+    }
+  }, [calendar, resolvedTheme])
+
+  return <ScheduleXCalendar calendarApp={calendar} customComponents={customComponents} />
 }
 
 function getWeekRange(): { start: string; end: string } {
@@ -88,6 +101,10 @@ function getWeekRange(): { start: string; end: string } {
 
 export function CalendarStrip() {
   const { resolvedTheme } = useTheme()
+  const [timeZonePref] = usePreference<string>("display.timeZone", "auto")
+  const [locale] = usePreference<string>("display.locale", "en-US")
+  const [timeFormat] = usePreference<TimeFormat>("display.timeFormat", "12h")
+  const timeZoneId = resolveTimeZone(timeZonePref)
   const range = useMemo(() => getWeekRange(), [])
   const { data: appointments, refetch } = useAppointments(range)
 
@@ -102,31 +119,11 @@ export function CalendarStrip() {
 
   const [eventsService] = useState(() => createEventsServicePlugin())
 
-  const calendar = useCalendarApp({
-    theme: "shadcn",
-    isDark: resolvedTheme === "dark",
-    views: [createViewWeek()],
-    calendars: CALENDAR_COLORS,
-    timezone: getLocalTZ(),
-    weekOptions: { gridHeight: 2000, nDays: 7 },
-    events: [],
-    plugins: [eventsService],
-    callbacks: {
-      onEventClick(calendarEvent: { id: unknown }) {
-        handleEventClick(calendarEvent.id as string)
-      },
-    },
-  })
+  const isDark = resolvedTheme === "dark"
 
   useEffect(() => {
-    eventsService.set(toEvents(appointments))
-  }, [appointments, eventsService])
-
-  useEffect(() => {
-    if (calendar && resolvedTheme && (resolvedTheme === "light" || resolvedTheme === "dark")) {
-      calendar.setTheme(resolvedTheme)
-    }
-  }, [calendar, resolvedTheme])
+    eventsService.set(appointmentsToScheduleXEvents(appointments, timeZoneId))
+  }, [appointments, eventsService, timeZoneId])
 
   async function handleEventClick(eventId: string) {
     const result = await getAppointment(Number(eventId))
@@ -171,7 +168,16 @@ export function CalendarStrip() {
         <CollapsibleContent>
           <CardContent>
             <div className="sx-calendar-strip-wrapper" style={{ isolation: "isolate" }}>
-              <ScheduleXCalendar calendarApp={calendar} />
+              <CalendarStripScheduleX
+                key={`${locale}-${timeFormat}-${timeZoneId}`}
+                timeZoneId={timeZoneId}
+                locale={locale}
+                timeFormat={timeFormat}
+                isDark={isDark}
+                resolvedTheme={resolvedTheme}
+                eventsService={eventsService}
+                onEventClick={handleEventClick}
+              />
             </div>
           </CardContent>
         </CollapsibleContent>

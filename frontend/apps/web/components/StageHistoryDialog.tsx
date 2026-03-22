@@ -21,6 +21,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@workspace/ui/components/separator"
 import { Textarea } from "@workspace/ui/components/textarea"
 import { useApplicationHistory } from "@/hooks/useApplicationHistory"
+import { usePreference } from "@/hooks/usePreference"
+import { formatDateTime, type TimeFormat } from "@/lib/display"
 import { advanceStage, deleteHistoryEntry, updateHistoryEntry } from "@/services/applications.service"
 import type { ApplicationHistoryResponse } from "@/types"
 
@@ -33,17 +35,9 @@ interface Props {
   onStageChanged?: () => void
 }
 
-function formatDateTime(iso: string): string {
-  return new Intl.DateTimeFormat("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(new Date(iso))
-}
-
 export function StageHistoryDialog({ applicationId, open, onOpenChange, onStageChanged }: Props) {
+  const [locale] = usePreference<string>("display.locale", "en-US")
+  const [timeFormat] = usePreference<TimeFormat>("display.timeFormat", "12h")
   const { data: history, isLoading, refetch } = useApplicationHistory(open ? applicationId : null)
 
   const [newStage, setNewStage] = useState("")
@@ -146,7 +140,9 @@ export function StageHistoryDialog({ applicationId, open, onOpenChange, onStageC
                 <div key={entry.id} className="flex items-start justify-between gap-2 rounded-md border p-3">
                   <div className="min-w-0">
                     <p className="text-sm font-medium capitalize">{entry.stage}</p>
-                    <p className="text-xs text-muted-foreground">{formatDateTime(entry.date)}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {formatDateTime(entry.date, locale, timeFormat)}
+                    </p>
                     {entry.notes && <p className="mt-1 text-xs text-muted-foreground">{entry.notes}</p>}
                   </div>
                   <div className="flex shrink-0 flex-col gap-1">
