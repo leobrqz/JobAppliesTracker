@@ -45,6 +45,7 @@ describe("StageHistoryDialog", () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockRefetch.mockResolvedValue(undefined)
+    localStorage.clear()
   })
 
   it("shows stage history title and entries when open", () => {
@@ -60,8 +61,16 @@ describe("StageHistoryDialog", () => {
   it("opens edit dialog and calls updateHistoryEntry on save", async () => {
     const user = userEvent.setup()
     const onStageChanged = vi.fn()
+    const entry = mockHistory[0]!
     vi.mocked(applicationsService.updateHistoryEntry).mockResolvedValue({
-      data: { ...mockHistory[0], stage: "offer", notes: "First round" },
+      data: {
+        id: 10,
+        application_id: 1,
+        stage: "offer",
+        date: entry.date,
+        notes: "First round",
+        created_at: entry.created_at,
+      },
       error: null,
     })
 
@@ -147,5 +156,23 @@ describe("StageHistoryDialog", () => {
 
     expect(applicationsService.advanceStage).not.toHaveBeenCalled()
     expect(toast.error).toHaveBeenCalledWith("Stage is required")
+  })
+
+  describe("with 24-hour display preference", () => {
+    beforeEach(() => {
+      localStorage.setItem("display.timeFormat", JSON.stringify("24h"))
+      localStorage.setItem("display.locale", JSON.stringify("en-US"))
+    })
+
+    it("renders history timestamps without AM/PM", async () => {
+      render(
+        <StageHistoryDialog applicationId={1} open onOpenChange={() => {}} />,
+      )
+
+      const dialog = screen.getByRole("dialog", { name: /stage history/i })
+      await waitFor(() => {
+        expect(dialog.textContent).not.toMatch(/\b(AM|PM)\b/)
+      })
+    })
   })
 })
