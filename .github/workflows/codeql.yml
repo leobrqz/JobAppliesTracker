@@ -1,4 +1,4 @@
-# CodeQL analysis (JS/TS + Python) and dependency review on PRs.
+# CodeQL analysis (JS/TS + Python) and dependency review on PRs and pushes to main.
 # Languages: frontend (pnpm monorepo), backend (Python/requirements.txt).
 #
 name: "CodeQL"
@@ -14,7 +14,7 @@ on:
 jobs:
   dependency-review:
     name: Dependency review
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' || github.event_name == 'push'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -26,6 +26,8 @@ jobs:
         uses: actions/dependency-review-action@v4
         with:
           fail-on-severity: high
+          base-ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+          head-ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.event.after }}
 
   analyze:
     name: Analyze (${{ matrix.language }})
