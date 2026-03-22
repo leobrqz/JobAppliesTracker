@@ -463,6 +463,10 @@ export interface components {
             company?: string | null;
             /** Salary */
             salary?: number | string | null;
+            /** Salary Currency */
+            salary_currency?: string | null;
+            /** Pay Period */
+            pay_period?: "annual" | "monthly" | "hourly" | null;
             /** Seniority */
             seniority?: string | null;
             /** Contract Type */
@@ -539,6 +543,10 @@ export interface components {
             company_id: number | null;
             /** Salary */
             salary: string | null;
+            /** Salary Currency */
+            salary_currency: string | null;
+            /** Pay Period */
+            pay_period: string | null;
             /** Seniority */
             seniority: string | null;
             /** Contract Type */
@@ -579,6 +587,10 @@ export interface components {
             company?: string | null;
             /** Salary */
             salary?: number | string | null;
+            /** Salary Currency */
+            salary_currency?: string | null;
+            /** Pay Period */
+            pay_period?: "annual" | "monthly" | "hourly" | null;
             /** Seniority */
             seniority?: string | null;
             /** Contract Type */

@@ -17,6 +17,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
+import { formatCompensation } from "@/lib/compensation-display"
 import { formatResumeColumn } from "@/lib/formatResumeColumn"
 import { formatDate } from "@/lib/display"
 import type { ApplicationResponse, CompanyResponse, ResumeResponse } from "@/types"
@@ -82,11 +83,12 @@ export function ApplicationDetailDialog({
     onOpenAppointments(app)
   }
 
-  const salaryNum = app.salary != null && app.salary !== "" ? Number(app.salary) : null
-  const salaryText =
-    salaryNum != null && !Number.isNaN(salaryNum)
-      ? new Intl.NumberFormat(locale, { maximumFractionDigits: 2 }).format(salaryNum)
-      : null
+  const salaryText = formatCompensation({
+    salary: app.salary,
+    salary_currency: app.salary_currency,
+    pay_period: app.pay_period,
+    locale,
+  })
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

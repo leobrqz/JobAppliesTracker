@@ -43,6 +43,7 @@ import {
 import { cn } from "@workspace/ui/lib/utils"
 import { AppointmentListDialog } from "@/components/AppointmentListDialog"
 import { StageHistoryDialog } from "@/components/StageHistoryDialog"
+import { formatCompensation } from "@/lib/compensation-display"
 import { formatDate } from "@/lib/display"
 import { formatResumeColumn } from "@/lib/formatResumeColumn"
 import { useApplicationsTablePreferences } from "@/hooks/useApplicationsTablePreferences"
@@ -129,7 +130,7 @@ export function ApplicationTable({
   )
 
   const columns = useMemo((): ColumnDef<ApplicationResponse>[] => {
-    const base = [
+    const out: ColumnDef<ApplicationResponse>[] = [
       columnHelper.accessor("job_title", {
         header: "Job Title",
         cell: ({ row, getValue }) => (
@@ -143,32 +144,70 @@ export function ApplicationTable({
           </Button>
         ),
       }),
-      columnHelper.accessor("company", {
-        header: "Company",
-        cell: (info) => info.getValue() ?? <span className="text-muted-foreground">—</span>,
-      }),
       columnHelper.accessor("platform_id", {
         header: "Platform",
         cell: (info) => platforms[info.getValue()] ?? info.getValue(),
       }),
-      columnHelper.accessor("status", {
-        header: "Status",
-        cell: (info) => <Badge variant="outline">{info.getValue()}</Badge>,
+      columnHelper.accessor("company", {
+        header: "Company",
+        cell: (info) => info.getValue() ?? <span className="text-muted-foreground">—</span>,
       }),
-      columnHelper.accessor("current_stage", {
-        header: "Stage",
-        cell: (info) => <Badge variant="secondary">{info.getValue()}</Badge>,
-      }),
-      columnHelper.accessor("applied_at", {
-        header: "Date Applied",
-        cell: (info) => formatDate(info.getValue(), locale),
-      }),
-    ] as ColumnDef<ApplicationResponse>[]
+    ]
 
-    const optional: ColumnDef<ApplicationResponse>[] = []
+    if (tablePrefs.showSeniorityColumn) {
+      out.push(
+        columnHelper.accessor((row) => row.seniority ?? "", {
+          id: "seniority",
+          header: "Seniority",
+          cell: (info) =>
+            info.row.original.seniority ? (
+              info.getValue()
+            ) : (
+              <span className="text-muted-foreground">—</span>
+            ),
+        }) as ColumnDef<ApplicationResponse>,
+      )
+    }
+
+    if (tablePrefs.showSalaryColumn) {
+      out.push(
+        columnHelper.accessor(
+          (row) => {
+            const s = row.salary
+            if (s == null || s === "") return null
+            const n = Number(s)
+            return Number.isNaN(n) ? null : n
+          },
+          {
+            id: "salary",
+            header: "Salary",
+            cell: ({ row }) => {
+              const formatted = formatCompensation({
+                salary: row.original.salary,
+                salary_currency: row.original.salary_currency,
+                pay_period: row.original.pay_period,
+                locale,
+              })
+              if (formatted == null) {
+                return <span className="text-muted-foreground">—</span>
+              }
+              return <span className="max-w-[14rem] truncate" title={formatted}>{formatted}</span>
+            },
+            sortingFn: (a, b, columnId) => {
+              const av = a.getValue(columnId) as number | null
+              const bv = b.getValue(columnId) as number | null
+              if (av == null && bv == null) return 0
+              if (av == null) return 1
+              if (bv == null) return -1
+              return av === bv ? 0 : av < bv ? -1 : 1
+            },
+          },
+        ) as ColumnDef<ApplicationResponse>,
+      )
+    }
 
     if (tablePrefs.showResumeColumn) {
-      optional.push(
+      out.push(
         columnHelper.accessor((row) => formatResumeColumn(row.resume_id, resumeMap), {
           id: "resume",
           header: "Resume",
@@ -188,59 +227,23 @@ export function ApplicationTable({
       )
     }
 
-    if (tablePrefs.showSalaryColumn) {
-      optional.push(
-        columnHelper.accessor(
-          (row) => {
-            const s = row.salary
-            if (s == null || s === "") return null
-            const n = Number(s)
-            return Number.isNaN(n) ? null : n
-          },
-          {
-            id: "salary",
-            header: "Salary",
-            cell: ({ row }) => {
-              const s = row.original.salary
-              if (s == null || s === "") {
-                return <span className="text-muted-foreground">—</span>
-              }
-              const n = Number(s)
-              if (Number.isNaN(n)) {
-                return <span className="text-muted-foreground">—</span>
-              }
-              return new Intl.NumberFormat(locale, { maximumFractionDigits: 2 }).format(n)
-            },
-            sortingFn: (a, b, columnId) => {
-              const av = a.getValue(columnId) as number | null
-              const bv = b.getValue(columnId) as number | null
-              if (av == null && bv == null) return 0
-              if (av == null) return 1
-              if (bv == null) return -1
-              return av === bv ? 0 : av < bv ? -1 : 1
-            },
-          },
-        ) as ColumnDef<ApplicationResponse>,
-      )
-    }
-
-    if (tablePrefs.showSeniorityColumn) {
-      optional.push(
-        columnHelper.accessor((row) => row.seniority ?? "", {
-          id: "seniority",
-          header: "Seniority",
-          cell: (info) =>
-            info.row.original.seniority ? (
-              info.getValue()
-            ) : (
-              <span className="text-muted-foreground">—</span>
-            ),
-        }) as ColumnDef<ApplicationResponse>,
-      )
-    }
+    out.push(
+      columnHelper.accessor("current_stage", {
+        header: "Stage",
+        cell: (info) => <Badge variant="secondary">{info.getValue()}</Badge>,
+      }),
+      columnHelper.accessor("status", {
+        header: "Status",
+        cell: (info) => <Badge variant="outline">{info.getValue()}</Badge>,
+      }),
+      columnHelper.accessor("applied_at", {
+        header: "Date Applied",
+        cell: (info) => formatDate(info.getValue(), locale),
+      }),
+    )
 
     if (tablePrefs.showCreatedAtColumn) {
-      optional.push(
+      out.push(
         columnHelper.accessor("created_at", {
           id: "created_at",
           header: "Created",
@@ -389,7 +392,8 @@ export function ApplicationTable({
       },
     }) as ColumnDef<ApplicationResponse>
 
-    return [...base, ...optional, actions]
+    out.push(actions)
+    return out
   }, [tablePrefs, platforms, resumeMap, locale, archived, onEdit, handleArchive, handleRestore, handleDelete])
 
   const table = useReactTable({

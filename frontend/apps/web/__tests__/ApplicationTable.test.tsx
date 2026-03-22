@@ -12,6 +12,8 @@ const { sampleApp, StageHistoryDialogSpy } = vi.hoisted(() => {
     company: "Globex",
     company_id: null,
     salary: null,
+    salary_currency: null,
+    pay_period: null,
     seniority: null,
     contract_type: null,
     application_url: null,

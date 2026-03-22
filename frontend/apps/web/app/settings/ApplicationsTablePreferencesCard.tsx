@@ -42,7 +42,9 @@ export function ApplicationsTablePreferencesCard() {
             <div className="flex items-center justify-between gap-4">
               <div className="flex flex-col gap-1">
                 <FieldLabel>Salary column</FieldLabel>
-                <p className="text-xs text-muted-foreground">Show stored salary when present.</p>
+                <p className="text-xs text-muted-foreground">
+                  Show compensation (amount, currency, pay period) when present.
+                </p>
               </div>
               <Switch
                 checked={prefs.showSalaryColumn}
