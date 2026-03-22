@@ -16,6 +16,8 @@ class Application(Base):
     job_title: Mapped[str] = mapped_column(String(255), nullable=False)
     company: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     salary: Mapped[Optional[Decimal]] = mapped_column(Numeric(12, 2), nullable=True)
+    salary_currency: Mapped[Optional[str]] = mapped_column(String(3), nullable=True)
+    pay_period: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
     seniority: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
     contract_type: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
     application_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)

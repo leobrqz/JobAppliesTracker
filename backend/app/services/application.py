@@ -9,6 +9,12 @@ from app.core import utcnow
 from app.services.application_history import _append_history_and_update_stage
 
 
+def _normalize_salary_fields(application: Application) -> None:
+    if application.salary is None:
+        application.salary_currency = None
+        application.pay_period = None
+
+
 def get_application(db: Session, application_id: int) -> Application | None:
     return db.query(Application).filter(Application.id == application_id).first()
 
@@ -46,6 +52,8 @@ def create_application(db: Session, data: ApplicationCreate) -> Application:
         company=data.company,
         company_id=data.company_id,
         salary=data.salary,
+        salary_currency=data.salary_currency,
+        pay_period=data.pay_period,
         seniority=data.seniority,
         contract_type=data.contract_type,
         application_url=data.application_url,
@@ -54,6 +62,7 @@ def create_application(db: Session, data: ApplicationCreate) -> Application:
         applied_at=applied_at_dt,
         resume_id=data.resume_id,
     )
+    _normalize_salary_fields(application)
     db.add(application)
     db.flush()
 
@@ -77,6 +86,7 @@ def update_application(db: Session, application_id: int, data: ApplicationUpdate
         if field == "applied_at" and isinstance(value, date) and not isinstance(value, datetime):
             value = datetime.combine(value, time.min)
         setattr(application, field, value)
+    _normalize_salary_fields(application)
     db.commit()
     db.refresh(application)
     return application
