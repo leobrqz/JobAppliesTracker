@@ -100,16 +100,6 @@ Global display and layout.
 
 ---
 
-## Stack
-
-| Layer | Tech |
-|-------|------|
-| Frontend | Next.js 16, React 19, Tailwind CSS, shadcn/ui, Turborepo |
-| Backend | FastAPI, SQLAlchemy, Alembic |
-| Data | PostgreSQL |
-| Runtime | Docker |
-| Testing | Vitest + React Testing Library, Pytest |
-
 
 ## Setup
 
