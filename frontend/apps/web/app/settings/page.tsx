@@ -308,7 +308,7 @@ function TimezoneCombobox({ value, onChange }: TimezoneComboboxProps) {
           aria-label="Select timezone"
         >
           <span className="truncate text-left">
-            {label === "" ? "Auto" : label}
+            {label}
           </span>
         </Button>
       </PopoverTrigger>

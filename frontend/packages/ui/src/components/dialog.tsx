@@ -51,6 +51,7 @@ function DialogContent({
   className,
   children,
   showCloseButton = true,
+  "aria-describedby": ariaDescribedBy,
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Content> & {
   showCloseButton?: boolean
@@ -65,6 +66,7 @@ function DialogContent({
           className
         )}
         {...props}
+        aria-describedby={ariaDescribedBy}
       >
         {children}
         {showCloseButton && (

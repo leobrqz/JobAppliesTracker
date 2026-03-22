@@ -108,6 +108,8 @@ export function AppointmentListDialog({
                       <AppointmentCard
                         key={appt.id}
                         appointment={appt}
+                        locale={locale}
+                        timeFormat={timeFormat}
                         onEdit={handleEdit}
                         onDelete={handleDelete}
                       />
@@ -124,6 +126,8 @@ export function AppointmentListDialog({
                       <AppointmentCard
                         key={appt.id}
                         appointment={appt}
+                        locale={locale}
+                        timeFormat={timeFormat}
                         onEdit={handleEdit}
                         onDelete={handleDelete}
                         isPast
@@ -156,11 +160,15 @@ export function AppointmentListDialog({
 
 function AppointmentCard({
   appointment,
+  locale,
+  timeFormat,
   onEdit,
   onDelete,
   isPast,
 }: {
   appointment: AppointmentResponse
+  locale: string
+  timeFormat: TimeFormat
   onEdit: (a: AppointmentResponse) => void
   onDelete: (id: number) => void
   isPast?: boolean

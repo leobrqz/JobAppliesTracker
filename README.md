@@ -20,84 +20,141 @@ Track applications across platforms, manage companies, schedule interviews, and 
 --- 
 <br/> 
 
-**WIP**: This is a work in progress. The project is not yet ready for production, changes are expected. It is still stable to use. Database migrations (Alembic) support schema updates across versions.
-
-
-## What it does
-
-| Area | Capabilities |
-|------|--------------|
-| **Applications** | Job title, company, platform, salary, seniority, stages, history, archiving |
-| **Companies** | Name, website, notes, linked to applications |
-| **Platforms** | Job boards (LinkedIn, Indeed, etc.) with templates for quick entry |
-| **Profile** | Resumes and profile data for fast attachment to applications |
-| **Calendar** | Appointments and interviews with meeting URLs |
-| **Dashboard** | Summary cards, status distribution, platform ranking, weekly heatmap |
-
+**WIP.** This is a work in progress. The project is not yet ready for production, breaking changes are possible. It is stable to use. Database migrations support schema updates across versions.
 
 
 ## Stack
 
 | Layer | Tech |
 |-------|------|
-| Frontend | Next.js 16, React 19, Tailwind, shadcn/ui, Turborepo |
+| Frontend | Next.js 16, React 19, Tailwind CSS, shadcn/ui, Turborepo |
 | Backend | FastAPI, SQLAlchemy, Alembic |
 | Data | PostgreSQL |
 | Runtime | Docker |
+| Testing | Vitest + React Testing Library, Pytest |
+
+
+## Features
+
+### Dashboard
+
+Default home when you load the app (`/dashboard`).
+
+- Application count (with offers/rejections), response rate, average days per stage
+- Week strip of upcoming appointments
+- Stage distribution (pie chart), recent applications, platform conversion ranking, weekly heatmap
+- Hide any widget from Settings
+
+### Applications
+
+Primary list for every application you track.
+
+- Filter by status, stage, platform, company, and active vs archived; column sort; pagination
+- Stage history (add, edit, remove entries)
+- Archive and restore
+- Detail view from the job title
+- Create and edit: job title, company, platform, posting URL, contract type, seniority, salary, applied date, stage, status, resume
+- Linked resume; appointments scoped to that application
+- Extra columns and compact rows (Settings)
+
+### Companies
+
+Directory of employers.
+
+- Name, website, notes
+- New company: links applications that already used the same company text but were not linked yet
+- Rename company: updates the company text on applications already linked to that record
+
+### Platforms
+
+Job boards and career sites you record applications against.
+
+- Dedicated page: create, edit, and delete platforms
+- Each row: name, optional icon, base URL and "applications" URL (open from the table), **manual resume** flag for boards where you fill a CV on their site
+- Built-in **templates** pre-fill name, icon, and URLs when you add or edit a platform
+- Applications pick a platform; the applications list can filter by platform
+
+### Calendar
+
+Full-month schedule.
+
+- Month grid and agenda views
+- Event types: interview, assessment, project, meeting, other
+- Optional meeting URL and optional link to an application
+
+### Profile
+
+Resumes and text you reuse on forms.
+
+- CV upload, rename, archive, delete, download
+- Presets: full name, email, phone, LinkedIn, GitHub, portfolio
+- Customizable key/value rows
+
+### Settings
+
+Global display and layout.
+
+- 12h or 24h, timezone, locale
+- Dashboard: show or hide each widget; week strip starts expanded or collapsed
+- Applications table: optional resume, salary, seniority, and created-at columns; compact row density
+
+---
+
+## Stack
+
+| Layer | Tech |
+|-------|------|
+| Frontend | Next.js 16, React 19, Tailwind CSS, shadcn/ui, Turborepo |
+| Backend | FastAPI, SQLAlchemy, Alembic |
+| Data | PostgreSQL |
+| Runtime | Docker |
+| Testing | Vitest + React Testing Library, Pytest |
 
 
 ## Setup
 
-### Docker
+You can run the application via Docker or locally.
 
-**Prerequisites:** Docker 
+
+**Note:**  
+Running migrations is required on first setup. Also run after pulling updates that include new migrations.
+
+**Prerequisites:**  
+- Setup up `backend/.env` (see `backend/.env.example`)
+- Setup up `frontend/.env` (see `frontend/.env.example`)
+
+
+
+## Docker
 
 ```bash
 git clone https://github.com/leobrqz/JobAppliesTracker.git
 cd JobAppliesTracker
 ```
 
-Create `backend/.env`:
 
-```env
-DATABASE_URL=postgresql://postgres:root@localhost:5432/jobtracker
-STORAGE_DIR=./storage
-```
+Start the services:
 
 ```bash
 docker compose up --build -d
 ```
 
-Run migrations (required on first setup; also run after pulling updates that include new migrations):
+Run migrations:
 
 ```bash
 docker exec jobappliestracker-backend alembic upgrade head
 ```
 
-| Service | URL |
-|---------|-----|
-| App | [http://localhost:3000](http://localhost:3000) |
-| API | [http://localhost:8000](http://localhost:8000) |
-| API docs | [http://localhost:8000/docs](http://localhost:8000/docs) |
 
-### Local Environment
+## Local Environment
 
 **Prerequisites:** Node 20+, pnpm, Python 3.11+, PostgreSQL
 
-1. Start PostgreSQL. Create database `jobtracker`:
+### 1. PostgreSQL
+Start PostgreSQL and create database `jobtracker`  
 
-```
-createdb jobtracker
-```
 
-2. Create `backend/.env`:
-
-```
-DATABASE_URL=postgresql://postgres:root@localhost:5432/jobtracker
-STORAGE_DIR=./storage
-```
-
-3. Backend:
+### 2. Backend  
 
 **Prerequisites:** Set up Python virtual environment.
 
@@ -106,17 +163,18 @@ cd backend
 pip install -r requirements.txt
 ```
 
-Run migrations (required on first setup; also run after pulling updates that include new migrations):
+Run migrations:
 
 ```bash
 alembic upgrade head
 ```
 
+Run the backend:
 ```bash
 uvicorn app.main:app --reload
 ```
 
-4. Frontend (another terminal):
+### 3. Frontend:
 
 ```bash
 cd frontend

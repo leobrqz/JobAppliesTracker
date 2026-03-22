@@ -4,6 +4,7 @@ import type {
   ApplicationFilters,
   ApplicationHistoryCreate,
   ApplicationHistoryResponse,
+  ApplicationHistoryUpdate,
   ApplicationResponse,
   ApplicationUpdate,
 } from "@/types"
@@ -72,4 +73,16 @@ export function advanceStage(
 
 export function deleteHistoryEntry(applicationId: number, historyId: number): Promise<ApiResult<null>> {
   return apiRequest<null>(`/api/applications/${applicationId}/history/${historyId}`, { method: "DELETE" })
+}
+
+export function updateHistoryEntry(
+  applicationId: number,
+  historyId: number,
+  data: ApplicationHistoryUpdate,
+): Promise<ApiResult<ApplicationHistoryResponse>> {
+  return apiRequest<ApplicationHistoryResponse>(`/api/applications/${applicationId}/history/${historyId}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  })
 }

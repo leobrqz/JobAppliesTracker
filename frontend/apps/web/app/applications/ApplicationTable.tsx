@@ -129,7 +129,7 @@ export function ApplicationTable({
   )
 
   const columns = useMemo((): ColumnDef<ApplicationResponse>[] => {
-    const base: ColumnDef<ApplicationResponse>[] = [
+    const base = [
       columnHelper.accessor("job_title", {
         header: "Job Title",
         cell: ({ row, getValue }) => (
@@ -163,7 +163,7 @@ export function ApplicationTable({
         header: "Date Applied",
         cell: (info) => formatDate(info.getValue(), locale),
       }),
-    ]
+    ] as ColumnDef<ApplicationResponse>[]
 
     const optional: ColumnDef<ApplicationResponse>[] = []
 
@@ -184,7 +184,7 @@ export function ApplicationTable({
             )
           },
           sortingFn: "alphanumeric",
-        }),
+        }) as ColumnDef<ApplicationResponse>,
       )
     }
 
@@ -220,7 +220,7 @@ export function ApplicationTable({
               return av === bv ? 0 : av < bv ? -1 : 1
             },
           },
-        ),
+        ) as ColumnDef<ApplicationResponse>,
       )
     }
 
@@ -235,7 +235,7 @@ export function ApplicationTable({
             ) : (
               <span className="text-muted-foreground">—</span>
             ),
-        }),
+        }) as ColumnDef<ApplicationResponse>,
       )
     }
 
@@ -245,7 +245,7 @@ export function ApplicationTable({
           id: "created_at",
           header: "Created",
           cell: (info) => formatDate(info.getValue(), locale),
-        }),
+        }) as ColumnDef<ApplicationResponse>,
       )
     }
 
@@ -268,7 +268,12 @@ export function ApplicationTable({
                 </Tooltip>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button variant="ghost" size="sm" onClick={() => setHistoryAppId(app.id)}>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      aria-label="Stage history"
+                      onClick={() => setHistoryAppId(app.id)}
+                    >
                       <History data-icon="inline-start" />
                     </Button>
                   </TooltipTrigger>
@@ -382,7 +387,7 @@ export function ApplicationTable({
           </div>
         )
       },
-    })
+    }) as ColumnDef<ApplicationResponse>
 
     return [...base, ...optional, actions]
   }, [tablePrefs, platforms, resumeMap, locale, archived, onEdit, handleArchive, handleRestore, handleDelete])

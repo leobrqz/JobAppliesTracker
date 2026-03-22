@@ -60,28 +60,29 @@ export function ApplicationDetailDialog({
     return null
   }
 
+  const app = application
+
   const companyRecord =
-    application.company_id != null
-      ? companies.find((c) => c.id === application.company_id)
+    app.company_id != null
+      ? companies.find((c) => c.id === app.company_id)
       : undefined
 
   function closeAndEdit() {
     onOpenChange(false)
-    onEdit(application)
+    onEdit(app)
   }
 
   function closeAndHistory() {
     onOpenChange(false)
-    onOpenHistory(application.id)
+    onOpenHistory(app.id)
   }
 
   function closeAndAppointments() {
     onOpenChange(false)
-    onOpenAppointments(application)
+    onOpenAppointments(app)
   }
 
-  const salaryNum =
-    application.salary != null && application.salary !== "" ? Number(application.salary) : null
+  const salaryNum = app.salary != null && app.salary !== "" ? Number(app.salary) : null
   const salaryText =
     salaryNum != null && !Number.isNaN(salaryNum)
       ? new Intl.NumberFormat(locale, { maximumFractionDigits: 2 }).format(salaryNum)
