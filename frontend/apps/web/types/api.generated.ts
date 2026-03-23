@@ -129,6 +129,620 @@ export interface paths {
         patch: operations["update_profile_data_api_profile_data__profile_data_id__patch"];
         trace?: never;
     };
+    "/api/profile-experience/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Experience Entries */
+        get: operations["list_experience_entries_api_profile_experience__get"];
+        put?: never;
+        /** Create Experience Entry */
+        post: operations["create_experience_entry_api_profile_experience__post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/profile-experience/{entry_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete Experience Entry */
+        delete: operations["delete_experience_entry_api_profile_experience__entry_id__delete"];
+        options?: never;
+        head?: never;
+        /** Update Experience Entry */
+        patch: operations["update_experience_entry_api_profile_experience__entry_id__patch"];
+        trace?: never;
+    };
+    "/api/profile-experience/reorder": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Reorder Experience Entries */
+        patch: operations["reorder_experience_entries_api_profile_experience_reorder_patch"];
+        trace?: never;
+    };
+    "/api/profile-experience/{entry_id}/bullets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Experience Bullet */
+        post: operations["create_experience_bullet_api_profile_experience__entry_id__bullets_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/profile-experience/bullets/{bullet_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete Experience Bullet */
+        delete: operations["delete_experience_bullet_api_profile_experience_bullets__bullet_id__delete"];
+        options?: never;
+        head?: never;
+        /** Update Experience Bullet */
+        patch: operations["update_experience_bullet_api_profile_experience_bullets__bullet_id__patch"];
+        trace?: never;
+    };
+    "/api/profile-experience/{entry_id}/bullets/reorder": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Reorder Experience Bullets */
+        patch: operations["reorder_experience_bullets_api_profile_experience__entry_id__bullets_reorder_patch"];
+        trace?: never;
+    };
+    "/api/profile-education/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Education Entries */
+        get: operations["list_education_entries_api_profile_education__get"];
+        put?: never;
+        /** Create Education Entry */
+        post: operations["create_education_entry_api_profile_education__post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/profile-education/{entry_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete Education Entry */
+        delete: operations["delete_education_entry_api_profile_education__entry_id__delete"];
+        options?: never;
+        head?: never;
+        /** Update Education Entry */
+        patch: operations["update_education_entry_api_profile_education__entry_id__patch"];
+        trace?: never;
+    };
+    "/api/profile-education/reorder": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Reorder Education Entries */
+        patch: operations["reorder_education_entries_api_profile_education_reorder_patch"];
+        trace?: never;
+    };
+    "/api/profile-education/{entry_id}/highlights": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Education Highlight */
+        post: operations["create_education_highlight_api_profile_education__entry_id__highlights_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/profile-education/highlights/{highlight_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete Education Highlight */
+        delete: operations["delete_education_highlight_api_profile_education_highlights__highlight_id__delete"];
+        options?: never;
+        head?: never;
+        /** Update Education Highlight */
+        patch: operations["update_education_highlight_api_profile_education_highlights__highlight_id__patch"];
+        trace?: never;
+    };
+    "/api/profile-education/{entry_id}/highlights/reorder": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Reorder Education Highlights */
+        patch: operations["reorder_education_highlights_api_profile_education__entry_id__highlights_reorder_patch"];
+        trace?: never;
+    };
+    "/api/profile-projects/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Project Entries */
+        get: operations["list_project_entries_api_profile_projects__get"];
+        put?: never;
+        /** Create Project Entry */
+        post: operations["create_project_entry_api_profile_projects__post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/profile-projects/{entry_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete Project Entry */
+        delete: operations["delete_project_entry_api_profile_projects__entry_id__delete"];
+        options?: never;
+        head?: never;
+        /** Update Project Entry */
+        patch: operations["update_project_entry_api_profile_projects__entry_id__patch"];
+        trace?: never;
+    };
+    "/api/profile-projects/reorder": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Reorder Project Entries */
+        patch: operations["reorder_project_entries_api_profile_projects_reorder_patch"];
+        trace?: never;
+    };
+    "/api/profile-projects/{entry_id}/bullets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Project Bullet */
+        post: operations["create_project_bullet_api_profile_projects__entry_id__bullets_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/profile-projects/bullets/{bullet_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete Project Bullet */
+        delete: operations["delete_project_bullet_api_profile_projects_bullets__bullet_id__delete"];
+        options?: never;
+        head?: never;
+        /** Update Project Bullet */
+        patch: operations["update_project_bullet_api_profile_projects_bullets__bullet_id__patch"];
+        trace?: never;
+    };
+    "/api/profile-projects/{entry_id}/bullets/reorder": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Reorder Project Bullets */
+        patch: operations["reorder_project_bullets_api_profile_projects__entry_id__bullets_reorder_patch"];
+        trace?: never;
+    };
+    "/api/profile-skills/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Skill Groups */
+        get: operations["list_skill_groups_api_profile_skills__get"];
+        put?: never;
+        /** Create Skill Group */
+        post: operations["create_skill_group_api_profile_skills__post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/profile-skills/{group_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete Skill Group */
+        delete: operations["delete_skill_group_api_profile_skills__group_id__delete"];
+        options?: never;
+        head?: never;
+        /** Update Skill Group */
+        patch: operations["update_skill_group_api_profile_skills__group_id__patch"];
+        trace?: never;
+    };
+    "/api/profile-skills/reorder": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Reorder Skill Groups */
+        patch: operations["reorder_skill_groups_api_profile_skills_reorder_patch"];
+        trace?: never;
+    };
+    "/api/profile-skills/{group_id}/items": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Skill Item */
+        post: operations["create_skill_item_api_profile_skills__group_id__items_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/profile-skills/items/{item_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete Skill Item */
+        delete: operations["delete_skill_item_api_profile_skills_items__item_id__delete"];
+        options?: never;
+        head?: never;
+        /** Update Skill Item */
+        patch: operations["update_skill_item_api_profile_skills_items__item_id__patch"];
+        trace?: never;
+    };
+    "/api/profile-skills/{group_id}/items/reorder": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Reorder Skill Items */
+        patch: operations["reorder_skill_items_api_profile_skills__group_id__items_reorder_patch"];
+        trace?: never;
+    };
+    "/api/profile-certifications/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Certifications */
+        get: operations["list_certifications_api_profile_certifications__get"];
+        put?: never;
+        /** Create Certification */
+        post: operations["create_certification_api_profile_certifications__post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/profile-certifications/{entry_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete Certification */
+        delete: operations["delete_certification_api_profile_certifications__entry_id__delete"];
+        options?: never;
+        head?: never;
+        /** Update Certification */
+        patch: operations["update_certification_api_profile_certifications__entry_id__patch"];
+        trace?: never;
+    };
+    "/api/profile-certifications/reorder": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Reorder Certifications */
+        patch: operations["reorder_certifications_api_profile_certifications_reorder_patch"];
+        trace?: never;
+    };
+    "/api/profile-certifications/{entry_id}/attachment": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Upload Attachment */
+        post: operations["upload_attachment_api_profile_certifications__entry_id__attachment_post"];
+        /** Delete Attachment */
+        delete: operations["delete_attachment_api_profile_certifications__entry_id__attachment_delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/profile-certifications/{entry_id}/attachment/download": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Download Attachment */
+        get: operations["download_attachment_api_profile_certifications__entry_id__attachment_download_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/profile-courses/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Courses */
+        get: operations["list_courses_api_profile_courses__get"];
+        put?: never;
+        /** Create Course */
+        post: operations["create_course_api_profile_courses__post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/profile-courses/{entry_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete Course */
+        delete: operations["delete_course_api_profile_courses__entry_id__delete"];
+        options?: never;
+        head?: never;
+        /** Update Course */
+        patch: operations["update_course_api_profile_courses__entry_id__patch"];
+        trace?: never;
+    };
+    "/api/profile-courses/reorder": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Reorder Courses */
+        patch: operations["reorder_courses_api_profile_courses_reorder_patch"];
+        trace?: never;
+    };
+    "/api/profile-courses/{entry_id}/attachment": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Upload Attachment */
+        post: operations["upload_attachment_api_profile_courses__entry_id__attachment_post"];
+        /** Delete Attachment */
+        delete: operations["delete_attachment_api_profile_courses__entry_id__attachment_delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/profile-courses/{entry_id}/attachment/download": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Download Attachment */
+        get: operations["download_attachment_api_profile_courses__entry_id__attachment_download_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/profile-about-me/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get About Me */
+        get: operations["get_about_me_api_profile_about_me__get"];
+        /** Update About Me */
+        put: operations["update_about_me_api_profile_about_me__put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/platform-templates/": {
         parameters: {
             query?: never;
@@ -466,7 +1080,7 @@ export interface components {
             /** Salary Currency */
             salary_currency?: string | null;
             /** Pay Period */
-            pay_period?: "annual" | "monthly" | "hourly" | null;
+            pay_period?: ("annual" | "monthly" | "hourly") | null;
             /** Seniority */
             seniority?: string | null;
             /** Contract Type */
@@ -590,7 +1204,7 @@ export interface components {
             /** Salary Currency */
             salary_currency?: string | null;
             /** Pay Period */
-            pay_period?: "annual" | "monthly" | "hourly" | null;
+            pay_period?: ("annual" | "monthly" | "hourly") | null;
             /** Seniority */
             seniority?: string | null;
             /** Contract Type */
@@ -681,6 +1295,16 @@ export interface components {
             /** Notes */
             notes?: string | null;
         };
+        /** Body_upload_attachment_api_profile_certifications__entry_id__attachment_post */
+        Body_upload_attachment_api_profile_certifications__entry_id__attachment_post: {
+            /** File */
+            file: string;
+        };
+        /** Body_upload_attachment_api_profile_courses__entry_id__attachment_post */
+        Body_upload_attachment_api_profile_courses__entry_id__attachment_post: {
+            /** File */
+            file: string;
+        };
         /** Body_upload_resume_api_resumes__post */
         Body_upload_resume_api_resumes__post: {
             /** Name */
@@ -689,6 +1313,82 @@ export interface components {
             description?: string | null;
             /** File */
             file: string;
+        };
+        /** CertificationEntryCreate */
+        CertificationEntryCreate: {
+            /** Name */
+            name: string;
+            /** Issuer */
+            issuer: string;
+            /** Issued On */
+            issued_on?: string | null;
+            /** Expires On */
+            expires_on?: string | null;
+            /** Credential Id */
+            credential_id?: string | null;
+            /** Verification Link */
+            verification_link?: string | null;
+            /** Notes */
+            notes?: string | null;
+        };
+        /** CertificationEntryResponse */
+        CertificationEntryResponse: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+            /** Issuer */
+            issuer: string;
+            /** Issued On */
+            issued_on: string | null;
+            /** Expires On */
+            expires_on: string | null;
+            /** Credential Id */
+            credential_id: string | null;
+            /** Verification Link */
+            verification_link: string | null;
+            /** Attachment File Name */
+            attachment_file_name: string | null;
+            /** Attachment Mime Type */
+            attachment_mime_type: string | null;
+            /** Notes */
+            notes: string | null;
+            /** Display Order */
+            display_order: number;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** CertificationEntryUpdate */
+        CertificationEntryUpdate: {
+            /** Name */
+            name?: string | null;
+            /** Issuer */
+            issuer?: string | null;
+            /** Issued On */
+            issued_on?: string | null;
+            /** Expires On */
+            expires_on?: string | null;
+            /** Credential Id */
+            credential_id?: string | null;
+            /** Verification Link */
+            verification_link?: string | null;
+            /** Notes */
+            notes?: string | null;
+        };
+        /** CertificationReorderItem */
+        CertificationReorderItem: {
+            /** Id */
+            id: number;
+            /** Display Order */
+            display_order: number;
         };
         /** CompanyCreate */
         CompanyCreate: {
@@ -729,6 +1429,76 @@ export interface components {
             /** Notes */
             notes?: string | null;
         };
+        /** CourseEntryCreate */
+        CourseEntryCreate: {
+            /** Title */
+            title: string;
+            /** Provider */
+            provider: string;
+            /** Completed On */
+            completed_on?: string | null;
+            /** Duration Hours */
+            duration_hours?: number | string | null;
+            /** Verification Link */
+            verification_link?: string | null;
+            /** Notes */
+            notes?: string | null;
+        };
+        /** CourseEntryResponse */
+        CourseEntryResponse: {
+            /** Id */
+            id: number;
+            /** Title */
+            title: string;
+            /** Provider */
+            provider: string;
+            /** Completed On */
+            completed_on: string | null;
+            /** Duration Hours */
+            duration_hours: string | null;
+            /** Verification Link */
+            verification_link: string | null;
+            /** Attachment File Name */
+            attachment_file_name: string | null;
+            /** Attachment Mime Type */
+            attachment_mime_type: string | null;
+            /** Notes */
+            notes: string | null;
+            /** Display Order */
+            display_order: number;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** CourseEntryUpdate */
+        CourseEntryUpdate: {
+            /** Title */
+            title?: string | null;
+            /** Provider */
+            provider?: string | null;
+            /** Completed On */
+            completed_on?: string | null;
+            /** Duration Hours */
+            duration_hours?: number | string | null;
+            /** Verification Link */
+            verification_link?: string | null;
+            /** Notes */
+            notes?: string | null;
+        };
+        /** CourseReorderItem */
+        CourseReorderItem: {
+            /** Id */
+            id: number;
+            /** Display Order */
+            display_order: number;
+        };
         /** DashboardSummary */
         DashboardSummary: {
             /** Total Applications */
@@ -741,6 +1511,250 @@ export interface components {
             response_rate: number;
             /** Avg Days Per Stage */
             avg_days_per_stage: components["schemas"]["StageAvg"][];
+        };
+        /** EducationEntryCreate */
+        EducationEntryCreate: {
+            /** Institution */
+            institution: string;
+            /** Degree */
+            degree: string;
+            /** Field Of Study */
+            field_of_study?: string | null;
+            /** Start Date */
+            start_date?: string | null;
+            /** End Date */
+            end_date?: string | null;
+            /**
+             * Is Current
+             * @default false
+             */
+            is_current: boolean;
+            /** Description */
+            description?: string | null;
+            /**
+             * Highlights
+             * @default []
+             */
+            highlights: components["schemas"]["EducationHighlightCreate"][];
+        };
+        /** EducationEntryResponse */
+        EducationEntryResponse: {
+            /** Id */
+            id: number;
+            /** Institution */
+            institution: string;
+            /** Degree */
+            degree: string;
+            /** Field Of Study */
+            field_of_study: string | null;
+            /** Start Date */
+            start_date: string | null;
+            /** End Date */
+            end_date: string | null;
+            /** Is Current */
+            is_current: boolean;
+            /** Description */
+            description: string | null;
+            /** Display Order */
+            display_order: number;
+            /** Highlights */
+            highlights: components["schemas"]["EducationHighlightResponse"][];
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** EducationEntryUpdate */
+        EducationEntryUpdate: {
+            /** Institution */
+            institution?: string | null;
+            /** Degree */
+            degree?: string | null;
+            /** Field Of Study */
+            field_of_study?: string | null;
+            /** Start Date */
+            start_date?: string | null;
+            /** End Date */
+            end_date?: string | null;
+            /** Is Current */
+            is_current?: boolean | null;
+            /** Description */
+            description?: string | null;
+        };
+        /** EducationHighlightCreate */
+        EducationHighlightCreate: {
+            /** Content */
+            content: string;
+        };
+        /** EducationHighlightResponse */
+        EducationHighlightResponse: {
+            /** Id */
+            id: number;
+            /** Education Entry Id */
+            education_entry_id: number;
+            /** Content */
+            content: string;
+            /** Display Order */
+            display_order: number;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** EducationHighlightUpdate */
+        EducationHighlightUpdate: {
+            /** Content */
+            content?: string | null;
+        };
+        /** EducationReorderItem */
+        EducationReorderItem: {
+            /** Id */
+            id: number;
+            /** Display Order */
+            display_order: number;
+        };
+        /** ExperienceBulletCreate */
+        ExperienceBulletCreate: {
+            /** Content */
+            content: string;
+        };
+        /** ExperienceBulletResponse */
+        ExperienceBulletResponse: {
+            /** Id */
+            id: number;
+            /** Experience Entry Id */
+            experience_entry_id: number;
+            /** Content */
+            content: string;
+            /** Display Order */
+            display_order: number;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** ExperienceBulletUpdate */
+        ExperienceBulletUpdate: {
+            /** Content */
+            content?: string | null;
+        };
+        /** ExperienceEntryCreate */
+        ExperienceEntryCreate: {
+            /** Job Title */
+            job_title: string;
+            /** Company */
+            company: string;
+            /** Start Date */
+            start_date?: string | null;
+            /** End Date */
+            end_date?: string | null;
+            /**
+             * Is Current
+             * @default false
+             */
+            is_current: boolean;
+            /** Seniority */
+            seniority?: string | null;
+            /** Compensation Amount */
+            compensation_amount?: number | string | null;
+            /** Compensation Currency */
+            compensation_currency?: string | null;
+            /** Compensation Period */
+            compensation_period?: string | null;
+            /** Summary */
+            summary?: string | null;
+            /**
+             * Bullets
+             * @default []
+             */
+            bullets: components["schemas"]["ExperienceBulletCreate"][];
+        };
+        /** ExperienceEntryResponse */
+        ExperienceEntryResponse: {
+            /** Id */
+            id: number;
+            /** Job Title */
+            job_title: string;
+            /** Company */
+            company: string;
+            /** Start Date */
+            start_date: string | null;
+            /** End Date */
+            end_date: string | null;
+            /** Is Current */
+            is_current: boolean;
+            /** Seniority */
+            seniority: string | null;
+            /** Compensation Amount */
+            compensation_amount: string | null;
+            /** Compensation Currency */
+            compensation_currency: string | null;
+            /** Compensation Period */
+            compensation_period: string | null;
+            /** Summary */
+            summary: string | null;
+            /** Display Order */
+            display_order: number;
+            /** Bullets */
+            bullets: components["schemas"]["ExperienceBulletResponse"][];
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** ExperienceEntryUpdate */
+        ExperienceEntryUpdate: {
+            /** Job Title */
+            job_title?: string | null;
+            /** Company */
+            company?: string | null;
+            /** Start Date */
+            start_date?: string | null;
+            /** End Date */
+            end_date?: string | null;
+            /** Is Current */
+            is_current?: boolean | null;
+            /** Seniority */
+            seniority?: string | null;
+            /** Compensation Amount */
+            compensation_amount?: number | string | null;
+            /** Compensation Currency */
+            compensation_currency?: string | null;
+            /** Compensation Period */
+            compensation_period?: string | null;
+            /** Summary */
+            summary?: string | null;
+        };
+        /** ExperienceReorderItem */
+        ExperienceReorderItem: {
+            /** Id */
+            id: number;
+            /** Display Order */
+            display_order: number;
         };
         /** HTTPValidationError */
         HTTPValidationError: {
@@ -851,6 +1865,28 @@ export interface components {
              */
             created_at: string;
         };
+        /** ProfileAboutMeResponse */
+        ProfileAboutMeResponse: {
+            /** Id */
+            id: number;
+            /** Description */
+            description: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** ProfileAboutMeUpdate */
+        ProfileAboutMeUpdate: {
+            /** Description */
+            description: string;
+        };
         /** ProfileDataCreate */
         ProfileDataCreate: {
             /** Label */
@@ -889,6 +1925,125 @@ export interface components {
             value?: string | null;
             /** Type */
             type?: string | null;
+        };
+        /** ProjectBulletCreate */
+        ProjectBulletCreate: {
+            /** Content */
+            content: string;
+        };
+        /** ProjectBulletResponse */
+        ProjectBulletResponse: {
+            /** Id */
+            id: number;
+            /** Project Entry Id */
+            project_entry_id: number;
+            /** Content */
+            content: string;
+            /** Display Order */
+            display_order: number;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** ProjectBulletUpdate */
+        ProjectBulletUpdate: {
+            /** Content */
+            content?: string | null;
+        };
+        /** ProjectEntryCreate */
+        ProjectEntryCreate: {
+            /** Name */
+            name: string;
+            /** Role */
+            role?: string | null;
+            /** Url */
+            url?: string | null;
+            /** Repository Url */
+            repository_url?: string | null;
+            /** Start Date */
+            start_date?: string | null;
+            /** End Date */
+            end_date?: string | null;
+            /**
+             * Is Current
+             * @default false
+             */
+            is_current: boolean;
+            /** Description */
+            description?: string | null;
+            /**
+             * Bullets
+             * @default []
+             */
+            bullets: components["schemas"]["ProjectBulletCreate"][];
+        };
+        /** ProjectEntryResponse */
+        ProjectEntryResponse: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+            /** Role */
+            role: string | null;
+            /** Url */
+            url: string | null;
+            /** Repository Url */
+            repository_url: string | null;
+            /** Start Date */
+            start_date: string | null;
+            /** End Date */
+            end_date: string | null;
+            /** Is Current */
+            is_current: boolean;
+            /** Description */
+            description: string | null;
+            /** Display Order */
+            display_order: number;
+            /** Bullets */
+            bullets: components["schemas"]["ProjectBulletResponse"][];
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** ProjectEntryUpdate */
+        ProjectEntryUpdate: {
+            /** Name */
+            name?: string | null;
+            /** Role */
+            role?: string | null;
+            /** Url */
+            url?: string | null;
+            /** Repository Url */
+            repository_url?: string | null;
+            /** Start Date */
+            start_date?: string | null;
+            /** End Date */
+            end_date?: string | null;
+            /** Is Current */
+            is_current?: boolean | null;
+            /** Description */
+            description?: string | null;
+        };
+        /** ProjectReorderItem */
+        ProjectReorderItem: {
+            /** Id */
+            id: number;
+            /** Display Order */
+            display_order: number;
         };
         /** RecentApplicationItem */
         RecentApplicationItem: {
@@ -935,6 +2090,92 @@ export interface components {
             name?: string | null;
             /** Description */
             description?: string | null;
+        };
+        /** SkillGroupCreate */
+        SkillGroupCreate: {
+            /** Name */
+            name: string;
+            /** Description */
+            description?: string | null;
+            /**
+             * Items
+             * @default []
+             */
+            items: components["schemas"]["SkillItemCreate"][];
+        };
+        /** SkillGroupResponse */
+        SkillGroupResponse: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+            /** Description */
+            description: string | null;
+            /** Display Order */
+            display_order: number;
+            /** Items */
+            items: components["schemas"]["SkillItemResponse"][];
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** SkillGroupUpdate */
+        SkillGroupUpdate: {
+            /** Name */
+            name?: string | null;
+            /** Description */
+            description?: string | null;
+        };
+        /** SkillItemCreate */
+        SkillItemCreate: {
+            /** Name */
+            name: string;
+            /** Level */
+            level?: string | null;
+        };
+        /** SkillItemResponse */
+        SkillItemResponse: {
+            /** Id */
+            id: number;
+            /** Skill Group Id */
+            skill_group_id: number;
+            /** Name */
+            name: string;
+            /** Level */
+            level: string | null;
+            /** Display Order */
+            display_order: number;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** SkillItemUpdate */
+        SkillItemUpdate: {
+            /** Name */
+            name?: string | null;
+            /** Level */
+            level?: string | null;
+        };
+        /** SkillReorderItem */
+        SkillReorderItem: {
+            /** Id */
+            id: number;
+            /** Display Order */
+            display_order: number;
         };
         /** StageAvg */
         StageAvg: {
@@ -1359,6 +2600,1689 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ProfileDataResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_experience_entries_api_profile_experience__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExperienceEntryResponse"][];
+                };
+            };
+        };
+    };
+    create_experience_entry_api_profile_experience__post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ExperienceEntryCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExperienceEntryResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_experience_entry_api_profile_experience__entry_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entry_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_experience_entry_api_profile_experience__entry_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entry_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ExperienceEntryUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExperienceEntryResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reorder_experience_entries_api_profile_experience_reorder_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ExperienceReorderItem"][];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExperienceEntryResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_experience_bullet_api_profile_experience__entry_id__bullets_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entry_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ExperienceBulletCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExperienceBulletResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_experience_bullet_api_profile_experience_bullets__bullet_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                bullet_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_experience_bullet_api_profile_experience_bullets__bullet_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                bullet_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ExperienceBulletUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExperienceBulletResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reorder_experience_bullets_api_profile_experience__entry_id__bullets_reorder_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entry_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ExperienceReorderItem"][];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExperienceBulletResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_education_entries_api_profile_education__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EducationEntryResponse"][];
+                };
+            };
+        };
+    };
+    create_education_entry_api_profile_education__post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EducationEntryCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EducationEntryResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_education_entry_api_profile_education__entry_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entry_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_education_entry_api_profile_education__entry_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entry_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EducationEntryUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EducationEntryResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reorder_education_entries_api_profile_education_reorder_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EducationReorderItem"][];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EducationEntryResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_education_highlight_api_profile_education__entry_id__highlights_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entry_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EducationHighlightCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EducationHighlightResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_education_highlight_api_profile_education_highlights__highlight_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                highlight_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_education_highlight_api_profile_education_highlights__highlight_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                highlight_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EducationHighlightUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EducationHighlightResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reorder_education_highlights_api_profile_education__entry_id__highlights_reorder_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entry_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EducationReorderItem"][];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EducationHighlightResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_project_entries_api_profile_projects__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProjectEntryResponse"][];
+                };
+            };
+        };
+    };
+    create_project_entry_api_profile_projects__post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProjectEntryCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProjectEntryResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_project_entry_api_profile_projects__entry_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entry_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_project_entry_api_profile_projects__entry_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entry_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProjectEntryUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProjectEntryResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reorder_project_entries_api_profile_projects_reorder_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProjectReorderItem"][];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProjectEntryResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_project_bullet_api_profile_projects__entry_id__bullets_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entry_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProjectBulletCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProjectBulletResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_project_bullet_api_profile_projects_bullets__bullet_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                bullet_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_project_bullet_api_profile_projects_bullets__bullet_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                bullet_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProjectBulletUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProjectBulletResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reorder_project_bullets_api_profile_projects__entry_id__bullets_reorder_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entry_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProjectReorderItem"][];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProjectBulletResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_skill_groups_api_profile_skills__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SkillGroupResponse"][];
+                };
+            };
+        };
+    };
+    create_skill_group_api_profile_skills__post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SkillGroupCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SkillGroupResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_skill_group_api_profile_skills__group_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                group_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_skill_group_api_profile_skills__group_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                group_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SkillGroupUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SkillGroupResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reorder_skill_groups_api_profile_skills_reorder_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SkillReorderItem"][];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SkillGroupResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_skill_item_api_profile_skills__group_id__items_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                group_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SkillItemCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SkillItemResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_skill_item_api_profile_skills_items__item_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                item_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_skill_item_api_profile_skills_items__item_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                item_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SkillItemUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SkillItemResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reorder_skill_items_api_profile_skills__group_id__items_reorder_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                group_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SkillReorderItem"][];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SkillItemResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_certifications_api_profile_certifications__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CertificationEntryResponse"][];
+                };
+            };
+        };
+    };
+    create_certification_api_profile_certifications__post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CertificationEntryCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CertificationEntryResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_certification_api_profile_certifications__entry_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entry_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_certification_api_profile_certifications__entry_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entry_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CertificationEntryUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CertificationEntryResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reorder_certifications_api_profile_certifications_reorder_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CertificationReorderItem"][];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CertificationEntryResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    upload_attachment_api_profile_certifications__entry_id__attachment_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entry_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_upload_attachment_api_profile_certifications__entry_id__attachment_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CertificationEntryResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_attachment_api_profile_certifications__entry_id__attachment_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entry_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CertificationEntryResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    download_attachment_api_profile_certifications__entry_id__attachment_download_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entry_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_courses_api_profile_courses__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CourseEntryResponse"][];
+                };
+            };
+        };
+    };
+    create_course_api_profile_courses__post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CourseEntryCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CourseEntryResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_course_api_profile_courses__entry_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entry_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_course_api_profile_courses__entry_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entry_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CourseEntryUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CourseEntryResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reorder_courses_api_profile_courses_reorder_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CourseReorderItem"][];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CourseEntryResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    upload_attachment_api_profile_courses__entry_id__attachment_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entry_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_upload_attachment_api_profile_courses__entry_id__attachment_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CourseEntryResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_attachment_api_profile_courses__entry_id__attachment_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entry_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CourseEntryResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    download_attachment_api_profile_courses__entry_id__attachment_download_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                entry_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_about_me_api_profile_about_me__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProfileAboutMeResponse"];
+                };
+            };
+        };
+    };
+    update_about_me_api_profile_about_me__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProfileAboutMeUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProfileAboutMeResponse"];
                 };
             };
             /** @description Validation Error */
