@@ -12,7 +12,7 @@ import { Input } from "@workspace/ui/components/input"
 import { Separator } from "@workspace/ui/components/separator"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { Textarea } from "@workspace/ui/components/textarea"
-import { Tooltip, TooltipContent, TooltipTrigger } from "@workspace/ui/components/tooltip"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@workspace/ui/components/tooltip"
 import { useProfileSkills } from "@/hooks/useProfileSkills"
 import { usePreference } from "@/hooks/usePreference"
 import {
@@ -75,16 +75,18 @@ export function SkillsSection() {
             <CardDescription>Group skills into reusable categories.</CardDescription>
           </div>
           <div className="flex items-center gap-2">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button asChild variant="ghost" size="sm">
-                  <Link href="/settings#profile-sections" aria-label="Profile section settings">
-                    <Settings data-icon="inline-start" />
-                  </Link>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Skills settings</TooltipContent>
-            </Tooltip>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button asChild variant="ghost" size="sm">
+                    <Link href="/settings#profile-sections" aria-label="Profile section settings">
+                      <Settings data-icon="inline-start" />
+                    </Link>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Skills settings</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
             <Button size="sm" onClick={() => { setEditGroup(null); setGroupForm(EMPTY_GROUP); setGroupOpen(true) }}>Add Group</Button>
           </div>
         </div>
