@@ -29,8 +29,7 @@ export function CertificationsSection() {
   const [open, setOpen] = useState(false)
   const [edit, setEdit] = useState<CertificationEntryResponse | null>(null)
   const [form, setForm] = useState(EMPTY)
-  const fileRef = useRef<HTMLInputElement>(null)
-  const [uploadTarget, setUploadTarget] = useState<number | null>(null)
+  const [selectedAttachment, setSelectedAttachment] = useState<File | null>(null)
   const items = useMemo(() => [...data].sort((a, b) => a.display_order - b.display_order), [data])
 
   async function save() {
@@ -46,24 +45,19 @@ export function CertificationsSection() {
     }
     const result = edit ? await updateProfileCertification(edit.id, payload) : await createProfileCertification(payload)
     if (result.error) return toast.error(result.error)
+    if (selectedAttachment && result.data) {
+      const formData = new FormData()
+      formData.append("file", selectedAttachment)
+      const uploadResult = await uploadProfileCertificationAttachment(result.data.id, formData)
+      if (uploadResult.error) {
+        toast.error(uploadResult.error)
+        return
+      }
+    }
     toast.success(edit ? "Certification updated" : "Certification added")
     setOpen(false)
+    setSelectedAttachment(null)
     refetch()
-  }
-
-  async function onFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
-    if (!file || uploadTarget === null) return
-    const formData = new FormData()
-    formData.append("file", file)
-    const result = await uploadProfileCertificationAttachment(uploadTarget, formData)
-    if (result.error) toast.error(result.error)
-    else {
-      toast.success("Attachment uploaded")
-      refetch()
-    }
-    e.target.value = ""
-    setUploadTarget(null)
   }
 
   return (
@@ -74,11 +68,10 @@ export function CertificationsSection() {
             <CardTitle className="text-base">Certifications</CardTitle>
             <CardDescription>Track certifications, verification links, and attachments.</CardDescription>
           </div>
-          <Button size="sm" onClick={() => { setEdit(null); setForm(EMPTY); setOpen(true) }}>Add Certification</Button>
+          <Button size="sm" onClick={() => { setEdit(null); setForm(EMPTY); setSelectedAttachment(null); setOpen(true) }}>Add Certification</Button>
         </div>
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
-        <input ref={fileRef} type="file" accept=".pdf,.png,.jpg,.jpeg" className="hidden" onChange={onFileChange} />
         {isLoading ? <Skeleton className="h-24 w-full" /> : error ? (
           <p className="text-sm text-destructive">Failed to load certifications: {error}</p>
         ) : items.length === 0 ? (
@@ -99,7 +92,6 @@ export function CertificationsSection() {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" onClick={() => { setUploadTarget(item.id); fileRef.current?.click() }}>Upload Attachment</Button>
               {item.attachment_file_name && (
                 <>
                   <Button variant="ghost" size="sm" onClick={() => downloadProfileCertificationAttachment(item.id, item.attachment_file_name!)}>Download</Button>
@@ -121,6 +113,15 @@ export function CertificationsSection() {
             <Field><FieldLabel htmlFor="cert-credential">Credential ID</FieldLabel><Input id="cert-credential" value={form.credential_id} onChange={(e) => setForm((s) => ({ ...s, credential_id: e.target.value }))} /></Field>
             <Field><FieldLabel htmlFor="cert-link">Verification Link</FieldLabel><Input id="cert-link" value={form.verification_link} onChange={(e) => setForm((s) => ({ ...s, verification_link: e.target.value }))} /></Field>
             <Field><FieldLabel htmlFor="cert-notes">Notes</FieldLabel><Textarea id="cert-notes" value={form.notes} onChange={(e) => setForm((s) => ({ ...s, notes: e.target.value }))} /></Field>
+            <Field>
+              <FieldLabel htmlFor="cert-create-attachment">Attachment (PDF/PNG/JPEG)</FieldLabel>
+              <Input
+                id="cert-create-attachment"
+                type="file"
+                accept=".pdf,.png,.jpg,.jpeg"
+                onChange={(e) => setSelectedAttachment(e.target.files?.[0] ?? null)}
+              />
+            </Field>
           </FieldGroup>
           <DialogFooter><Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button><Button onClick={save}>{edit ? "Save" : "Add"}</Button></DialogFooter>
         </DialogContent>

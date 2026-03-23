@@ -129,8 +129,8 @@ export function ApplicationTable({
     [onRefresh],
   )
 
-  const columns = useMemo((): ColumnDef<ApplicationResponse>[] => {
-    const out: ColumnDef<ApplicationResponse>[] = [
+  const columns = useMemo((): ColumnDef<ApplicationResponse, any>[] => {
+    const out: ColumnDef<ApplicationResponse, any>[] = [
       columnHelper.accessor("job_title", {
         header: "Job Title",
         cell: ({ row, getValue }) => (
@@ -165,7 +165,7 @@ export function ApplicationTable({
             ) : (
               <span className="text-muted-foreground">—</span>
             ),
-        }) as ColumnDef<ApplicationResponse>,
+        }) as ColumnDef<ApplicationResponse, any>,
       )
     }
 
@@ -202,7 +202,7 @@ export function ApplicationTable({
               return av === bv ? 0 : av < bv ? -1 : 1
             },
           },
-        ) as ColumnDef<ApplicationResponse>,
+        ) as ColumnDef<ApplicationResponse, any>,
       )
     }
 
@@ -223,7 +223,7 @@ export function ApplicationTable({
             )
           },
           sortingFn: "alphanumeric",
-        }) as ColumnDef<ApplicationResponse>,
+        }) as ColumnDef<ApplicationResponse, any>,
       )
     }
 
@@ -390,7 +390,7 @@ export function ApplicationTable({
           </div>
         )
       },
-    }) as ColumnDef<ApplicationResponse>
+    }) as ColumnDef<ApplicationResponse, any>
 
     out.push(actions)
     return out

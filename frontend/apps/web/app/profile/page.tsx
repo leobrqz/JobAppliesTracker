@@ -16,13 +16,15 @@ export default function ProfilePage() {
       <h1 className="text-2xl font-semibold">Profile</h1>
       <ProfileDataSection />
       <ResumesSection />
-      <ExperienceSection />
-      <EducationSection />
-      <ProjectsSection />
-      <SkillsSection />
-      <CertificationsSection />
-      <CoursesSection />
       <AboutMeSection />
+      <SkillsSection />
+      <ExperienceSection />
+      <ProjectsSection />
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <CertificationsSection />
+        <CoursesSection />
+      </div>
+      <EducationSection />
     </div>
   )
 }

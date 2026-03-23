@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useRef, useState } from "react"
+import { useMemo, useState } from "react"
 import { toast } from "sonner"
 import { Button } from "@workspace/ui/components/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@workspace/ui/components/card"
@@ -29,8 +29,7 @@ export function CoursesSection() {
   const [open, setOpen] = useState(false)
   const [edit, setEdit] = useState<CourseEntryResponse | null>(null)
   const [form, setForm] = useState(EMPTY)
-  const [uploadTarget, setUploadTarget] = useState<number | null>(null)
-  const fileRef = useRef<HTMLInputElement>(null)
+  const [selectedAttachment, setSelectedAttachment] = useState<File | null>(null)
   const items = useMemo(() => [...data].sort((a, b) => a.display_order - b.display_order), [data])
 
   async function save() {
@@ -45,24 +44,19 @@ export function CoursesSection() {
     }
     const result = edit ? await updateProfileCourse(edit.id, payload) : await createProfileCourse(payload)
     if (result.error) return toast.error(result.error)
+    if (selectedAttachment && result.data) {
+      const formData = new FormData()
+      formData.append("file", selectedAttachment)
+      const uploadResult = await uploadProfileCourseAttachment(result.data.id, formData)
+      if (uploadResult.error) {
+        toast.error(uploadResult.error)
+        return
+      }
+    }
     toast.success(edit ? "Course updated" : "Course added")
     setOpen(false)
+    setSelectedAttachment(null)
     refetch()
-  }
-
-  async function onFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
-    if (!file || uploadTarget === null) return
-    const formData = new FormData()
-    formData.append("file", file)
-    const result = await uploadProfileCourseAttachment(uploadTarget, formData)
-    if (result.error) toast.error(result.error)
-    else {
-      toast.success("Attachment uploaded")
-      refetch()
-    }
-    e.target.value = ""
-    setUploadTarget(null)
   }
 
   return (
@@ -73,11 +67,10 @@ export function CoursesSection() {
             <CardTitle className="text-base">Courses</CardTitle>
             <CardDescription>Track courses, verification links, and attachments.</CardDescription>
           </div>
-          <Button size="sm" onClick={() => { setEdit(null); setForm(EMPTY); setOpen(true) }}>Add Course</Button>
+          <Button size="sm" onClick={() => { setEdit(null); setForm(EMPTY); setSelectedAttachment(null); setOpen(true) }}>Add Course</Button>
         </div>
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
-        <input ref={fileRef} type="file" accept=".pdf,.png,.jpg,.jpeg" className="hidden" onChange={onFileChange} />
         {isLoading ? <Skeleton className="h-24 w-full" /> : error ? (
           <p className="text-sm text-destructive">Failed to load courses: {error}</p>
         ) : items.length === 0 ? (
@@ -98,7 +91,6 @@ export function CoursesSection() {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" onClick={() => { setUploadTarget(item.id); fileRef.current?.click() }}>Upload Attachment</Button>
               {item.attachment_file_name && (
                 <>
                   <Button variant="ghost" size="sm" onClick={() => downloadProfileCourseAttachment(item.id, item.attachment_file_name!)}>Download</Button>
@@ -119,6 +111,15 @@ export function CoursesSection() {
             <Field><FieldLabel htmlFor="course-duration">Duration (hours)</FieldLabel><Input id="course-duration" type="number" value={form.duration_hours} onChange={(e) => setForm((s) => ({ ...s, duration_hours: e.target.value }))} /></Field>
             <Field><FieldLabel htmlFor="course-link">Verification Link</FieldLabel><Input id="course-link" value={form.verification_link} onChange={(e) => setForm((s) => ({ ...s, verification_link: e.target.value }))} /></Field>
             <Field><FieldLabel htmlFor="course-notes">Notes</FieldLabel><Textarea id="course-notes" value={form.notes} onChange={(e) => setForm((s) => ({ ...s, notes: e.target.value }))} /></Field>
+            <Field>
+              <FieldLabel htmlFor="course-create-attachment">Attachment (PDF/PNG/JPEG)</FieldLabel>
+              <Input
+                id="course-create-attachment"
+                type="file"
+                accept=".pdf,.png,.jpg,.jpeg"
+                onChange={(e) => setSelectedAttachment(e.target.files?.[0] ?? null)}
+              />
+            </Field>
           </FieldGroup>
           <DialogFooter><Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button><Button onClick={save}>{edit ? "Save" : "Add"}</Button></DialogFooter>
         </DialogContent>
