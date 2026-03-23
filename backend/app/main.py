@@ -10,6 +10,9 @@ from app.routes.company import router as company_router
 from app.routes.dashboard import router as dashboard_router
 from app.routes.job_platform import router as job_platform_router
 from app.routes.platform_template import router as platform_template_router
+from app.routes.profile_about_me import router as profile_about_me_router
+from app.routes.profile_certification import router as profile_certification_router
+from app.routes.profile_course import router as profile_course_router
 from app.routes.profile_data import router as profile_data_router
 from app.routes.profile_education import router as profile_education_router
 from app.routes.profile_experience import router as profile_experience_router
@@ -35,6 +38,9 @@ app.include_router(profile_experience_router)
 app.include_router(profile_education_router)
 app.include_router(profile_project_router)
 app.include_router(profile_skill_router)
+app.include_router(profile_certification_router)
+app.include_router(profile_course_router)
+app.include_router(profile_about_me_router)
 app.include_router(platform_template_router)
 app.include_router(job_platform_router)
 app.include_router(company_router)

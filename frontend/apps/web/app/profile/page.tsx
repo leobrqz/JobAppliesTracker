@@ -6,6 +6,9 @@ import { EducationSection } from "./EducationSection"
 import { ExperienceSection } from "./ExperienceSection"
 import { ProjectsSection } from "./ProjectsSection"
 import { SkillsSection } from "./SkillsSection"
+import { CertificationsSection } from "./CertificationsSection"
+import { CoursesSection } from "./CoursesSection"
+import { AboutMeSection } from "./AboutMeSection"
 
 export default function ProfilePage() {
   return (
@@ -17,6 +20,9 @@ export default function ProfilePage() {
       <EducationSection />
       <ProjectsSection />
       <SkillsSection />
+      <CertificationsSection />
+      <CoursesSection />
+      <AboutMeSection />
     </div>
   )
 }

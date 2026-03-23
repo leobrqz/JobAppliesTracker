@@ -58,6 +58,19 @@ export type SkillItemUpdate = components["schemas"]["SkillItemUpdate"]
 export type SkillItemResponse = components["schemas"]["SkillItemResponse"]
 export type SkillReorderItem = components["schemas"]["SkillReorderItem"]
 
+export type CertificationEntryCreate = components["schemas"]["CertificationEntryCreate"]
+export type CertificationEntryUpdate = components["schemas"]["CertificationEntryUpdate"]
+export type CertificationEntryResponse = components["schemas"]["CertificationEntryResponse"]
+export type CertificationReorderItem = components["schemas"]["CertificationReorderItem"]
+
+export type CourseEntryCreate = components["schemas"]["CourseEntryCreate"]
+export type CourseEntryUpdate = components["schemas"]["CourseEntryUpdate"]
+export type CourseEntryResponse = components["schemas"]["CourseEntryResponse"]
+export type CourseReorderItem = components["schemas"]["CourseReorderItem"]
+
+export type ProfileAboutMeUpdate = components["schemas"]["ProfileAboutMeUpdate"]
+export type ProfileAboutMeResponse = components["schemas"]["ProfileAboutMeResponse"]
+
 export type ResumeUpdate = components["schemas"]["ResumeUpdate"]
 export type ResumeResponse = components["schemas"]["ResumeResponse"]
 
