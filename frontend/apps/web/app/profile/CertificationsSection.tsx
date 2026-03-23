@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useRef, useState } from "react"
+import { useMemo, useState } from "react"
 import { toast } from "sonner"
 import { Button } from "@workspace/ui/components/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@workspace/ui/components/card"
@@ -20,7 +20,7 @@ import {
   uploadProfileCertificationAttachment,
 } from "@/services/profile-certifications.service"
 import type { CertificationEntryResponse } from "@/types"
-import { buildReorderPayload, moveItem } from "./profile-section-utils"
+import { buildReorderPayload, copyText, moveItem } from "./profile-section-utils"
 
 const EMPTY = { name: "", issuer: "", issued_on: "", expires_on: "", credential_id: "", verification_link: "", notes: "" }
 
@@ -28,6 +28,7 @@ export function CertificationsSection() {
   const { data, isLoading, error, refetch } = useProfileCertifications()
   const [open, setOpen] = useState(false)
   const [edit, setEdit] = useState<CertificationEntryResponse | null>(null)
+  const [inspectEntry, setInspectEntry] = useState<CertificationEntryResponse | null>(null)
   const [form, setForm] = useState(EMPTY)
   const [selectedAttachment, setSelectedAttachment] = useState<File | null>(null)
   const items = useMemo(() => [...data].sort((a, b) => a.display_order - b.display_order), [data])
@@ -80,7 +81,14 @@ export function CertificationsSection() {
           <div key={item.id} className="flex flex-col gap-2 rounded-md border p-3">
             <div className="flex items-start justify-between gap-2">
               <div className="flex flex-col gap-1">
-                <p className="text-sm font-medium">{item.name} - {item.issuer}</p>
+                <button
+                  type="button"
+                  className="w-fit cursor-pointer text-left text-sm font-medium underline"
+                  onClick={() => setInspectEntry(item)}
+                >
+                  {item.name}
+                </button>
+                <p className="text-xs text-muted-foreground">{item.issuer}</p>
                 {item.verification_link && <a className="text-xs text-primary underline" href={item.verification_link} target="_blank" rel="noreferrer">Verification link</a>}
                 {item.notes && <p className="text-sm text-muted-foreground">{item.notes}</p>}
               </div>
@@ -126,6 +134,46 @@ export function CertificationsSection() {
           <DialogFooter><Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button><Button onClick={save}>{edit ? "Save" : "Add"}</Button></DialogFooter>
         </DialogContent>
       </Dialog>
+      <Dialog open={inspectEntry !== null} onOpenChange={(openState) => { if (!openState) setInspectEntry(null) }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Certification details</DialogTitle>
+          </DialogHeader>
+          {inspectEntry && (
+            <div className="flex flex-col gap-2">
+              <InspectRow label="Name" value={inspectEntry.name} />
+              <InspectRow label="Issuer" value={inspectEntry.issuer} />
+              <InspectRow label="Issued on" value={inspectEntry.issued_on ?? ""} />
+              <InspectRow label="Expires on" value={inspectEntry.expires_on ?? ""} />
+              <InspectRow label="Credential ID" value={inspectEntry.credential_id ?? ""} />
+              <InspectRow label="Verification link" value={inspectEntry.verification_link ?? ""} />
+              <InspectRow label="Notes" value={inspectEntry.notes ?? ""} />
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </Card>
+  )
+}
+
+function InspectRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-start justify-between gap-2 rounded-md border p-2">
+      <div className="flex min-w-0 flex-col">
+        <p className="text-xs text-muted-foreground">{label}</p>
+        <p className="text-sm break-words">{value || "—"}</p>
+      </div>
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={async () => {
+          const ok = await copyText(value || "")
+          if (ok) toast.success("Copied")
+          else toast.error("Failed to copy")
+        }}
+      >
+        Copy
+      </Button>
+    </div>
   )
 }

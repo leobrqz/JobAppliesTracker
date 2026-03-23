@@ -137,7 +137,7 @@ export function ApplicationTable({
           <Button
             type="button"
             variant="link"
-            className="h-auto max-w-[min(100%,16rem)] justify-start truncate p-0 font-medium"
+            className="h-auto max-w-[min(100%,16rem)] cursor-pointer justify-start truncate p-0 font-medium"
             onClick={() => setDetailApp(row.original)}
           >
             {getValue()}

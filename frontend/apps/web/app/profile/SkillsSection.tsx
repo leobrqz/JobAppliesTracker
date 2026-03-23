@@ -1,6 +1,8 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import Link from "next/link"
+import { Settings } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@workspace/ui/components/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@workspace/ui/components/card"
@@ -10,7 +12,9 @@ import { Input } from "@workspace/ui/components/input"
 import { Separator } from "@workspace/ui/components/separator"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { Textarea } from "@workspace/ui/components/textarea"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@workspace/ui/components/tooltip"
 import { useProfileSkills } from "@/hooks/useProfileSkills"
+import { usePreference } from "@/hooks/usePreference"
 import {
   createProfileSkillGroup,
   createProfileSkillItem,
@@ -29,6 +33,7 @@ const EMPTY_ITEM = { name: "", level: "" }
 
 export function SkillsSection() {
   const { data, isLoading, error, refetch } = useProfileSkills()
+  const [copyFormat] = usePreference<"bullet" | "comma">("profile.skills.copyFormat", "bullet")
   const [groupOpen, setGroupOpen] = useState(false)
   const [groupForm, setGroupForm] = useState(EMPTY_GROUP)
   const [editGroup, setEditGroup] = useState<SkillGroupResponse | null>(null)
@@ -69,7 +74,19 @@ export function SkillsSection() {
             <CardTitle className="text-base">Skills</CardTitle>
             <CardDescription>Group skills into reusable categories.</CardDescription>
           </div>
-          <Button size="sm" onClick={() => { setEditGroup(null); setGroupForm(EMPTY_GROUP); setGroupOpen(true) }}>Add Group</Button>
+          <div className="flex items-center gap-2">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button asChild variant="ghost" size="sm">
+                  <Link href="/settings#profile-sections" aria-label="Profile section settings">
+                    <Settings data-icon="inline-start" />
+                  </Link>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Skills settings</TooltipContent>
+            </Tooltip>
+            <Button size="sm" onClick={() => { setEditGroup(null); setGroupForm(EMPTY_GROUP); setGroupOpen(true) }}>Add Group</Button>
+          </div>
         </div>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
@@ -89,7 +106,20 @@ export function SkillsSection() {
               <div className="flex items-center gap-1">
                 <Button variant="ghost" size="sm" onClick={async () => { const r = await reorderProfileSkillGroups(buildReorderPayload(moveItem(groups, index, index - 1))); if (r.error) toast.error(r.error); else refetch() }} disabled={index === 0}>Up</Button>
                 <Button variant="ghost" size="sm" onClick={async () => { const r = await reorderProfileSkillGroups(buildReorderPayload(moveItem(groups, index, index + 1))); if (r.error) toast.error(r.error); else refetch() }} disabled={index === groups.length - 1}>Down</Button>
-                <Button variant="ghost" size="sm" onClick={async () => { const ok = await copyText(`${group.name}\n${group.items.map((item) => `- ${item.name}${item.level ? ` (${item.level})` : ""}`).join("\n")}`); if (ok) toast.success("Skills copied"); else toast.error("Failed to copy") }}>Copy</Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={async () => {
+                    const text = copyFormat === "comma"
+                      ? `${group.name}: ${group.items.map((item) => `${item.name}${item.level ? ` (${item.level})` : ""}`).join(", ")}`
+                      : `${group.name}\n${group.items.map((item) => `- ${item.name}${item.level ? ` (${item.level})` : ""}`).join("\n")}`
+                    const ok = await copyText(text)
+                    if (ok) toast.success("Skills copied")
+                    else toast.error("Failed to copy")
+                  }}
+                >
+                  Copy
+                </Button>
                 <Button variant="ghost" size="sm" onClick={() => { setEditGroup(group); setGroupForm({ name: group.name, description: group.description ?? "" }); setGroupOpen(true) }}>Edit</Button>
                 <Button variant="ghost" size="sm" onClick={async () => { const r = await deleteProfileSkillGroup(group.id); if (r.error) toast.error(r.error); else { toast.success("Group deleted"); refetch() } }}>Delete</Button>
               </div>

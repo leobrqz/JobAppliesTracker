@@ -76,6 +76,10 @@ export default function SettingsPage() {
   const [timeFormat, setTimeFormat] = usePreference<"12h" | "24h">("display.timeFormat", "12h")
   const [timeZone, setTimeZone] = usePreference<TimeZoneValue>("display.timeZone", "auto")
   const [locale, setLocale] = usePreference<string>("display.locale", "en-US")
+  const [skillsCopyFormat, setSkillsCopyFormat] = usePreference<"bullet" | "comma">(
+    "profile.skills.copyFormat",
+    "bullet",
+  )
 
   return (
     <div className="flex flex-col gap-4">
@@ -272,6 +276,38 @@ export default function SettingsPage() {
                   <SelectContent>
                     <SelectItem value="en-US">English (United States)</SelectItem>
                     <SelectItem value="pt-BR">Português (Brasil)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </Field>
+          </FieldGroup>
+        </CardContent>
+      </Card>
+
+      <Card id="profile-sections">
+        <CardHeader>
+          <CardTitle className="text-base">Profile Sections</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <FieldGroup>
+            <Field>
+              <div className="flex items-center justify-between gap-4">
+                <div className="space-y-1">
+                  <FieldLabel>Skills copy format</FieldLabel>
+                  <p className="text-xs text-muted-foreground">
+                    Choose how a skills group is copied from the Profile page.
+                  </p>
+                </div>
+                <Select
+                  value={skillsCopyFormat}
+                  onValueChange={(value) => setSkillsCopyFormat(value as "bullet" | "comma")}
+                >
+                  <SelectTrigger className="w-56">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="bullet">Bullet-point style</SelectItem>
+                    <SelectItem value="comma">Comma separated</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
