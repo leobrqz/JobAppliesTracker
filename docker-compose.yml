@@ -1,24 +1,4 @@
 services:
-  postgres:
-    image: postgres:18
-    container_name: jobappliestracker-postgres
-    restart: always
-    environment:
-      POSTGRES_PASSWORD: root
-      POSTGRES_DB: jobtracker
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql
-    networks:
-      - jobappliestracker-network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
-      start_period: 30s
-
   backend:
     build:
       context: ./backend
@@ -31,10 +11,10 @@ services:
     volumes:
       - ./backend:/app
     ports:
-      - "8000:8000"
-    depends_on:
-      postgres:
-        condition: service_healthy
+      # Host 8001 avoids clashing with self-hosted Supabase Kong on 8000
+      - "8001:8000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       - jobappliestracker-network
 
@@ -46,7 +26,8 @@ services:
     restart: always
     environment:
       CI: "true"
-      NEXT_PUBLIC_API_URL: http://localhost:8000
+    env_file:
+      - ./frontend/apps/web/.env
     command: sh -c "pnpm install --no-frozen-lockfile && pnpm --filter web dev"
     volumes:
       - ./frontend:/app
@@ -59,7 +40,6 @@ services:
       - jobappliestracker-network
 
 volumes:
-  postgres_data:
   frontend_node_modules:
 
 networks:

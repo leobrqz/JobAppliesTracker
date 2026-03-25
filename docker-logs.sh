@@ -1,5 +1,11 @@
-#!/bin/bash
-echo "Visualizando logs do backend e frontend..."
-echo docker compose logs -f backend frontend
+#!/usr/bin/env bash
+set -euo pipefail
 
-docker compose logs -f backend frontend
+case "${1:-app}" in
+  supabase)
+    ( cd supabase && docker compose logs -f )
+    ;;
+  app|*)
+    docker compose logs -f backend frontend
+    ;;
+esac

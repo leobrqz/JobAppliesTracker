@@ -1,2 +1,7 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Linux containers: CRLF breaks shebangs (exec: no such file or directory) and Elixir eval
+supabase/**/*.exs text eol=lf
+supabase/**/*.sh text eol=lf
+supabase/**/*.yml text eol=lf

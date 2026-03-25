@@ -2,13 +2,16 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-load_dotenv(Path(__file__).resolve().parent.parent / ".env", encoding="utf-8", override=True)
+load_dotenv(
+    Path(__file__).resolve().parent.parent / ".env",
+    encoding="utf-8-sig",
+    override=True,
+)
 
 from logging.config import fileConfig
 
 from alembic import context
 
-from app.core.config import settings
 from app.core.database import Base, engine
 from app import models
 
@@ -17,14 +20,17 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
+config.set_main_option(
+    "sqlalchemy.url",
+    engine.url.render_as_string(hide_password=True),
+)
 
 target_metadata = Base.metadata
 
 
 def run_migrations_offline() -> None:
     context.configure(
-        url=settings.DATABASE_URL,
+        url=engine.url.render_as_string(hide_password=True),
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},

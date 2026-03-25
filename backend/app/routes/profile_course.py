@@ -1,5 +1,7 @@
+import io
+
 from fastapi import APIRouter, Depends, File, HTTPException, Response, UploadFile
-from fastapi.responses import FileResponse
+from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
@@ -66,6 +68,12 @@ def delete_attachment(entry_id: int, db: Session = Depends(get_db)) -> CourseEnt
 
 
 @router.get("/{entry_id}/attachment/download")
-def download_attachment(entry_id: int, db: Session = Depends(get_db)) -> FileResponse:
-    entry, resolved = profile_course_service.get_attachment_download(db, entry_id)
-    return FileResponse(path=resolved, filename=entry.attachment_file_name or "attachment")
+def download_attachment(entry_id: int, db: Session = Depends(get_db)) -> StreamingResponse:
+    entry, data = profile_course_service.get_attachment_download(db, entry_id)
+    media = entry.attachment_mime_type or "application/octet-stream"
+    name = entry.attachment_file_name or "attachment"
+    return StreamingResponse(
+        io.BytesIO(data),
+        media_type=media,
+        headers={"Content-Disposition": f'attachment; filename="{name}"'},
+    )

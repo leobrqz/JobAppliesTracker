@@ -4,7 +4,7 @@ set -euo pipefail
 # Extended backend smoke test.
 # Hits a broader set of endpoints to catch regressions across resources.
 
-BASE_URL="${BASE_URL:-http://localhost:8000}"
+BASE_URL="${BASE_URL:-http://localhost:8001}"
 
 echo "Running extended backend smoke test against ${BASE_URL}"
 

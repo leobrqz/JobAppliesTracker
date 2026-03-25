@@ -9,7 +9,7 @@
 [![React](https://img.shields.io/badge/React-19-61DAFB?logo=react)](https://react.dev/)
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.135-009688?logo=fastapi)](https://fastapi.tiangolo.com/)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-18-336791?logo=postgresql)](https://www.postgresql.org/)
+[![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?logo=supabase&logoColor=white)](https://supabase.com/)
 
 
 
@@ -29,7 +29,7 @@ Track applications across platforms, manage companies, schedule interviews, and 
 |-------|------|
 | Frontend | Next.js 16, React 19, Tailwind CSS, shadcn/ui, Turborepo |
 | Backend | FastAPI, SQLAlchemy, Alembic |
-| Data | PostgreSQL |
+| Data | PostgreSQL (Supabase) |
 | Runtime | Docker |
 | Testing | Vitest + React Testing Library, Pytest |
 
@@ -103,73 +103,54 @@ Global display and layout.
 
 ## Setup
 
-You can run the application via Docker or locally.
-
+You can run the application via Docker
 
 **Note:**  
 Running migrations is required on first setup. Also run after pulling updates that include new migrations.
 
+
 **Prerequisites:**  
-- Setup up `backend/.env` (see `backend/.env.example`)
-- Setup up `frontend/.env` (see `frontend/.env.example`)
+- Set up `backend/.env` (see `backend/.env.example`)
+- Set up `supabase/.env` (see `supabase/.env.example`)
+- Set up `frontend/apps/web/.env` (see `frontend/apps/web/.env.example`)
+
+Also, check the [Supabase documentation](https://supabase.com/docs/guides/self-hosting/docker) for more information.
+
+**You MUST set up Supabase .env before anything**
 
 
-
-## Docker
-
+### 1. Clone the repository
 ```bash
 git clone https://github.com/leobrqz/JobAppliesTracker.git
 cd JobAppliesTracker
 ```
 
-
-Start the services:
-
-```bash
-docker compose up --build -d
-```
-
-Run migrations:
+### 2. Start Supabase and create a new bucket
 
 ```bash
-docker exec jobappliestracker-backend alembic upgrade head
+cd supabase && docker compose up -d
 ```
 
-
-## Local Environment
-
-**Prerequisites:** Node 20+, pnpm, Python 3.11+, PostgreSQL
-
-### 1. PostgreSQL
-Start PostgreSQL and create database `jobtracker`  
+In **Supabase Studio** → **Storage** → **Create bucket**:
+- Create a **private** bucket named `jobtracker` 
 
 
-### 2. Backend  
-
-**Prerequisites:** Set up Python virtual environment.
+### 3. Start the app:
+This will restart Supabase and start the frontend and backend.
 
 ```bash
-cd backend
-pip install -r requirements.txt
+./docker-up.sh
 ```
 
-Run migrations:
+###  4. Run migrations:
 
 ```bash
-alembic upgrade head
+./docker-alembic-upgrade.sh
 ```
 
-Run the backend:
-```bash
-uvicorn app.main:app --reload
-```
-
-### 3. Frontend:
-
-```bash
-cd frontend
-pnpm install
-pnpm dev
-```
+### 5. Access the application:
+- Next.js: http://localhost:3000
+- Supabase: http://localhost:8000
+- FastAPI: http://localhost:8001
 
 

@@ -6,7 +6,11 @@ import type {
   CertificationReorderItem,
 } from "@/types"
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000"
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL
+
+if (!BASE_URL) {
+  throw new Error("NEXT_PUBLIC_API_URL is required (set it in frontend/apps/web/.env.local or via Docker Compose).")
+}
 
 export function getProfileCertifications(): Promise<ApiResult<CertificationEntryResponse[]>> {
   return apiRequest<CertificationEntryResponse[]>("/api/profile-certifications/")

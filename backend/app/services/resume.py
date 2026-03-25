@@ -1,10 +1,10 @@
-import os
+from uuid import uuid4
 
 from fastapi import HTTPException
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from app.core.storage import delete_file, get_file_path, save_file
+from app.core.storage import StorageError, delete_file, read_file_bytes, save_file
 from app.core import utcnow
 from app.models.resume import Resume
 from app.schemas.resume import ResumeCreate, ResumeUpdate
@@ -23,15 +23,30 @@ def get_resumes(db: Session, archived: bool = False) -> list[Resume]:
     return query.order_by(Resume.created_at.desc()).all()
 
 
+def _resume_storage_key(display_name: str) -> str:
+    safe = display_name.replace("/", "_").replace("\\", "_")
+    return f"resumes/{uuid4().hex}-{safe}"
+
+
 def upload_resume(db: Session, name: str, description: str | None, data: bytes) -> Resume:
-    stored_path = save_file(name, data)
+    try:
+        stored_path = save_file(
+            _resume_storage_key(name),
+            data,
+            content_type="application/octet-stream",
+        )
+    except StorageError as exc:
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
     resume = Resume(name=name, description=description, file_path=stored_path)
     db.add(resume)
     try:
         db.commit()
     except IntegrityError:
         db.rollback()
-        delete_file(stored_path)
+        try:
+            delete_file(stored_path)
+        except Exception:
+            pass
         raise HTTPException(status_code=409, detail="A resume with this name already exists")
     db.refresh(resume)
     return resume
@@ -83,13 +98,14 @@ def restore_resume(db: Session, resume_id: int) -> Resume | None:
     return resume
 
 
-def get_resume_for_download(db: Session, resume_id: int) -> tuple[Resume, str]:
+def get_resume_for_download(db: Session, resume_id: int) -> tuple[Resume, bytes]:
     resume = get_resume(db, resume_id)
     if resume is None:
         raise HTTPException(status_code=404, detail="Resume not found")
     if resume.archived_at is not None:
         raise HTTPException(status_code=404, detail="Resume is archived")
-    resolved_path = get_file_path(resume.file_path)
-    if not os.path.exists(resolved_path):
-        raise HTTPException(status_code=404, detail="Resume file not found on disk")
-    return resume, resolved_path
+    try:
+        data = read_file_bytes(resume.file_path)
+    except StorageError:
+        raise HTTPException(status_code=404, detail="Resume file not found") from None
+    return resume, data

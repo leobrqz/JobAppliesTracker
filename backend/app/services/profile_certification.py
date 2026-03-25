@@ -1,10 +1,9 @@
-import os
 from uuid import uuid4
 
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
-from app.core.storage import delete_file, get_file_path, save_file
+from app.core.storage import StorageError, delete_file, read_file_bytes, save_file
 from app.models.profile_certification import CertificationEntry
 from app.schemas.profile_certification import (
     CertificationEntryCreate,
@@ -21,9 +20,13 @@ def _reindex_entries(db: Session) -> None:
         entry.display_order = index
 
 
-def _store_attachment(file_name: str, data: bytes) -> str:
+def _store_attachment(file_name: str, data: bytes, mime_type: str) -> str:
     stored_name = f"certifications/{uuid4().hex}-{file_name}"
-    return save_file(stored_name, data)
+    return save_file(
+        stored_name,
+        data,
+        content_type=mime_type or "application/octet-stream",
+    )
 
 
 def get_certification(db: Session, entry_id: int) -> CertificationEntry | None:
@@ -98,7 +101,10 @@ def upload_attachment(db: Session, entry_id: int, file_name: str, mime_type: str
     if mime_type not in ALLOWED_MIME_TYPES:
         raise HTTPException(status_code=400, detail="Unsupported file type. Allowed: PDF, PNG, JPEG")
     old_path = entry.attachment_file_path
-    stored_path = _store_attachment(file_name, data)
+    try:
+        stored_path = _store_attachment(file_name, data, mime_type)
+    except StorageError as exc:
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
     entry.attachment_file_path = stored_path
     entry.attachment_file_name = file_name
     entry.attachment_mime_type = mime_type
@@ -124,13 +130,14 @@ def remove_attachment(db: Session, entry_id: int) -> CertificationEntry | None:
     return entry
 
 
-def get_attachment_download(db: Session, entry_id: int) -> tuple[CertificationEntry, str]:
+def get_attachment_download(db: Session, entry_id: int) -> tuple[CertificationEntry, bytes]:
     entry = get_certification(db, entry_id)
     if entry is None:
         raise HTTPException(status_code=404, detail="Certification not found")
     if not entry.attachment_file_path:
         raise HTTPException(status_code=404, detail="Attachment not found")
-    resolved = get_file_path(entry.attachment_file_path)
-    if not os.path.exists(resolved):
-        raise HTTPException(status_code=404, detail="Attachment file not found on disk")
-    return entry, resolved
+    try:
+        data = read_file_bytes(entry.attachment_file_path)
+    except StorageError:
+        raise HTTPException(status_code=404, detail="Attachment file not found") from None
+    return entry, data

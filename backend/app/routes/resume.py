@@ -1,5 +1,7 @@
+import io
+
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Response, UploadFile
-from fastapi.responses import FileResponse
+from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
@@ -66,10 +68,10 @@ def restore_resume(resume_id: int, db: Session = Depends(get_db)) -> ResumeRespo
 
 
 @router.get("/{resume_id}/download")
-def download_resume(resume_id: int, db: Session = Depends(get_db)) -> FileResponse:
-    resume, resolved_path = resume_service.get_resume_for_download(db, resume_id)
-    return FileResponse(
-        path=resolved_path,
-        filename=resume.name,
+def download_resume(resume_id: int, db: Session = Depends(get_db)) -> StreamingResponse:
+    resume, data = resume_service.get_resume_for_download(db, resume_id)
+    return StreamingResponse(
+        io.BytesIO(data),
         media_type="application/octet-stream",
+        headers={"Content-Disposition": f'attachment; filename="{resume.name}"'},
     )
