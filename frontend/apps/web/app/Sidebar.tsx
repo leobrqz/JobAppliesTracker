@@ -1,8 +1,9 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { BarChart2, Briefcase, Building2, CalendarDays, LayoutDashboard, Settings, User } from "lucide-react"
+import { createClient } from "@/lib/supabase/client"
 
 const NAV_ITEMS = [
   { href: "/profile", label: "Profile", icon: User },
@@ -16,6 +17,14 @@ const NAV_ITEMS = [
 
 export function Sidebar() {
   const pathname = usePathname()
+  const router = useRouter()
+  const supabase = createClient()
+
+  async function onLogout() {
+    await supabase.auth.signOut()
+    router.replace("/login")
+    router.refresh()
+  }
 
   return (
     <aside className="flex h-screen w-56 shrink-0 flex-col border-r bg-card px-3 py-6">
@@ -41,6 +50,15 @@ export function Sidebar() {
           )
         })}
       </nav>
+      <div className="mt-auto px-2">
+        <button
+          type="button"
+          onClick={onLogout}
+          className="w-full rounded-md border px-3 py-2 text-left text-sm font-medium text-muted-foreground hover:bg-accent"
+        >
+          Logout
+        </button>
+      </div>
     </aside>
   )
 }

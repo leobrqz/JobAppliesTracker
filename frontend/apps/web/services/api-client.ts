@@ -6,6 +6,17 @@ if (!BASE_URL) {
 
 export type ApiResult<T> = { data: T; error: null } | { data: null; error: string }
 
+let getAccessToken: (() => Promise<string | null>) | null = null
+
+if (typeof window !== "undefined") {
+  getAccessToken = async () => {
+    const { createClient } = await import("@/lib/supabase/client")
+    const supabase = createClient()
+    const { data } = await supabase.auth.getSession()
+    return data.session?.access_token ?? null
+  }
+}
+
 function normalizeErrorMessage(status: number, body: unknown): string {
   if (body && typeof body === "object") {
     const anyBody = body as any
@@ -44,7 +55,17 @@ export async function apiRequest<T>(
   options?: RequestInit,
 ): Promise<ApiResult<T>> {
   try {
-    const response = await fetch(`${BASE_URL}${path}`, options)
+    const headers = new Headers(options?.headers)
+    if (getAccessToken) {
+      const token = await getAccessToken()
+      if (token) {
+        headers.set("Authorization", `Bearer ${token}`)
+      }
+    }
+    const response = await fetch(`${BASE_URL}${path}`, {
+      ...options,
+      headers,
+    })
 
     if (response.status === 204) {
       return { data: null as T, error: null }

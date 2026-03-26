@@ -1,8 +1,10 @@
 from datetime import date, datetime
 from decimal import Decimal
 from typing import Optional
+from uuid import UUID
 
-from sqlalchemy import Date, ForeignKey, Integer, Numeric, String, Text, func
+from sqlalchemy import Date, ForeignKey, Integer, Numeric, String, Text, func, text
+from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
@@ -12,6 +14,7 @@ class ExperienceEntry(Base):
     __tablename__ = "experience_entry"
 
     id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), nullable=False, server_default=text("auth.uid()"), index=True)
     job_title: Mapped[str] = mapped_column(String(255), nullable=False)
     company: Mapped[str] = mapped_column(String(255), nullable=False)
     start_date: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
@@ -38,6 +41,7 @@ class ExperienceBullet(Base):
     __tablename__ = "experience_bullet"
 
     id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), nullable=False, server_default=text("auth.uid()"), index=True)
     experience_entry_id: Mapped[int] = mapped_column(
         ForeignKey("experience_entry.id", ondelete="CASCADE"),
         nullable=False,

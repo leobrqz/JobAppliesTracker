@@ -1,7 +1,12 @@
 from fastapi import FastAPI
+from fastapi import Request
+from fastapi import HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
+from app.core.auth import verify_bearer_token
 from app.core.config import settings
+from app.core.request_context import current_user_id_ctx
 from app.exception_handlers import register_exception_handlers
 from app.routes.application import router as application_router
 from app.routes.application_history import router as application_history_router
@@ -31,6 +36,34 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.middleware("http")
+async def auth_middleware(request: Request, call_next):
+    path = request.url.path
+    if path in settings.auth_public_paths_list:
+        return await call_next(request)
+    if path.startswith("/docs") or path.startswith("/redoc") or path.startswith("/openapi.json"):
+        return await call_next(request)
+
+    auth_header = request.headers.get("authorization", "")
+    if not auth_header.lower().startswith("bearer "):
+        return JSONResponse(status_code=401, content={"detail": "Missing bearer token"})
+
+    token = auth_header.split(" ", 1)[1].strip()
+    if not token:
+        return JSONResponse(status_code=401, content={"detail": "Missing bearer token"})
+
+    try:
+        user = verify_bearer_token(token)
+    except HTTPException as exc:
+        return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
+    request.state.user_id = str(user.user_id)
+    token_ctx = current_user_id_ctx.set(user.user_id)
+    try:
+        return await call_next(request)
+    finally:
+        current_user_id_ctx.reset(token_ctx)
 
 app.include_router(resume_router)
 app.include_router(profile_data_router)

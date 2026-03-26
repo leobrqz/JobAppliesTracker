@@ -1,6 +1,7 @@
 from sqlalchemy import func, text
 from sqlalchemy.orm import Session
 
+from app.core.request_context import current_user_id_ctx
 from app.models.application import Application
 from app.models.application_history import ApplicationHistory
 from app.models.job_platform import JobPlatform
@@ -15,9 +16,18 @@ from app.schemas.dashboard import (
 
 
 def get_summary(db: Session) -> DashboardSummary:
+    user_id = current_user_id_ctx.get()
+    if user_id is None:
+        return DashboardSummary(
+            total_applications=0,
+            total_offers=0,
+            total_rejections=0,
+            response_rate=0.0,
+            avg_days_per_stage=[],
+        )
     total = (
         db.query(func.count(Application.id))
-        .filter(Application.archived_at.is_(None))
+        .filter(Application.archived_at.is_(None), Application.user_id == user_id)
         .scalar()
         or 0
     )
@@ -27,6 +37,7 @@ def get_summary(db: Session) -> DashboardSummary:
         .join(Application, Application.id == ApplicationHistory.application_id)
         .filter(
             Application.archived_at.is_(None),
+            Application.user_id == user_id,
             ApplicationHistory.stage != "application",
         )
         .distinct()
@@ -46,7 +57,7 @@ def get_summary(db: Session) -> DashboardSummary:
                     )) / 86400.0 AS days_to_next
                 FROM application_history h
                 JOIN application a ON a.id = h.application_id
-                WHERE a.archived_at IS NULL
+                WHERE a.archived_at IS NULL AND a.user_id = :user_id
             )
             SELECT stage, AVG(days_to_next) AS avg_days
             FROM history_with_next
@@ -54,7 +65,8 @@ def get_summary(db: Session) -> DashboardSummary:
             GROUP BY stage
             ORDER BY avg_days DESC
             """
-        )
+        ),
+        {"user_id": str(user_id)},
     ).fetchall()
 
     avg_days_per_stage = [
@@ -64,14 +76,14 @@ def get_summary(db: Session) -> DashboardSummary:
 
     total_offers = (
         db.query(func.count(Application.id))
-        .filter(Application.archived_at.is_(None), Application.status == "offered")
+        .filter(Application.archived_at.is_(None), Application.user_id == user_id, Application.status == "offered")
         .scalar()
         or 0
     )
 
     total_rejections = (
         db.query(func.count(Application.id))
-        .filter(Application.archived_at.is_(None), Application.status == "rejected")
+        .filter(Application.archived_at.is_(None), Application.user_id == user_id, Application.status == "rejected")
         .scalar()
         or 0
     )
@@ -86,9 +98,12 @@ def get_summary(db: Session) -> DashboardSummary:
 
 
 def get_status_distribution(db: Session) -> list[StatusDistributionItem]:
+    user_id = current_user_id_ctx.get()
+    if user_id is None:
+        return []
     rows = (
         db.query(Application.current_stage, func.count(Application.id).label("count"))
-        .filter(Application.archived_at.is_(None))
+        .filter(Application.archived_at.is_(None), Application.user_id == user_id)
         .group_by(Application.current_stage)
         .order_by(func.count(Application.id).desc())
         .all()
@@ -97,9 +112,12 @@ def get_status_distribution(db: Session) -> list[StatusDistributionItem]:
 
 
 def get_recent_applications(db: Session) -> list[RecentApplicationItem]:
+    user_id = current_user_id_ctx.get()
+    if user_id is None:
+        return []
     rows = (
         db.query(Application)
-        .filter(Application.archived_at.is_(None))
+        .filter(Application.archived_at.is_(None), Application.user_id == user_id)
         .order_by(Application.applied_at.desc())
         .limit(10)
         .all()
@@ -118,6 +136,9 @@ def get_recent_applications(db: Session) -> list[RecentApplicationItem]:
 
 
 def get_platform_ranking(db: Session) -> list[PlatformRankingItem]:
+    user_id = current_user_id_ctx.get()
+    if user_id is None:
+        return []
     rows = db.execute(
         text(
             """
@@ -127,7 +148,7 @@ def get_platform_ranking(db: Session) -> list[PlatformRankingItem]:
                 COUNT(DISTINCT a.id) AS total,
                 COUNT(DISTINCT CASE WHEN oh.application_id IS NOT NULL THEN a.id END) AS conversions
             FROM job_platform jp
-            JOIN application a ON a.platform_id = jp.id AND a.archived_at IS NULL
+            JOIN application a ON a.platform_id = jp.id AND a.archived_at IS NULL AND a.user_id = :user_id
             LEFT JOIN (
                 SELECT DISTINCT application_id
                 FROM application_history
@@ -143,7 +164,7 @@ def get_platform_ranking(db: Session) -> list[PlatformRankingItem]:
                 END DESC
             """
         )
-    ).fetchall()
+    , {"user_id": str(user_id)}).fetchall()
 
     return [
         PlatformRankingItem(
@@ -158,6 +179,9 @@ def get_platform_ranking(db: Session) -> list[PlatformRankingItem]:
 
 
 def get_heatmap(db: Session) -> list[HeatmapItem]:
+    user_id = current_user_id_ctx.get()
+    if user_id is None:
+        return []
     rows = db.execute(
         text(
             """
@@ -165,10 +189,10 @@ def get_heatmap(db: Session) -> list[HeatmapItem]:
                 TO_CHAR(applied_at, 'YYYY-MM-DD') AS date,
                 COUNT(*) AS count
             FROM application
-            WHERE archived_at IS NULL
+            WHERE archived_at IS NULL AND user_id = :user_id
             GROUP BY TO_CHAR(applied_at, 'YYYY-MM-DD')
             ORDER BY date
             """
         )
-    ).fetchall()
+    , {"user_id": str(user_id)}).fetchall()
     return [HeatmapItem(date=row.date, count=row.count) for row in rows]

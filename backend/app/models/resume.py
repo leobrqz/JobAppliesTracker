@@ -1,7 +1,9 @@
 from datetime import datetime
 from typing import Optional
+from uuid import UUID
 
-from sqlalchemy import String, Text, func
+from sqlalchemy import String, Text, UniqueConstraint, func, text
+from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
@@ -9,9 +11,11 @@ from app.core.database import Base
 
 class Resume(Base):
     __tablename__ = "resume"
+    __table_args__ = (UniqueConstraint("user_id", "name", name="uq_resume_user_name"),)
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
+    user_id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), nullable=False, server_default=text("auth.uid()"), index=True)
+    name: Mapped[str] = mapped_column(String(255), nullable=False)
     file_path: Mapped[str] = mapped_column(String(500), nullable=False)
     description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     archived_at: Mapped[Optional[datetime]] = mapped_column(nullable=True)

@@ -1,7 +1,9 @@
 from datetime import date, datetime
 from typing import Optional
+from uuid import UUID
 
-from sqlalchemy import Date, ForeignKey, Integer, String, Text, func
+from sqlalchemy import Date, ForeignKey, Integer, String, Text, func, text
+from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
@@ -11,6 +13,7 @@ class ProjectEntry(Base):
     __tablename__ = "project_entry"
 
     id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), nullable=False, server_default=text("auth.uid()"), index=True)
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     role: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
@@ -35,6 +38,7 @@ class ProjectBullet(Base):
     __tablename__ = "project_bullet"
 
     id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), nullable=False, server_default=text("auth.uid()"), index=True)
     project_entry_id: Mapped[int] = mapped_column(
         ForeignKey("project_entry.id", ondelete="CASCADE"),
         nullable=False,

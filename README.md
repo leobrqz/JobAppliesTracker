@@ -98,58 +98,69 @@ Global display and layout.
 - Dashboard: show or hide each widget; week strip starts expanded or collapsed
 - Applications table: optional resume, salary, seniority, and created-at columns; compact row density
 
+### Authentication
+
+- Supabase Auth email/password login and registration
+- Public landing page at `/`
+- Protected application routes requiring authenticated session
+- Backend API authorization via bearer JWT
+
 ---
 
 
 ## Setup
 
-You can run the application via Docker
+Run the project with Docker.
 
-**Note:**  
-Running migrations is required on first setup. Also run after pulling updates that include new migrations.
+**Prerequisites**
 
+- Configure `supabase/.env` first (from `supabase/.env.example`)
+- Configure `backend/.env` (from `backend/.env.example`)
+- Configure `frontend/apps/web/.env` (from `frontend/apps/web/.env.example`)
 
-**Prerequisites:**  
-- Set up `backend/.env` (see `backend/.env.example`)
-- Set up `supabase/.env` (see `supabase/.env.example`)
-- Set up `frontend/apps/web/.env` (see `frontend/apps/web/.env.example`)
+`backend/.env` and `supabase/.env` must agree on:
 
-Also, check the [Supabase documentation](https://supabase.com/docs/guides/self-hosting/docker) for more information.
+- Supavisor tenant (`POOLER_TENANT_ID` in Supabase; `postgres.{POOLER_TENANT_ID}` in backend `DATABASE_URL`)
+- Postgres password
+- Supabase service key (`SERVICE_ROLE_KEY` in Supabase, copied to backend)
+- Supabase anon key (`ANON_KEY` in Supabase, copied to frontend and backend)
 
-**You MUST set up Supabase .env before anything**
+`DATABASE_URL` must include `/postgres` as database name.
 
-
-### 1. Clone the repository
+### 1. Clone repository
 ```bash
 git clone https://github.com/leobrqz/JobAppliesTracker.git
 cd JobAppliesTracker
 ```
 
-### 2. Start Supabase and create a new bucket
+### 2. Start Supabase
 
 ```bash
 cd supabase && docker compose up -d
 ```
 
-In **Supabase Studio** → **Storage** → **Create bucket**:
-- Create a **private** bucket named `jobtracker` 
+For local development without SMTP, set `ENABLE_EMAIL_AUTOCONFIRM=true` in `supabase/.env`.
+If it is `false` and no SMTP service is configured, signup fails with `Error sending confirmation email`.
+
+### 3. Create Storage bucket
+
+In Supabase Studio (`http://localhost:8000`) create a **private** bucket named `jobtracker`.
 
 
-### 3. Start the app:
-This will restart Supabase and start the frontend and backend.
+### 4. Start app containers
 
 ```bash
 ./docker-up.sh
 ```
 
-###  4. Run migrations:
+### 5. Run migrations (required)
 
 ```bash
 ./docker-alembic-upgrade.sh
 ```
 
-### 5. Access the application:
-- Next.js: http://localhost:3000
+### 6. Access services
+- Next.js: http://localhost:3000 (landing/login/register)
 - Supabase: http://localhost:8000
 - FastAPI: http://localhost:8001
 

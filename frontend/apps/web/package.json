@@ -15,6 +15,8 @@
     "types:generate": "openapi-typescript http://localhost:8000/openapi.json -o types/api.generated.ts"
   },
   "dependencies": {
+    "@supabase/ssr": "^0.7.0",
+    "@supabase/supabase-js": "^2.57.5",
     "@preact/signals": "^2.8.2",
     "@schedule-x/calendar": "^4.3.1",
     "@schedule-x/events-service": "^4.3.1",

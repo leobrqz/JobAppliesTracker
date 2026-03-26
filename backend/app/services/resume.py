@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 
 from app.core.storage import StorageError, delete_file, read_file_bytes, save_file
 from app.core import utcnow
+from app.core.request_context import current_user_id_ctx
 from app.models.resume import Resume
 from app.schemas.resume import ResumeCreate, ResumeUpdate
 
@@ -25,7 +26,10 @@ def get_resumes(db: Session, archived: bool = False) -> list[Resume]:
 
 def _resume_storage_key(display_name: str) -> str:
     safe = display_name.replace("/", "_").replace("\\", "_")
-    return f"resumes/{uuid4().hex}-{safe}"
+    user_id = current_user_id_ctx.get()
+    if user_id is None:
+        raise HTTPException(status_code=401, detail="Missing authenticated user context")
+    return f"users/{user_id}/resumes/{uuid4().hex}-{safe}"
 
 
 def upload_resume(db: Session, name: str, description: str | None, data: bytes) -> Resume:

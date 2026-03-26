@@ -1,8 +1,10 @@
 from datetime import datetime
 from decimal import Decimal
 from typing import Optional
+from uuid import UUID
 
-from sqlalchemy import ForeignKey, Numeric, String, func
+from sqlalchemy import ForeignKey, Numeric, String, func, text
+from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
@@ -12,6 +14,7 @@ class Application(Base):
     __tablename__ = "application"
 
     id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), nullable=False, server_default=text("auth.uid()"), index=True)
     platform_id: Mapped[int] = mapped_column(ForeignKey("job_platform.id", ondelete="RESTRICT"), nullable=False)
     job_title: Mapped[str] = mapped_column(String(255), nullable=False)
     company: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)

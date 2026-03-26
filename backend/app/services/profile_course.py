@@ -4,6 +4,7 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 from app.core.storage import StorageError, delete_file, read_file_bytes, save_file
+from app.core.request_context import current_user_id_ctx
 from app.models.profile_course import CourseEntry
 from app.schemas.profile_course import CourseEntryCreate, CourseEntryUpdate, CourseReorderItem
 
@@ -17,7 +18,10 @@ def _reindex_entries(db: Session) -> None:
 
 
 def _store_attachment(file_name: str, data: bytes, mime_type: str) -> str:
-    stored_name = f"courses/{uuid4().hex}-{file_name}"
+    user_id = current_user_id_ctx.get()
+    if user_id is None:
+        raise HTTPException(status_code=401, detail="Missing authenticated user context")
+    stored_name = f"users/{user_id}/courses/{uuid4().hex}-{file_name}"
     return save_file(
         stored_name,
         data,
