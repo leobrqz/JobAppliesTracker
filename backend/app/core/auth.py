@@ -8,6 +8,12 @@ from uuid import UUID
 import jwt
 from fastapi import HTTPException, status
 from jwt import PyJWKClient
+from jwt.exceptions import DecodeError
+from jwt.exceptions import ExpiredSignatureError
+from jwt.exceptions import InvalidAudienceError
+from jwt.exceptions import InvalidIssuerError
+from jwt.exceptions import InvalidSignatureError
+from jwt.exceptions import InvalidTokenError
 
 from app.core.config import settings
 
@@ -46,7 +52,7 @@ def verify_bearer_token(token: str) -> AuthUser:
         decode_kwargs["issuer"] = issuer
 
     try:
-        if settings.SUPABASE_JWT_SECRET:
+        if settings.SUPABASE_JWT_VERIFICATION_MODE == "hs256":
             payload = jwt.decode(
                 token,
                 settings.SUPABASE_JWT_SECRET,
@@ -54,15 +60,25 @@ def verify_bearer_token(token: str) -> AuthUser:
                 **decode_kwargs,
             )
         else:
-            signing_key = _jwk_client().get_signing_key_from_jwt(token)
+            try:
+                signing_key = _jwk_client().get_signing_key_from_jwt(token)
+            except Exception:
+                raise HTTPException(
+                    status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                    detail="Token verification service unavailable",
+                ) from None
             payload = jwt.decode(
                 token,
                 signing_key.key,
                 algorithms=["RS256", "ES256"],
                 **decode_kwargs,
             )
-    except Exception:
+    except HTTPException:
+        raise
+    except (ExpiredSignatureError, InvalidAudienceError, InvalidIssuerError, InvalidSignatureError, DecodeError, InvalidTokenError):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid or expired token") from None
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Token verification failed") from None
 
     sub = payload.get("sub")
     if not isinstance(sub, str):

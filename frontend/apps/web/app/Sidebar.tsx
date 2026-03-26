@@ -3,7 +3,9 @@
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { BarChart2, Briefcase, Building2, CalendarDays, LayoutDashboard, Settings, User } from "lucide-react"
-import { createClient } from "@/lib/supabase/client"
+import { toast } from "sonner"
+
+import { hardSignOutAndRedirect } from "@/lib/supabase/auth-session"
 
 const NAV_ITEMS = [
   { href: "/profile", label: "Profile", icon: User },
@@ -18,12 +20,15 @@ const NAV_ITEMS = [
 export function Sidebar() {
   const pathname = usePathname()
   const router = useRouter()
-  const supabase = createClient()
 
   async function onLogout() {
-    await supabase.auth.signOut()
-    router.replace("/login")
-    router.refresh()
+    try {
+      await hardSignOutAndRedirect()
+    } catch {
+      toast.error("Failed to end session. Redirecting to login.")
+      router.replace("/login")
+      router.refresh()
+    }
   }
 
   return (

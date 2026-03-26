@@ -38,26 +38,52 @@ app.add_middleware(
 )
 
 
+def _cors_headers_for_request(request: Request) -> dict[str, str]:
+    origin = request.headers.get("origin")
+    if origin and origin in settings.cors_origins_list:
+        return {
+            "Access-Control-Allow-Origin": origin,
+            "Access-Control-Allow-Credentials": "true",
+        }
+    return {}
+
+
+def _auth_error_response(request: Request, detail: str, status_code: int = 401) -> JSONResponse:
+    headers = _cors_headers_for_request(request)
+    if status_code == 401:
+        headers["WWW-Authenticate"] = "Bearer"
+    return JSONResponse(status_code=status_code, content={"detail": detail}, headers=headers)
+
+
+def _is_public_path(path: str) -> bool:
+    if path.startswith("/docs") or path.startswith("/redoc") or path.startswith("/openapi.json"):
+        return True
+    for public_path in settings.auth_public_paths_list:
+        if path == public_path:
+            return True
+    return False
+
+
 @app.middleware("http")
 async def auth_middleware(request: Request, call_next):
     path = request.url.path
-    if path in settings.auth_public_paths_list:
+    if request.method == "OPTIONS":
         return await call_next(request)
-    if path.startswith("/docs") or path.startswith("/redoc") or path.startswith("/openapi.json"):
+    if _is_public_path(path):
         return await call_next(request)
 
     auth_header = request.headers.get("authorization", "")
     if not auth_header.lower().startswith("bearer "):
-        return JSONResponse(status_code=401, content={"detail": "Missing bearer token"})
+        return _auth_error_response(request, detail="Missing bearer token", status_code=401)
 
     token = auth_header.split(" ", 1)[1].strip()
     if not token:
-        return JSONResponse(status_code=401, content={"detail": "Missing bearer token"})
+        return _auth_error_response(request, detail="Missing bearer token", status_code=401)
 
     try:
         user = verify_bearer_token(token)
     except HTTPException as exc:
-        return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
+        return _auth_error_response(request, detail=str(exc.detail), status_code=exc.status_code)
     request.state.user_id = str(user.user_id)
     token_ctx = current_user_id_ctx.set(user.user_id)
     try:

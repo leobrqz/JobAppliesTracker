@@ -6,15 +6,14 @@ if (!BASE_URL) {
 
 export type ApiResult<T> = { data: T; error: null } | { data: null; error: string }
 
-let getAccessToken: (() => Promise<string | null>) | null = null
+let getValidAccessToken: ((forceRefresh?: boolean) => Promise<string | null>) | null = null
+let hardSignOutAndRedirect: (() => Promise<void>) | null = null
 
 if (typeof window !== "undefined") {
-  getAccessToken = async () => {
-    const { createClient } = await import("@/lib/supabase/client")
-    const supabase = createClient()
-    const { data } = await supabase.auth.getSession()
-    return data.session?.access_token ?? null
-  }
+  void import("@/lib/supabase/auth-session").then((mod) => {
+    getValidAccessToken = mod.getValidAccessToken
+    hardSignOutAndRedirect = mod.hardSignOutAndRedirect
+  })
 }
 
 function normalizeErrorMessage(status: number, body: unknown): string {
@@ -54,18 +53,33 @@ export async function apiRequest<T>(
   path: string,
   options?: RequestInit,
 ): Promise<ApiResult<T>> {
-  try {
+  const executeRequest = async (token: string | null) => {
     const headers = new Headers(options?.headers)
-    if (getAccessToken) {
-      const token = await getAccessToken()
-      if (token) {
-        headers.set("Authorization", `Bearer ${token}`)
-      }
+    if (token) {
+      headers.set("Authorization", `Bearer ${token}`)
     }
-    const response = await fetch(`${BASE_URL}${path}`, {
+    return fetch(`${BASE_URL}${path}`, {
       ...options,
       headers,
     })
+  }
+
+  try {
+    const initialToken = getValidAccessToken ? await getValidAccessToken(false) : null
+    let response = await executeRequest(initialToken)
+
+    if (response.status === 401 && getValidAccessToken) {
+      const refreshedToken = await getValidAccessToken(true)
+      if (refreshedToken) {
+        response = await executeRequest(refreshedToken)
+      }
+      if (response.status === 401) {
+        if (hardSignOutAndRedirect) {
+          void hardSignOutAndRedirect()
+        }
+        return { data: null, error: "Authentication required" }
+      }
+    }
 
     if (response.status === 204) {
       return { data: null as T, error: null }

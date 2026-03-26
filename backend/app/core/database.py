@@ -1,11 +1,10 @@
 from collections.abc import Generator
 from importlib.util import find_spec
-from uuid import UUID
-
 from fastapi import Request
-from sqlalchemy import create_engine, event, text
+from sqlalchemy import create_engine, event
 from sqlalchemy.engine.url import make_url
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker, with_loader_criteria
+from sqlalchemy.pool import NullPool
 
 from app.core.config import settings
 from app.core.request_context import current_user_id_ctx
@@ -25,7 +24,7 @@ def _engine_url():
     return u
 
 
-engine = create_engine(_engine_url())
+engine = create_engine(_engine_url(), poolclass=NullPool)
 SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False, expire_on_commit=False)
 
 
@@ -51,21 +50,20 @@ def _apply_user_scope(execute_state) -> None:
     execute_state.statement = statement
 
 
+@event.listens_for(SessionLocal, "before_flush")
+def _set_user_id_on_new_entities(session: Session, flush_context, instances) -> None:
+    user_id = current_user_id_ctx.get()
+    if user_id is None:
+        return
+    for obj in session.new:
+        if hasattr(obj, "user_id") and getattr(obj, "user_id", None) is None:
+            setattr(obj, "user_id", user_id)
+
+
 def get_db(request: Request) -> Generator[Session, None, None]:
     db = SessionLocal()
     try:
-        request_user_id = getattr(request.state, "user_id", None)
-        token_ctx = None
-        if request_user_id:
-            token_ctx = current_user_id_ctx.set(UUID(request_user_id))
-        current_user_id = current_user_id_ctx.get()
-        if current_user_id is not None:
-            db.execute(
-                text("select set_config('request.jwt.claim.sub', :user_id, false)"),
-                {"user_id": str(current_user_id)},
-            )
         yield db
     finally:
-        if 'token_ctx' in locals() and token_ctx is not None:
-            current_user_id_ctx.reset(token_ctx)
+        db.rollback()
         db.close()
