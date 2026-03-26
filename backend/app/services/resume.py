@@ -6,17 +6,20 @@ from sqlalchemy.orm import Session
 
 from app.core.storage import StorageError, delete_file, read_file_bytes, save_file
 from app.core import utcnow
-from app.core.request_context import current_user_id_ctx
+from app.core.request_context import require_current_user_id
 from app.models.resume import Resume
-from app.schemas.resume import ResumeCreate, ResumeUpdate
+from app.schemas.resume import ResumeUpdate
 
 
 def get_resume(db: Session, resume_id: int) -> Resume | None:
-    return db.query(Resume).filter(Resume.id == resume_id).first()
+    user_id = require_current_user_id()
+    return db.query(Resume).filter(Resume.id == resume_id, Resume.user_id == user_id).first()
 
 
 def get_resumes(db: Session, archived: bool = False) -> list[Resume]:
+    user_id = require_current_user_id()
     query = db.query(Resume)
+    query = query.filter(Resume.user_id == user_id)
     if archived:
         query = query.filter(Resume.archived_at.is_not(None))
     else:
@@ -26,9 +29,7 @@ def get_resumes(db: Session, archived: bool = False) -> list[Resume]:
 
 def _resume_storage_key(display_name: str) -> str:
     safe = display_name.replace("/", "_").replace("\\", "_")
-    user_id = current_user_id_ctx.get()
-    if user_id is None:
-        raise HTTPException(status_code=401, detail="Missing authenticated user context")
+    user_id = require_current_user_id()
     return f"users/{user_id}/resumes/{uuid4().hex}-{safe}"
 
 

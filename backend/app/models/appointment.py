@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Optional
 from uuid import UUID
 
-from sqlalchemy import ForeignKey, String, Text, func, text
+from sqlalchemy import ForeignKeyConstraint, String, Text, func, text
 from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -11,12 +11,18 @@ from app.core.database import Base
 
 class Appointment(Base):
     __tablename__ = "appointment"
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["user_id", "application_id"],
+            ["application.user_id", "application.id"],
+            ondelete="CASCADE",
+            name="fk_appointment_application_user",
+        ),
+    )
 
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), nullable=False, server_default=text("auth.uid()"), index=True)
-    application_id: Mapped[Optional[int]] = mapped_column(
-        ForeignKey("application.id", ondelete="CASCADE"), nullable=True
-    )
+    application_id: Mapped[Optional[int]] = mapped_column(nullable=True)
     title: Mapped[str] = mapped_column(String(255), nullable=False)
     type: Mapped[str] = mapped_column(String(50), nullable=False)
     platform: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)

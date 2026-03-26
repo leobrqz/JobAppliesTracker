@@ -19,6 +19,9 @@ class Settings(BaseSettings):
     SUPABASE_JWT_AUDIENCE: str = "authenticated"
     SUPABASE_JWT_ISSUER: str | None = None
     AUTH_PUBLIC_PATHS: str = "/,/healthz,/openapi.json,/docs,/docs/oauth2-redirect,/redoc"
+    RESUME_UPLOAD_MAX_BYTES: int = 10 * 1024 * 1024
+    CERTIFICATION_UPLOAD_MAX_BYTES: int = 5 * 1024 * 1024
+    COURSE_UPLOAD_MAX_BYTES: int = 5 * 1024 * 1024
 
     @field_validator(
         "SUPABASE_URL",

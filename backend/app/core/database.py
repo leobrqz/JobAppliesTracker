@@ -1,7 +1,7 @@
 from collections.abc import Generator
 from importlib.util import find_spec
 from fastapi import Request
-from sqlalchemy import create_engine, event
+from sqlalchemy import create_engine, event, text
 from sqlalchemy.engine.url import make_url
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker, with_loader_criteria
 from sqlalchemy.pool import NullPool
@@ -58,6 +58,36 @@ def _set_user_id_on_new_entities(session: Session, flush_context, instances) -> 
     for obj in session.new:
         if hasattr(obj, "user_id") and getattr(obj, "user_id", None) is None:
             setattr(obj, "user_id", user_id)
+
+
+@event.listens_for(SessionLocal, "after_begin")
+def _set_request_identity_context(session: Session, transaction, connection) -> None:
+    """
+    Make Supabase's auth.uid() resolve to the authenticated user for RLS policies.
+    """
+    user_id = current_user_id_ctx.get()
+    if user_id is None:
+        return
+
+    # Supabase policies target the `authenticated` role.
+    connection.execute(text("SET LOCAL ROLE authenticated"))
+    connection.execute(text("SET LOCAL search_path = public"))
+
+
+@event.listens_for(engine, "before_cursor_execute")
+def _inject_jwt_subject(conn, cursor, statement, parameters, context, executemany) -> None:  # type: ignore[no-untyped-def]
+    user_id = current_user_id_ctx.get()
+    if user_id is None:
+        return
+
+    stmt = str(statement).lower()
+    if "set_config('request.jwt.claim.sub'" in stmt or "request.jwt.claim.sub" in stmt:
+        return
+
+    conn.execute(
+        text("SELECT set_config('request.jwt.claim.sub', CAST(:sub AS text), true)"),
+        {"sub": str(user_id)},
+    )
 
 
 def get_db(request: Request) -> Generator[Session, None, None]:

@@ -2,7 +2,7 @@ from datetime import date, datetime
 from typing import Optional
 from uuid import UUID
 
-from sqlalchemy import Date, ForeignKey, Integer, String, Text, func, text
+from sqlalchemy import Date, ForeignKeyConstraint, Integer, String, Text, UniqueConstraint, func, text
 from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -11,6 +11,7 @@ from app.core.database import Base
 
 class EducationEntry(Base):
     __tablename__ = "education_entry"
+    __table_args__ = (UniqueConstraint("user_id", "id", name="uq_education_entry_user_id_id"),)
 
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), nullable=False, server_default=text("auth.uid()"), index=True)
@@ -35,14 +36,18 @@ class EducationEntry(Base):
 
 class EducationHighlight(Base):
     __tablename__ = "education_highlight"
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["user_id", "education_entry_id"],
+            ["education_entry.user_id", "education_entry.id"],
+            ondelete="CASCADE",
+            name="fk_education_highlight_entry_user",
+        ),
+    )
 
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), nullable=False, server_default=text("auth.uid()"), index=True)
-    education_entry_id: Mapped[int] = mapped_column(
-        ForeignKey("education_entry.id", ondelete="CASCADE"),
-        nullable=False,
-        index=True,
-    )
+    education_entry_id: Mapped[int] = mapped_column(nullable=False, index=True)
     content: Mapped[str] = mapped_column(Text, nullable=False)
     display_order: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     created_at: Mapped[datetime] = mapped_column(nullable=False, server_default=func.now())

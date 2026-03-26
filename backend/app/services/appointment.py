@@ -3,12 +3,14 @@ from typing import Optional
 
 from sqlalchemy.orm import Session
 
+from app.core.request_context import require_current_user_id
 from app.models.appointment import Appointment
 from app.schemas.appointment import AppointmentCreate, AppointmentUpdate
 
 
 def get_appointment(db: Session, appointment_id: int) -> Appointment | None:
-    return db.query(Appointment).filter(Appointment.id == appointment_id).first()
+    user_id = require_current_user_id()
+    return db.query(Appointment).filter(Appointment.id == appointment_id, Appointment.user_id == user_id).first()
 
 
 def get_appointments(
@@ -17,7 +19,9 @@ def get_appointments(
     start: Optional[datetime] = None,
     end: Optional[datetime] = None,
 ) -> list[Appointment]:
+    user_id = require_current_user_id()
     query = db.query(Appointment)
+    query = query.filter(Appointment.user_id == user_id)
     if application_id is not None:
         query = query.filter(Appointment.application_id == application_id)
     if start is not None:

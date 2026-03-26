@@ -3,7 +3,7 @@ from decimal import Decimal
 from typing import Optional
 from uuid import UUID
 
-from sqlalchemy import Date, ForeignKey, Integer, Numeric, String, Text, func, text
+from sqlalchemy import Date, ForeignKeyConstraint, Integer, Numeric, String, Text, UniqueConstraint, func, text
 from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -12,6 +12,7 @@ from app.core.database import Base
 
 class ExperienceEntry(Base):
     __tablename__ = "experience_entry"
+    __table_args__ = (UniqueConstraint("user_id", "id", name="uq_experience_entry_user_id_id"),)
 
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), nullable=False, server_default=text("auth.uid()"), index=True)
@@ -39,14 +40,18 @@ class ExperienceEntry(Base):
 
 class ExperienceBullet(Base):
     __tablename__ = "experience_bullet"
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["user_id", "experience_entry_id"],
+            ["experience_entry.user_id", "experience_entry.id"],
+            ondelete="CASCADE",
+            name="fk_experience_bullet_entry_user",
+        ),
+    )
 
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), nullable=False, server_default=text("auth.uid()"), index=True)
-    experience_entry_id: Mapped[int] = mapped_column(
-        ForeignKey("experience_entry.id", ondelete="CASCADE"),
-        nullable=False,
-        index=True,
-    )
+    experience_entry_id: Mapped[int] = mapped_column(nullable=False, index=True)
     content: Mapped[str] = mapped_column(Text, nullable=False)
     display_order: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     created_at: Mapped[datetime] = mapped_column(nullable=False, server_default=func.now())

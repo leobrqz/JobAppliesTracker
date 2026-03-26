@@ -4,6 +4,7 @@ from typing import Optional
 from sqlalchemy.orm import Session
 
 from app.models.application import Application
+from app.core.request_context import require_current_user_id
 from app.schemas.application import ApplicationCreate, ApplicationUpdate
 from app.core import utcnow
 from app.services.application_history import _append_history_and_update_stage
@@ -16,7 +17,8 @@ def _normalize_salary_fields(application: Application) -> None:
 
 
 def get_application(db: Session, application_id: int) -> Application | None:
-    return db.query(Application).filter(Application.id == application_id).first()
+    user_id = require_current_user_id()
+    return db.query(Application).filter(Application.id == application_id, Application.user_id == user_id).first()
 
 
 def get_applications(
@@ -27,7 +29,9 @@ def get_applications(
     company_id: Optional[int] = None,
     archived: bool = False,
 ) -> list[Application]:
+    user_id = require_current_user_id()
     query = db.query(Application)
+    query = query.filter(Application.user_id == user_id)
     if archived:
         query = query.filter(Application.archived_at.is_not(None))
     else:

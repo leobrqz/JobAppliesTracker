@@ -11,7 +11,10 @@ from app.core.database import Base
 
 class Company(Base):
     __tablename__ = "company"
-    __table_args__ = (UniqueConstraint("user_id", "name", name="uq_company_user_name"),)
+    __table_args__ = (
+        UniqueConstraint("user_id", "name", name="uq_company_user_name"),
+        UniqueConstraint("user_id", "id", name="uq_company_user_id_id"),
+    )
 
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), nullable=False, server_default=text("auth.uid()"), index=True)

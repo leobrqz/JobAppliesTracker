@@ -4,7 +4,9 @@ from fastapi import APIRouter, Depends, File, HTTPException, Response, UploadFil
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 
+from app.core.config import settings
 from app.core.database import get_db
+from app.core.uploads import read_upload_with_limit
 from app.schemas.profile_course import CourseEntryCreate, CourseEntryResponse, CourseEntryUpdate, CourseReorderItem
 from app.services import profile_course as profile_course_service
 
@@ -46,7 +48,7 @@ def reorder_courses(items: list[CourseReorderItem], db: Session = Depends(get_db
 async def upload_attachment(entry_id: int, file: UploadFile = File(...), db: Session = Depends(get_db)) -> CourseEntryResponse:
     if file.filename is None:
         raise HTTPException(status_code=400, detail="Invalid file name")
-    data = await file.read()
+    data = await read_upload_with_limit(file, settings.COURSE_UPLOAD_MAX_BYTES)
     entry = profile_course_service.upload_attachment(
         db=db,
         entry_id=entry_id,

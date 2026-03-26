@@ -3,8 +3,8 @@ from uuid import uuid4
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
+from app.core.request_context import require_current_user_id
 from app.core.storage import StorageError, delete_file, read_file_bytes, save_file
-from app.core.request_context import current_user_id_ctx
 from app.models.profile_certification import CertificationEntry
 from app.schemas.profile_certification import (
     CertificationEntryCreate,
@@ -22,9 +22,7 @@ def _reindex_entries(db: Session) -> None:
 
 
 def _store_attachment(file_name: str, data: bytes, mime_type: str) -> str:
-    user_id = current_user_id_ctx.get()
-    if user_id is None:
-        raise HTTPException(status_code=401, detail="Missing authenticated user context")
+    user_id = require_current_user_id()
     stored_name = f"users/{user_id}/certifications/{uuid4().hex}-{file_name}"
     return save_file(
         stored_name,
@@ -34,15 +32,19 @@ def _store_attachment(file_name: str, data: bytes, mime_type: str) -> str:
 
 
 def get_certification(db: Session, entry_id: int) -> CertificationEntry | None:
-    return db.query(CertificationEntry).filter(CertificationEntry.id == entry_id).first()
+    user_id = require_current_user_id()
+    return db.query(CertificationEntry).filter(CertificationEntry.id == entry_id, CertificationEntry.user_id == user_id).first()
 
 
 def list_certifications(db: Session) -> list[CertificationEntry]:
-    return db.query(CertificationEntry).order_by(CertificationEntry.display_order, CertificationEntry.id).all()
+    user_id = require_current_user_id()
+    return db.query(CertificationEntry).filter(CertificationEntry.user_id == user_id).order_by(CertificationEntry.display_order, CertificationEntry.id).all()
 
 
 def create_certification(db: Session, data: CertificationEntryCreate) -> CertificationEntry:
+    user_id = require_current_user_id()
     entry = CertificationEntry(
+        user_id=user_id,
         name=data.name,
         issuer=data.issuer,
         issued_on=data.issued_on,
@@ -50,7 +52,7 @@ def create_certification(db: Session, data: CertificationEntryCreate) -> Certifi
         credential_id=data.credential_id,
         verification_link=str(data.verification_link) if data.verification_link else None,
         notes=data.notes,
-        display_order=db.query(CertificationEntry).count(),
+        display_order=db.query(CertificationEntry).filter(CertificationEntry.user_id == user_id).count(),
     )
     db.add(entry)
     db.commit()
@@ -87,8 +89,9 @@ def delete_certification(db: Session, entry_id: int) -> bool:
 
 
 def reorder_certifications(db: Session, items: list[CertificationReorderItem]) -> list[CertificationEntry]:
+    user_id = require_current_user_id()
     item_map = {item.id: item.display_order for item in items}
-    entries = db.query(CertificationEntry).all()
+    entries = db.query(CertificationEntry).filter(CertificationEntry.user_id == user_id).all()
     for entry in entries:
         if entry.id in item_map:
             entry.display_order = item_map[entry.id]

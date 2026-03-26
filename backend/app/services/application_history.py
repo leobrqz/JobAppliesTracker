@@ -1,15 +1,17 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
+from app.core.request_context import require_current_user_id
 from app.models.application import Application
 from app.models.application_history import ApplicationHistory
 from app.schemas.application_history import ApplicationHistoryCreate, ApplicationHistoryUpdate
 
 
 def get_history(db: Session, application_id: int) -> list[ApplicationHistory]:
+    user_id = require_current_user_id()
     return (
         db.query(ApplicationHistory)
-        .filter(ApplicationHistory.application_id == application_id)
+        .filter(ApplicationHistory.application_id == application_id, ApplicationHistory.user_id == user_id)
         .order_by(ApplicationHistory.date.asc())
         .all()
     )
@@ -21,7 +23,8 @@ def _get_latest_history_entry(
     *,
     exclude_history_id: int | None = None,
 ) -> ApplicationHistory | None:
-    q = db.query(ApplicationHistory).filter(ApplicationHistory.application_id == application_id)
+    user_id = require_current_user_id()
+    q = db.query(ApplicationHistory).filter(ApplicationHistory.application_id == application_id, ApplicationHistory.user_id == user_id)
     if exclude_history_id is not None:
         q = q.filter(ApplicationHistory.id != exclude_history_id)
     return q.order_by(ApplicationHistory.date.desc()).first()
@@ -47,7 +50,8 @@ def _append_history_and_update_stage(
 
 
 def advance_stage(db: Session, application_id: int, data: ApplicationHistoryCreate) -> ApplicationHistory:
-    application = db.query(Application).filter(Application.id == application_id).first()
+    user_id = require_current_user_id()
+    application = db.query(Application).filter(Application.id == application_id, Application.user_id == user_id).first()
     if application is None:
         raise HTTPException(status_code=404, detail="Application not found")
 
@@ -74,6 +78,7 @@ def update_history_entry(
         .filter(
             ApplicationHistory.id == history_id,
             ApplicationHistory.application_id == application_id,
+            ApplicationHistory.user_id == require_current_user_id(),
         )
         .first()
     )
@@ -99,7 +104,10 @@ def update_history_entry(
     if "notes" in updates:
         entry.notes = updates["notes"]
 
-    application = db.query(Application).filter(Application.id == application_id).first()
+    application = db.query(Application).filter(
+        Application.id == application_id,
+        Application.user_id == require_current_user_id(),
+    ).first()
     if application is None:
         raise HTTPException(status_code=404, detail="Application not found")
 
@@ -118,6 +126,7 @@ def delete_history_entry(db: Session, application_id: int, history_id: int) -> b
         .filter(
             ApplicationHistory.id == history_id,
             ApplicationHistory.application_id == application_id,
+            ApplicationHistory.user_id == require_current_user_id(),
         )
         .first()
     )
@@ -126,7 +135,7 @@ def delete_history_entry(db: Session, application_id: int, history_id: int) -> b
 
     remaining_count = (
         db.query(ApplicationHistory)
-        .filter(ApplicationHistory.application_id == application_id)
+        .filter(ApplicationHistory.application_id == application_id, ApplicationHistory.user_id == require_current_user_id())
         .count()
     )
     if remaining_count <= 1:
@@ -138,7 +147,10 @@ def delete_history_entry(db: Session, application_id: int, history_id: int) -> b
     db.delete(entry)
 
     latest = _get_latest_history_entry(db, application_id, exclude_history_id=history_id)
-    application = db.query(Application).filter(Application.id == application_id).first()
+    application = db.query(Application).filter(
+        Application.id == application_id,
+        Application.user_id == require_current_user_id(),
+    ).first()
     if application and latest:
         application.current_stage = latest.stage
 

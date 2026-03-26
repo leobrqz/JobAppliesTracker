@@ -5,23 +5,27 @@ from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
+from app.core.request_context import require_current_user_id
 from app.models.application import Application
 from app.models.company import Company
 from app.schemas.company import CompanyCreate, CompanyUpdate
 
 
 def get_company(db: Session, company_id: int) -> Company | None:
-    return db.query(Company).filter(Company.id == company_id).first()
+    user_id = require_current_user_id()
+    return db.query(Company).filter(Company.id == company_id, Company.user_id == user_id).first()
 
 
 def get_companies(db: Session, search: Optional[str] = None) -> list[Company]:
+    user_id = require_current_user_id()
     query = db.query(Company)
     if search:
         query = query.filter(Company.name.ilike(f"%{search}%"))
-    return query.order_by(Company.name).all()
+    return query.filter(Company.user_id == user_id).order_by(Company.name).all()
 
 
 def create_company(db: Session, data: CompanyCreate) -> Company:
+    user_id = require_current_user_id()
     company = Company(
         name=data.name,
         website=data.website,
@@ -33,6 +37,7 @@ def create_company(db: Session, data: CompanyCreate) -> Company:
 
         # Auto-link existing applications that share the same company name (free-text, not yet linked)
         db.query(Application).filter(
+            Application.user_id == user_id,
             func.lower(Application.company) == func.lower(data.name),
             Application.company_id.is_(None),
             Application.company.isnot(None),
@@ -48,6 +53,7 @@ def create_company(db: Session, data: CompanyCreate) -> Company:
 
 
 def update_company(db: Session, company_id: int, data: CompanyUpdate) -> Company | None:
+    user_id = require_current_user_id()
     company = get_company(db, company_id)
     if company is None:
         return None
@@ -56,6 +62,7 @@ def update_company(db: Session, company_id: int, data: CompanyUpdate) -> Company
         new_name = data.name.strip()
         # Keep linked applications' company text in sync with the new name
         db.query(Application).filter(
+            Application.user_id == user_id,
             Application.company_id == company_id,
         ).update({"company": new_name}, synchronize_session=False)
 

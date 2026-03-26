@@ -4,7 +4,9 @@ from fastapi import APIRouter, Depends, File, Form, HTTPException, Response, Upl
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 
+from app.core.config import settings
 from app.core.database import get_db
+from app.core.uploads import read_upload_with_limit
 from app.schemas.resume import ResumeResponse, ResumeUpdate
 from app.services import resume as resume_service
 
@@ -23,7 +25,7 @@ async def upload_resume(
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
 ) -> ResumeResponse:
-    data = await file.read()
+    data = await read_upload_with_limit(file, settings.RESUME_UPLOAD_MAX_BYTES)
     return resume_service.upload_resume(db, name=name, description=description, data=data)
 
 

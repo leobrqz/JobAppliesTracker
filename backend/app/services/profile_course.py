@@ -3,8 +3,8 @@ from uuid import uuid4
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
+from app.core.request_context import require_current_user_id
 from app.core.storage import StorageError, delete_file, read_file_bytes, save_file
-from app.core.request_context import current_user_id_ctx
 from app.models.profile_course import CourseEntry
 from app.schemas.profile_course import CourseEntryCreate, CourseEntryUpdate, CourseReorderItem
 
@@ -18,9 +18,7 @@ def _reindex_entries(db: Session) -> None:
 
 
 def _store_attachment(file_name: str, data: bytes, mime_type: str) -> str:
-    user_id = current_user_id_ctx.get()
-    if user_id is None:
-        raise HTTPException(status_code=401, detail="Missing authenticated user context")
+    user_id = require_current_user_id()
     stored_name = f"users/{user_id}/courses/{uuid4().hex}-{file_name}"
     return save_file(
         stored_name,
@@ -30,22 +28,26 @@ def _store_attachment(file_name: str, data: bytes, mime_type: str) -> str:
 
 
 def get_course(db: Session, entry_id: int) -> CourseEntry | None:
-    return db.query(CourseEntry).filter(CourseEntry.id == entry_id).first()
+    user_id = require_current_user_id()
+    return db.query(CourseEntry).filter(CourseEntry.id == entry_id, CourseEntry.user_id == user_id).first()
 
 
 def list_courses(db: Session) -> list[CourseEntry]:
-    return db.query(CourseEntry).order_by(CourseEntry.display_order, CourseEntry.id).all()
+    user_id = require_current_user_id()
+    return db.query(CourseEntry).filter(CourseEntry.user_id == user_id).order_by(CourseEntry.display_order, CourseEntry.id).all()
 
 
 def create_course(db: Session, data: CourseEntryCreate) -> CourseEntry:
+    user_id = require_current_user_id()
     entry = CourseEntry(
+        user_id=user_id,
         title=data.title,
         provider=data.provider,
         completed_on=data.completed_on,
         duration_hours=data.duration_hours,
         verification_link=str(data.verification_link) if data.verification_link else None,
         notes=data.notes,
-        display_order=db.query(CourseEntry).count(),
+        display_order=db.query(CourseEntry).filter(CourseEntry.user_id == user_id).count(),
     )
     db.add(entry)
     db.commit()
@@ -82,8 +84,9 @@ def delete_course(db: Session, entry_id: int) -> bool:
 
 
 def reorder_courses(db: Session, items: list[CourseReorderItem]) -> list[CourseEntry]:
+    user_id = require_current_user_id()
     item_map = {item.id: item.display_order for item in items}
-    entries = db.query(CourseEntry).all()
+    entries = db.query(CourseEntry).filter(CourseEntry.user_id == user_id).all()
     for entry in entries:
         if entry.id in item_map:
             entry.display_order = item_map[entry.id]
